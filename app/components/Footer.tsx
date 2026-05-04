@@ -17,8 +17,8 @@ const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
     links: [
       {to: '/atelier', label: 'The Atelier'},
       {to: '/journal', label: 'Journal'},
-      {to: '/atelier#commissions', label: 'Commissions'},
-      {to: '/atelier#mending', label: 'Mending'},
+      {to: '/atelier', label: 'Commissions'},
+      {to: '/atelier', label: 'Mending'},
     ],
   },
   {
@@ -34,7 +34,7 @@ const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
     title: 'Letters',
     links: [
       {to: '/account', label: 'Account'},
-      {to: '#newsletter', label: 'Newsletter'},
+      {to: '/#newsletter', label: 'Newsletter'},
       {to: '/journal', label: 'Contact'},
       {to: '/journal', label: 'Press'},
     ],

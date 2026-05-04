@@ -22,12 +22,18 @@ export class AppSession implements HydrogenSession {
   }
 
   static async init(request: Request, secrets: string[]) {
+    // Mark the cookie `secure` whenever we're served over HTTPS so the browser
+    // never sends it in plaintext on production deployments. We can't toggle
+    // on `process.env.NODE_ENV` directly — this runs in a worker — but the
+    // request URL is a reliable signal.
+    const secure = new URL(request.url).protocol === 'https:';
     const storage = createCookieSessionStorage({
       cookie: {
         name: 'session',
         httpOnly: true,
         path: '/',
         sameSite: 'lax',
+        secure,
         secrets,
       },
     });
@@ -62,6 +68,9 @@ export class AppSession implements HydrogenSession {
   }
 
   destroy() {
+    // Mark pending so `server.ts` writes the resulting Set-Cookie header that
+    // clears the session on the client.
+    this.isPending = true;
     return this.#sessionStorage.destroySession(this.#session);
   }
 

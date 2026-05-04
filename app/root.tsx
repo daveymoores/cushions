@@ -80,14 +80,16 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  let errorMessage = 'Unknown error';
+  const isDev = import.meta.env.DEV;
+  let errorMessage = '';
   let errorStatus = 500;
 
   if (isRouteErrorResponse(error)) {
-    errorMessage = error?.data?.message ?? error.data;
     errorStatus = error.status;
+    errorMessage = error?.data?.message ?? error.data ?? '';
   } else if (error instanceof Error) {
     errorMessage = error.message;
+    console.error(error);
   }
 
   return (
@@ -96,7 +98,7 @@ export function ErrorBoundary() {
       <h1 className="font-serif font-light text-[56px] mt-6 leading-[0.95]">
         Something has come undone.
       </h1>
-      {errorMessage ? (
+      {isDev && errorMessage ? (
         <pre className="mt-8 text-stone text-[13px] whitespace-pre-wrap">
           {errorMessage}
         </pre>

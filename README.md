@@ -13,7 +13,13 @@ real store can be wired up in a single follow-up step.
 
 ## Run it
 
+`server.ts` requires a `SESSION_SECRET` and the request handler also needs
+`PUBLIC_STORE_DOMAIN` to construct the storefront client (the `mock.shop`
+default is fine for the design phase). Copy the example env file before
+starting the server:
+
 ```bash
+cp .env.example .env
 npm install
 npm run dev
 ```
@@ -48,9 +54,13 @@ defaults to `true`. Files that contain the flag:
 - `app/routes/collections.$handle.tsx`
 - `app/routes/collections._index.tsx`
 
-Each file already contains the real GraphQL query path commented out below
-the mock branch — flipping the flag and uncommenting the block is a one-line
-change per loader.
+Each file shows the shape of the real `storefront.query(...)` call as a
+commented placeholder beneath the mock branch — but the GraphQL **query
+strings themselves are not yet defined**. When you swap to live data, write
+the queries (or import them from `app/lib/fragments.ts`, which you'll need
+to recreate) and pass them into the placeholder calls. The skeleton
+template's `app/lib/fragments.ts` and route-level queries are a useful
+starting point: <https://github.com/Shopify/hydrogen/tree/main/templates/skeleton>.
 
 ## Swapping in a real Shopify store
 
