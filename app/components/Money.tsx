@@ -15,8 +15,6 @@ export function formatMoney(money: MoneyT) {
 
 export function Money({money, className = ''}: {money: MoneyT; className?: string}) {
   return (
-    <span className={`font-serif font-light ${className}`}>
-      {formatMoney(money)}
-    </span>
+    <span className={`tabular-nums ${className}`}>{formatMoney(money)}</span>
   );
 }

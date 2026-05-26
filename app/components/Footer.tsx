@@ -1,6 +1,7 @@
 import {Container} from './Container';
 import {UnderlineLink} from './UnderlineLink';
 import {Eyebrow} from './Eyebrow';
+import {SealMark} from './SealMark';
 
 const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
   {
@@ -43,18 +44,16 @@ const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
 
 export function Footer() {
   return (
-    <footer className="bg-ink text-cream/85 mt-32">
+    <footer className="bg-paper text-ink mt-32 border-t border-hairline">
       <Container>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8 pt-24 pb-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8 pt-20 pb-16">
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <Eyebrow className="text-cream/55 block mb-6">
-                {col.title}
-              </Eyebrow>
-              <ul className="space-y-3 font-light text-[14px]">
+              <Eyebrow className="block mb-6">{col.title}</Eyebrow>
+              <ul className="space-y-3 text-[13px] font-light text-ash">
                 {col.links.map((l) => (
                   <li key={l.label + l.to}>
-                    <UnderlineLink to={l.to} className="text-cream/85">
+                    <UnderlineLink to={l.to} className="text-ash hover:text-ink">
                       {l.label}
                     </UnderlineLink>
                   </li>
@@ -63,22 +62,17 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="border-t border-cream/15 pt-10 pb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-          <div className="font-serif text-[44px] md:text-[64px] leading-[0.95] tracking-[-0.02em] font-light text-cream">
-            Maison
-            <br />
-            <span className="italic text-cream/70">Lévantine</span>
+        <div className="border-t border-hairline pt-12 pb-14 flex flex-col items-center text-center gap-5">
+          <SealMark size={22} className="text-ink" />
+          <div className="wordmark text-[20px] text-ink">
+            Maison Lévantine
           </div>
-          <div className="text-[12px] text-cream/55 leading-relaxed font-light max-w-md">
-            <p>
-              Heirloom cushions, sewn to order in north London. Each piece is
-              repaired for life.
-            </p>
-            <p className="mt-3">
-              © {new Date().getFullYear()} Maison Lévantine. All rights
-              reserved.
-            </p>
-          </div>
+          <p className="eyebrow text-ash max-w-[420px]">
+            Heirloom cushions · sewn to order in north London
+          </p>
+          <p className="caption mt-2 text-stone">
+            © {new Date().getFullYear()} Maison Lévantine. All rights reserved.
+          </p>
         </div>
       </Container>
     </footer>

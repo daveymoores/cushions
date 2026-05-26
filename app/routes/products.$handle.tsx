@@ -1,8 +1,10 @@
+import {useState} from 'react';
 import {useLoaderData, data} from 'react-router';
 import type {Route} from './+types/products.$handle';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
 import {Money} from '~/components/Money';
+import {SealMark} from '~/components/SealMark';
 import {UnderlineLink} from '~/components/UnderlineLink';
 import {getProductByHandle} from '~/lib/mock-data';
 
@@ -35,54 +37,89 @@ export async function loader({params}: Route.LoaderArgs) {
 export default function ProductPage() {
   const {product} = useLoaderData<typeof loader>();
   const variant = product.variants.nodes[0];
+  const [activeImage, setActiveImage] = useState(0);
+  const image = product.images[activeImage] ?? product.images[0];
+
+  const objectRecord: {label: string; value: string}[] = [
+    {label: 'Fiber', value: product.tags[0] ?? '—'},
+    {label: 'Origin', value: 'Sewn in north London'},
+    {label: 'Loom', value: 'Single-loom, small-batch'},
+    {label: 'Care', value: 'Cool wash · line dry · cool iron'},
+    {label: 'Repair', value: 'Mended for life — return when it tires'},
+  ];
 
   return (
     <Container className="section-y">
       <div className="mb-12">
         <UnderlineLink
           to="/collections/the-atelier-collection"
-          className="eyebrow text-stone"
+          className="eyebrow text-ash hover:text-ink"
         >
           ← Back to the collection
         </UnderlineLink>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20">
-        <div className="space-y-6">
-          {product.images.map((image) => (
-            <div
-              key={image.id}
-              className="aspect-[4/5] bg-bone overflow-hidden"
-            >
-              <img
-                src={image.url}
-                alt={image.altText ?? product.title}
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+        <div className="lg:col-span-7">
+          <figure className="aspect-[4/5] bg-bone overflow-hidden">
+            <img
+              src={image.url}
+              alt={image.altText ?? product.title}
+              loading="eager"
+              className="w-full h-full object-cover image-grade"
+            />
+          </figure>
+          {product.images.length > 1 ? (
+            <div className="mt-4 flex gap-3">
+              {product.images.map((img, i) => (
+                <button
+                  key={img.id}
+                  type="button"
+                  onClick={() => setActiveImage(i)}
+                  aria-label={`View image ${i + 1}`}
+                  aria-pressed={i === activeImage}
+                  className={`hairline aspect-square w-20 overflow-hidden bg-bone transition-opacity ${
+                    i === activeImage ? 'opacity-100' : 'opacity-60 hover:opacity-100'
+                  }`}
+                  style={{
+                    borderColor:
+                      i === activeImage ? 'var(--color-ink)' : 'var(--color-hairline)',
+                  }}
+                >
+                  <img
+                    src={img.url}
+                    alt=""
+                    loading="lazy"
+                    className="w-full h-full object-cover image-grade"
+                  />
+                </button>
+              ))}
             </div>
-          ))}
+          ) : null}
         </div>
-        <div className="lg:sticky lg:top-32 self-start">
-          <Eyebrow className="block mb-6">{product.productType}</Eyebrow>
-          <h1 className="font-serif font-light text-[40px] sm:text-[52px] leading-[0.95] tracking-[-0.02em]">
-            {product.title}
-          </h1>
-          <div className="mt-6 font-serif text-[20px]">
+
+        <div className="lg:col-span-5 lg:sticky lg:top-24 self-start">
+          <Eyebrow className="block mb-5">{product.productType} · No. 0{product.id.slice(-1)}</Eyebrow>
+          <h1 className="display-h1 text-ink">{product.title}</h1>
+          <div className="mt-5 caption text-ash">
             <Money money={product.priceRange.minVariantPrice} />
           </div>
-          <p className="mt-8 text-stone text-[15px] leading-relaxed font-light">
+
+          <div className="mt-8 w-10 h-px bg-hairline" aria-hidden="true" />
+
+          <p className="mt-8 text-ash text-[14px] leading-[1.7] font-light max-w-md">
             {product.description}
           </p>
 
           {product.options.map((option) => (
             <div key={option.name} className="mt-10">
               <Eyebrow className="block mb-4">{option.name}</Eyebrow>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2">
                 {option.values.map((value) => (
                   <button
                     key={value}
                     type="button"
-                    className="border border-hairline px-4 py-2 text-[13px] font-light hover:border-ink transition-colors cursor-pointer"
+                    className="hairline px-4 py-2.5 text-[12px] font-light tracking-wide hover:border-ink transition-colors cursor-pointer"
                   >
                     {value}
                   </button>
@@ -91,20 +128,58 @@ export default function ProductPage() {
             </div>
           ))}
 
-          <button
-            type="button"
-            disabled={!variant?.availableForSale}
-            className="btn-bleed text-ink mt-12 w-full md:w-auto"
-          >
-            Add to cart
-          </button>
-
-          <div className="mt-12 border-t border-hairline pt-8 space-y-4 text-stone text-[13px] font-light leading-relaxed">
-            <p>Sewn to order. Allow 14–21 days for completion.</p>
-            <p>Repaired for life — return it when it tires.</p>
+          <div className="mt-12">
+            <button
+              type="button"
+              disabled={!variant?.availableForSale}
+              className="arrow-link text-ink"
+            >
+              <span>
+                {variant?.availableForSale ? 'Add to cart' : 'Sold out'}
+              </span>
+              <svg
+                viewBox="0 0 24 1"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <line
+                  x1="0"
+                  y1="0.5"
+                  x2="24"
+                  y2="0.5"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+              </svg>
+            </button>
           </div>
+
+          <p className="caption mt-8 text-stone max-w-md">
+            Sewn to order — allow 14 to 21 days for completion. Returned
+            to you wrapped in unbleached cotton, with a mending card.
+          </p>
         </div>
       </div>
+
+      <section className="mt-20 lg:mt-32">
+        <div className="flex items-center gap-4 mb-10">
+          <SealMark size={14} className="text-ink/70" />
+          <Eyebrow>Object record</Eyebrow>
+        </div>
+        <dl className="border-t border-hairline">
+          {objectRecord.map((row) => (
+            <div
+              key={row.label}
+              className="grid grid-cols-12 gap-6 py-5 border-b border-hairline"
+            >
+              <dt className="col-span-4 md:col-span-3 eyebrow">{row.label}</dt>
+              <dd className="col-span-8 md:col-span-9 text-[14px] font-light text-ink">
+                {row.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
     </Container>
   );
 }

@@ -10,7 +10,7 @@ const MESSAGES = [
 export function AnnouncementBar() {
   return (
     <div
-      className="bg-ink text-cream/90 overflow-hidden"
+      className="bg-ink text-paper/75 overflow-hidden"
       style={{height: 'var(--announcement-height)'}}
     >
       <div className="flex h-full items-center">

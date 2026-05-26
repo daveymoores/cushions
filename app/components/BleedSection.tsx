@@ -19,24 +19,54 @@ export function BleedSection({
   ctaTo,
 }: Props) {
   return (
-    <section className="relative w-full overflow-hidden">
-      <div className="relative w-full" style={{aspectRatio: '16 / 8'}}>
-        <img
-          src={imageSrc}
-          alt={imageAlt}
-          loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-ink/45" aria-hidden="true" />
-        <div className="absolute inset-0 flex items-center justify-center text-center px-6">
-          <div className="max-w-2xl text-cream">
-            <span className="eyebrow text-cream/70">{eyebrow}</span>
-            <h2 className="mt-6 font-serif font-light text-[40px] sm:text-[56px] lg:text-[68px] leading-[0.95] tracking-[-0.02em]">
-              {heading}
-            </h2>
-            <div className="mt-10">
-              <Link to={ctaTo} className="btn-bleed on-dark text-cream">
-                {ctaLabel}
+    <section
+      className="relative w-full overflow-hidden noise-overlay"
+      style={{height: '88vh', minHeight: '520px'}}
+    >
+      <img
+        src={imageSrc}
+        alt={imageAlt}
+        loading="lazy"
+        className="absolute inset-0 w-full h-full object-cover image-grade"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(to top, rgba(28,26,22,0.65) 0%, rgba(28,26,22,0.32) 35%, rgba(28,26,22,0.08) 60%, rgba(28,26,22,0) 80%)',
+        }}
+      />
+      <div className="absolute inset-0 flex items-end">
+        <div className="container-page w-full pb-12 lg:pb-24">
+          <div className="max-w-xl text-paper">
+            <div
+              aria-hidden="true"
+              className="w-10 h-px bg-paper/60 mb-5"
+            />
+            <span className="eyebrow text-paper/80 block">{eyebrow}</span>
+            <h2 className="display-h1 mt-5 text-paper">{heading}</h2>
+            <div className="mt-8">
+              <Link
+                to={ctaTo}
+                className="arrow-link text-paper"
+                aria-label={ctaLabel}
+              >
+                <span>{ctaLabel}</span>
+                <svg
+                  viewBox="0 0 24 1"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <line
+                    x1="0"
+                    y1="0.5"
+                    x2="24"
+                    y2="0.5"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                  />
+                </svg>
               </Link>
             </div>
           </div>

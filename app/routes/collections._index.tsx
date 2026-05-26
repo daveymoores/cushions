@@ -28,15 +28,13 @@ export default function CollectionsIndex() {
   const {collections: cols} = useLoaderData<typeof loader>();
 
   return (
-    <section className="section-y bg-cream">
+    <section className="section-y bg-paper">
       <Container>
-        <div className="text-center max-w-xl mx-auto mb-20">
-          <Eyebrow className="block mb-8">By Material</Eyebrow>
-          <h1 className="font-serif font-light text-[52px] sm:text-[64px] leading-[0.95] tracking-[-0.02em]">
-            Collections
-          </h1>
+        <div className="max-w-xl mb-14">
+          <Eyebrow className="block mb-5">By Material</Eyebrow>
+          <h1 className="display-h1 text-ink">Collections</h1>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-14 gap-x-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-6">
           {cols.map((c) => (
             <CollectionCard key={c.id} collection={c} />
           ))}

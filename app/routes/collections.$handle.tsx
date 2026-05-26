@@ -36,23 +36,21 @@ export default function CollectionPage() {
 
   return (
     <>
-      <section className="section-y bg-cream">
+      <section className="section-y bg-paper">
         <Container>
           <div className="max-w-2xl">
-            <Eyebrow className="block mb-8">Collection</Eyebrow>
-            <h1 className="font-serif font-light text-[52px] sm:text-[72px] leading-[0.95] tracking-[-0.02em]">
-              {collection.title}
-            </h1>
-            <p className="mt-8 text-stone text-[15px] leading-relaxed font-light max-w-md">
+            <Eyebrow className="block mb-5">Collection</Eyebrow>
+            <h1 className="display-h1 text-ink">{collection.title}</h1>
+            <p className="mt-7 text-ash text-[14px] leading-[1.7] font-light max-w-md">
               {collection.description}
             </p>
           </div>
         </Container>
       </section>
 
-      <section className="bg-cream pb-32">
+      <section className="bg-paper pb-32">
         <Container>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-14 gap-x-10">
             {collection.products.nodes.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

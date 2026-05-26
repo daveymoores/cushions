@@ -1,6 +1,7 @@
 import type {ReactNode} from 'react';
 import {Container} from './Container';
 import {Eyebrow} from './Eyebrow';
+import {SealMark} from './SealMark';
 import {UnderlineLink} from './UnderlineLink';
 
 type Props = {
@@ -25,34 +26,33 @@ export function EditorialSplit({
   reverse = false,
 }: Props) {
   return (
-    <section className="section-y bg-cream">
+    <section className="section-y bg-paper">
       <Container>
-        <div
-          className={`grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20 items-center`}
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-0">
           <div
-            className={`lg:col-span-7 ${reverse ? 'lg:order-2' : 'lg:order-1'}`}
+            className={`lg:col-span-5 ${reverse ? 'lg:col-start-8' : 'lg:col-start-1'}`}
           >
-            <div className="aspect-[4/5] lg:aspect-[5/6] overflow-hidden bg-bone">
+            <div className="aspect-[4/5] overflow-hidden bg-bone">
               <img
                 src={imageSrc}
                 alt={imageAlt}
                 loading="lazy"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover image-grade"
               />
             </div>
           </div>
           <div
-            className={`lg:col-span-5 ${reverse ? 'lg:order-1' : 'lg:order-2'}`}
+            className={`lg:col-span-6 flex flex-col lg:justify-end lg:pb-2 ${
+              reverse ? 'lg:col-start-1 lg:row-start-1' : 'lg:col-start-7'
+            }`}
           >
-            <Eyebrow className="mb-8 block">{eyebrow}</Eyebrow>
-            <h2 className="font-serif font-light text-[44px] sm:text-[56px] lg:text-[64px] leading-[0.95] tracking-[-0.02em] text-ink">
-              {heading}
-            </h2>
-            <p className="mt-8 text-stone text-[15px] leading-relaxed font-light max-w-md">
+            <Eyebrow className="block mb-5">{eyebrow}</Eyebrow>
+            <SealMark size={14} className="text-ink mb-5 opacity-80" />
+            <h2 className="display-h2 text-ink max-w-md">{heading}</h2>
+            <p className="mt-6 text-ash text-[14px] leading-[1.7] font-light max-w-md">
               {body}
             </p>
-            <div className="mt-10">
+            <div className="mt-9">
               <UnderlineLink
                 to={ctaTo}
                 staticUnderline

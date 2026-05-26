@@ -1,4 +1,4 @@
-import {Link, useLoaderData} from 'react-router';
+import {useLoaderData} from 'react-router';
 import type {Route} from './+types/_index';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
@@ -9,6 +9,8 @@ import {EditorialSplit} from '~/components/EditorialSplit';
 import {BleedSection} from '~/components/BleedSection';
 import {ValuesStrip} from '~/components/ValuesStrip';
 import {Newsletter} from '~/components/Newsletter';
+import {Hero} from '~/components/Hero';
+import {SealMark} from '~/components/SealMark';
 import {
   collections,
   featuredCollection,
@@ -58,11 +60,23 @@ export default function Homepage() {
 
   return (
     <>
-      <Hero />
-      <FeaturedCollection
-        title={featured.title}
-        products={featured.products.nodes}
+      <Hero
+        imageSrc={placeholderImages.heroLinen}
+        imageAlt="Bone-coloured linen cushion at rest on a low timber bench"
+        eyebrow="Spring · Twenty Twenty-Six"
+        heading={
+          <>
+            quiet rooms,
+            <br />
+            slowly furnished
+          </>
+        }
+        ctaLabel="Enter the atelier"
+        ctaTo="/collections/the-atelier-collection"
       />
+
+      <IntroStrip />
+
       <EditorialSplit
         eyebrow="House Notes"
         heading={
@@ -75,21 +89,44 @@ export default function Homepage() {
         body="A cushion well-mended carries more of its life with it. Send yours back when the seam tires; we re-line, re-fill, or close the loose stitch by hand and return it. There is no charge, and no expiry."
         ctaLabel="Read the journal"
         ctaTo="/journal"
-        imageSrc={`${placeholderImages.editorialMending}`}
+        imageSrc={placeholderImages.editorialMending}
         imageAlt="Hands mending a piece of linen"
       />
+
+      <FeaturedCollection
+        title={featured.title}
+        products={featured.products.nodes}
+      />
+
       <BleedSection
         imageSrc={placeholderImages.bleedAtelier}
         imageAlt="The atelier in low evening light"
         eyebrow="By appointment"
         heading={
           <>
-            Begin a <span className="italic">commission</span>
+            begin a <span className="italic">commission</span>
           </>
         }
-        ctaLabel="Begin a Commission"
+        ctaLabel="Begin a commission"
         ctaTo="/atelier"
       />
+
+      <EditorialSplit
+        reverse
+        eyebrow="On Material"
+        heading={
+          <>
+            cloth that <span className="italic-stone">holds</span> its
+            life
+          </>
+        }
+        body="We work with three cloths only: heavyweight Belgian linen, aged cotton velvet dyed in the Levant, and undyed mountain wool from a single Tuscan loom. Every fibre is chosen for the way it ages — softening, deepening, never tiring."
+        ctaLabel="See the materials"
+        ctaTo="/journal"
+        imageSrc={placeholderImages.collectionLinen}
+        imageAlt="Stack of folded linen in raw cream"
+      />
+
       <BrowseByCollection collections={browseCollections} />
       <ValuesStrip />
       <Newsletter />
@@ -97,52 +134,16 @@ export default function Homepage() {
   );
 }
 
-function Hero() {
+function IntroStrip() {
   return (
-    <section className="section-y bg-cream">
+    <section className="bg-paper section-y-sm">
       <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          <div className="lg:col-span-5">
-            <Eyebrow className="block mb-10">Spring · Twenty Twenty-Six</Eyebrow>
-            <h1 className="font-serif font-light text-[56px] sm:text-[80px] lg:text-[104px] leading-[0.95] tracking-[-0.02em] text-ink">
-              Quiet rooms,
-              <br />
-              <span className="italic-stone">slowly</span>
-              <br />
-              furnished
-              <span className="text-rust">.</span>
-            </h1>
-            <p className="mt-10 text-stone text-[15px] leading-relaxed font-light max-w-md">
-              Heirloom cushions, cut by hand from washed Belgian linen, aged
-              cotton velvet, and undyed mountain wool. Each piece is sewn to
-              order in our atelier and repaired, for life.
-            </p>
-            <div className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-6">
-              <Link
-                to="/collections/the-atelier-collection"
-                className="btn-bleed text-ink"
-              >
-                Shop the Atelier
-              </Link>
-              <UnderlineLink
-                to="/atelier"
-                className="eyebrow text-ink"
-                staticUnderline
-              >
-                Begin a commission
-              </UnderlineLink>
-            </div>
-          </div>
-          <div className="lg:col-span-7">
-            <div className="aspect-[4/5] lg:aspect-[5/6] overflow-hidden bg-bone">
-              <img
-                src={placeholderImages.heroLinen}
-                alt="A bone-coloured linen cushion resting on a low timber bench"
-                loading="eager"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
+        <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
+          <SealMark size={16} className="text-ink/70 mb-6" />
+          <p className="display-h2 text-ink">
+            Linens hand-loomed in northeastern Lebanon, sewn by hand in north
+            London — <span className="italic-stone">made to be lived with</span>.
+          </p>
         </div>
       </Container>
     </section>
@@ -157,12 +158,12 @@ function FeaturedCollection({
   products: import('~/lib/mock-data').Product[];
 }) {
   return (
-    <section className="section-y bg-bone">
+    <section className="section-y bg-paper">
       <Container>
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
           <div>
-            <Eyebrow className="block mb-6">The Collection</Eyebrow>
-            <h2 className="font-serif font-light text-[44px] sm:text-[56px] lg:text-[64px] leading-[0.95] tracking-[-0.02em]">
+            <Eyebrow className="block mb-4">The Collection</Eyebrow>
+            <h2 className="display-h2 text-ink">
               {title.split(' ').slice(0, -1).join(' ')}{' '}
               <span className="italic-stone">
                 {title.split(' ').slice(-1)}
@@ -177,7 +178,7 @@ function FeaturedCollection({
             Browse all pieces
           </UnderlineLink>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-16 gap-x-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-14 gap-x-10">
           {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
@@ -193,16 +194,15 @@ function BrowseByCollection({
   collections: import('~/lib/mock-data').Collection[];
 }) {
   return (
-    <section className="section-y bg-cream">
+    <section className="section-y bg-paper">
       <Container>
-        <div className="text-center max-w-xl mx-auto mb-20">
-          <Eyebrow className="block mb-8">By Material</Eyebrow>
-          <h2 className="font-serif font-light text-[40px] sm:text-[52px] lg:text-[60px] leading-[0.95] tracking-[-0.02em]">
-            Browse by{' '}
-            <span className="italic-stone">collection</span>
+        <div className="max-w-xl mb-14">
+          <Eyebrow className="block mb-4">By Material</Eyebrow>
+          <h2 className="display-h2 text-ink">
+            Browse by <span className="italic-stone">collection</span>
           </h2>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-14 gap-x-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-6">
           {cols.map((c) => (
             <CollectionCard key={c.id} collection={c} />
           ))}

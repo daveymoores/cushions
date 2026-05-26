@@ -36,7 +36,7 @@ export function links() {
     },
     {
       rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap',
+      href: 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Cinzel:wght@400;500&family=Hanken+Grotesk:wght@300;400;500&display=swap',
     },
     {rel: 'preconnect', href: 'https://images.unsplash.com'},
     {rel: 'icon', type: 'image/svg+xml', href: favicon},
@@ -61,7 +61,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Meta />
         <Links />
       </head>
-      <body className="bg-cream text-ink">
+      <body className="bg-paper text-ink">
         {children}
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
@@ -95,11 +95,11 @@ export function ErrorBoundary() {
   return (
     <div className="container-page section-y">
       <p className="eyebrow">Error {errorStatus}</p>
-      <h1 className="font-serif font-light text-[56px] mt-6 leading-[0.95]">
+      <h1 className="font-display italic text-[28px] mt-8 leading-[1.1] text-ink">
         Something has come undone.
       </h1>
       {isDev && errorMessage ? (
-        <pre className="mt-8 text-stone text-[13px] whitespace-pre-wrap">
+        <pre className="mt-8 text-ash text-[12px] whitespace-pre-wrap font-body">
           {errorMessage}
         </pre>
       ) : null}

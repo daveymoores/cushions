@@ -8,22 +8,17 @@ export function ProductCard({product}: {product: Product}) {
       to={`/products/${product.handle}`}
       className="product-card group block"
     >
-      <div className="product-card-image aspect-[4/5]">
+      <div className="product-card-image aspect-[3/4]">
         <img
           src={product.featuredImage.url}
           alt={product.featuredImage.altText ?? product.title}
           loading="lazy"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover image-grade"
         />
       </div>
-      <div className="pt-6">
-        <h3 className="font-serif font-light text-[22px] leading-tight tracking-[-0.01em]">
-          {product.title}
-        </h3>
-        <p className="text-stone text-[13px] mt-2 leading-relaxed font-light line-clamp-2 max-w-md">
-          {product.description}
-        </p>
-        <div className="mt-3 font-serif text-ink text-[15px]">
+      <div className="pt-5">
+        <h3 className="display-card text-ink">{product.title}</h3>
+        <div className="mt-1.5 caption text-ash">
           <Money money={product.priceRange.minVariantPrice} />
         </div>
       </div>

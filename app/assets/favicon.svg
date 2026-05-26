@@ -1,28 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="none">
   <style>
-    .stroke {
-      stroke: #000;
-    }
-    .fill {
-      fill: #000;
-    }
-    @media (prefers-color-scheme: dark) {
-      .stroke {
-        stroke: #fff;
-      }
-      .fill {
-        fill: #fff;
-      }
-    }
+    .ml { stroke: #1c1a16; }
+    @media (prefers-color-scheme: dark) { .ml { stroke: #f6f1e8; } }
   </style>
-  <path
-    class="stroke"
-    fill-rule="evenodd"
-    d="M16.1 16.04 1 8.02 6.16 5.3l5.82 3.09 4.88-2.57-5.82-3.1L16.21 0l15.1 8.02-5.17 2.72-5.5-2.91-4.88 2.57 5.5 2.92-5.16 2.72Z"
-  />
-  <path
-    class="fill"
-    fill-rule="evenodd"
-    d="M16.1 32 1 23.98l5.16-2.72 5.82 3.08 4.88-2.57-5.82-3.08 5.17-2.73 15.1 8.02-5.17 2.72-5.5-2.92-4.88 2.58 5.5 2.92L16.1 32Z"
-  />
+  <path class="ml" d="M12 2 L19.07 4.93 L22 12 L19.07 19.07 L12 22 L4.93 19.07 L2 12 L4.93 4.93 Z" stroke-width="1" fill="none" stroke-linejoin="miter"/>
+  <path class="ml" d="M12 5 L17 7 L19 12 L17 17 L12 19 L7 17 L5 12 L7 7 Z" stroke-width="1" fill="none" stroke-linejoin="miter"/>
+  <circle cx="12" cy="12" r="0.9" fill="#1c1a16"/>
 </svg>

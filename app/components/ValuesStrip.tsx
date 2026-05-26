@@ -1,5 +1,6 @@
 import {Container} from './Container';
 import {Eyebrow} from './Eyebrow';
+import {SealMark} from './SealMark';
 
 const VALUES = [
   {
@@ -21,16 +22,22 @@ const VALUES = [
 
 export function ValuesStrip() {
   return (
-    <section className="bg-bone section-y">
+    <section className="bg-cream section-y">
       <Container>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-14 md:gap-x-16">
-          {VALUES.map((v) => (
-            <article key={v.title} className="border-t border-hairline pt-8">
-              <Eyebrow className="block mb-6 italic-stone">{v.eyebrow}</Eyebrow>
-              <h3 className="font-serif font-light text-[28px] sm:text-[32px] tracking-[-0.02em] leading-[0.95]">
-                {v.title}
-              </h3>
-              <p className="mt-5 text-stone text-[14px] leading-relaxed font-light max-w-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 md:divide-x md:divide-hairline">
+          {VALUES.map((v, i) => (
+            <article
+              key={v.title}
+              className={`px-0 ${
+                i > 0 ? 'pt-12 md:pt-0 md:pl-14' : 'md:pr-14'
+              } ${i < VALUES.length - 1 ? 'md:pr-14' : ''}`}
+            >
+              <SealMark size={14} className="text-ink/70 mb-6" />
+              <Eyebrow className="block mb-4">
+                <span className="italic-stone">{v.eyebrow}</span>
+              </Eyebrow>
+              <h3 className="display-h2 text-ink">{v.title}</h3>
+              <p className="mt-4 text-ash text-[14px] leading-[1.7] font-light max-w-sm">
                 {v.body}
               </p>
             </article>

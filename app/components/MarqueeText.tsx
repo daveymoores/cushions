@@ -14,7 +14,7 @@ export function MarqueeText({items}: {items: string[]}) {
           {sequence.map((item, i) => (
             <span
               key={i}
-              className="eyebrow whitespace-nowrap text-cream/90 inline-flex items-center gap-14"
+              className="eyebrow whitespace-nowrap text-paper/75 inline-flex items-center gap-14"
             >
               {item}
               <span className="opacity-50">·</span>

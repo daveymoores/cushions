@@ -74,19 +74,21 @@ const money = (amount: string, currencyCode = 'GBP'): Money => ({
 const baseUnsplash = (id: string, w = 1200) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&auto=format&fit=crop`;
 
+// Curated nature placeholders — leaves, bark, mist, light. Replace with real
+// product photography once available.
 export const placeholderImages = {
-  heroLinen: baseUnsplash('1616486338812-3dadae4b4ace', 1600),
-  productMaren: baseUnsplash('1616627988729-bd8c1f6f0e1b', 1200),
-  productAleppo: baseUnsplash('1556228720-195a672e8a03', 1200),
-  productSidon: baseUnsplash('1567538096630-e0c55bd6374c', 1200),
-  editorialMending: baseUnsplash('1528459801416-a9e53bbf4e17', 1400),
-  bleedAtelier: baseUnsplash('1505693416388-ac5ce068fe85', 2000),
-  collectionLinen: baseUnsplash('1493663284031-b7e3aefcae8e', 900),
-  collectionVelvet: baseUnsplash('1519710164239-da123dc03ef4', 900),
-  collectionWool: baseUnsplash('1606293926249-ed22e35e4c7a', 900),
-  collectionArchive: baseUnsplash('1493663284031-b7e3aefcae8e', 900),
-  productExtra1: baseUnsplash('1530462630268-ada6e2b95cf4', 1200),
-  productExtra2: baseUnsplash('1551776235-dde6d482980b', 1200),
+  heroLinen: baseUnsplash('1448375240586-882707db888b', 1800),
+  productMaren: baseUnsplash('1542273917363-3b1817f69a2d', 1200),
+  productAleppo: baseUnsplash('1499002238440-d264edd596ec', 1200),
+  productSidon: baseUnsplash('1444492417251-9c84a5fa18e0', 1200),
+  editorialMending: baseUnsplash('1483921020237-2ff51e8e4b22', 1400),
+  bleedAtelier: baseUnsplash('1506905925346-21bda4d32df4', 2000),
+  collectionLinen: baseUnsplash('1473773508845-188df298d2d1', 900),
+  collectionVelvet: baseUnsplash('1432405972618-c60b0225b8f9', 900),
+  collectionWool: baseUnsplash('1518495973542-4542c06a5843', 900),
+  collectionArchive: baseUnsplash('1483728642387-6c3bdd6c93e5', 900),
+  productExtra1: baseUnsplash('1506784983877-45594efa4cbe', 1200),
+  productExtra2: baseUnsplash('1469474968028-56623f02e42e', 1200),
 };
 
 export const products: Product[] = [
