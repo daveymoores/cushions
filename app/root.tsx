@@ -43,10 +43,10 @@ export function links() {
   ];
 }
 
-export async function loader(_args: Route.LoaderArgs) {
-  // Mock-data phase: nothing to fetch at the root. Once a real Shopify store is
-  // connected, fetch the menu/footer queries here and return them.
-  return {};
+export async function loader({context}: Route.LoaderArgs) {
+  // The cart is needed app-wide (header count + cart page). Awaited here so the
+  // header can render the count synchronously without Suspense.
+  return {cart: await context.cart.get()};
 }
 
 export function Layout({children}: {children?: React.ReactNode}) {

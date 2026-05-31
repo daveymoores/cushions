@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
-import {Link, useLocation} from 'react-router';
+import {Link, useLocation, useRouteLoaderData} from 'react-router';
+import type {RootLoader} from '~/root';
 import {Container} from './Container';
 import {UnderlineLink} from './UnderlineLink';
 import {SealMark} from './SealMark';
@@ -139,14 +140,18 @@ export function Header() {
 }
 
 function CartLink({link}: {link: (typeof SECONDARY_LINKS)[number]}) {
-  const [hasItems] = useState(false);
+  const rootData = useRouteLoaderData<RootLoader>('root');
+  const count = rootData?.cart?.totalQuantity ?? 0;
   return (
     <UnderlineLink
       to={link.to}
       className="text-ink/85 inline-flex items-center gap-2"
     >
-      <span>{link.label}</span>
-      {link.cartDot && hasItems ? (
+      <span>
+        {link.label}
+        {link.cartDot && count > 0 ? ` (${count})` : ''}
+      </span>
+      {link.cartDot && count > 0 ? (
         <span
           aria-hidden="true"
           className="inline-block w-1 h-1 rounded-full bg-clay"

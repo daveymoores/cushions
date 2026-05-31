@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {useLoaderData, data} from 'react-router';
+import {CartForm} from '@shopify/hydrogen';
 import type {Route} from './+types/products.$handle';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
@@ -35,9 +36,23 @@ export async function loader({params, context}: Route.LoaderArgs) {
 
 export default function ProductPage() {
   const {product} = useLoaderData<typeof loader>();
-  const variant = product.variants.nodes[0];
   const [activeImage, setActiveImage] = useState(0);
   const image = product.images[activeImage] ?? product.images[0];
+
+  // Track the chosen option values and resolve them to a concrete variant.
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(
+    () =>
+      Object.fromEntries(
+        (product.variants.nodes[0]?.selectedOptions ?? []).map((o) => [
+          o.name,
+          o.value,
+        ]),
+      ),
+  );
+  const variant =
+    product.variants.nodes.find((v) =>
+      v.selectedOptions.every((o) => selectedOptions[o.name] === o.value),
+    ) ?? product.variants.nodes[0];
 
   const objectRecord: {label: string; value: string}[] = [
     {label: 'Fiber', value: product.tags[0] ?? '—'},
@@ -114,43 +129,65 @@ export default function ProductPage() {
             <div key={option.name} className="mt-10">
               <Eyebrow className="block mb-4">{option.name}</Eyebrow>
               <div className="flex flex-wrap gap-2">
-                {option.values.map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className="hairline px-4 py-2.5 text-[12px] font-light tracking-wide hover:border-ink transition-colors cursor-pointer"
-                  >
-                    {value}
-                  </button>
-                ))}
+                {option.values.map((value) => {
+                  const active = selectedOptions[option.name] === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() =>
+                        setSelectedOptions((prev) => ({
+                          ...prev,
+                          [option.name]: value,
+                        }))
+                      }
+                      className={`hairline px-4 py-2.5 text-[12px] font-light tracking-wide transition-colors cursor-pointer ${
+                        active ? 'border-ink text-ink' : 'hover:border-ink'
+                      }`}
+                    >
+                      {value}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}
 
           <div className="mt-12">
-            <button
-              type="button"
-              disabled={!variant?.availableForSale}
-              className="arrow-link text-ink"
+            <CartForm
+              route="/cart"
+              action={CartForm.ACTIONS.LinesAdd}
+              inputs={{
+                lines: variant
+                  ? [{merchandiseId: variant.id, quantity: 1}]
+                  : [],
+              }}
             >
-              <span>
-                {variant?.availableForSale ? 'Add to cart' : 'Sold out'}
-              </span>
-              <svg
-                viewBox="0 0 24 1"
-                preserveAspectRatio="none"
-                aria-hidden="true"
+              <button
+                type="submit"
+                disabled={!variant?.availableForSale}
+                className="arrow-link text-ink disabled:opacity-50"
               >
-                <line
-                  x1="0"
-                  y1="0.5"
-                  x2="24"
-                  y2="0.5"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                />
-              </svg>
-            </button>
+                <span>
+                  {variant?.availableForSale ? 'Add to cart' : 'Sold out'}
+                </span>
+                <svg
+                  viewBox="0 0 24 1"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <line
+                    x1="0"
+                    y1="0.5"
+                    x2="24"
+                    y2="0.5"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                  />
+                </svg>
+              </button>
+            </CartForm>
           </div>
 
           <p className="caption mt-8 text-stone max-w-md">

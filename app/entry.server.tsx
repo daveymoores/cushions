@@ -19,8 +19,16 @@ export default async function handleRequest(
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
-    imgSrc: ["'self'", 'data:', 'https://images.unsplash.com'],
-    connectSrc: ["'self'", 'https://images.unsplash.com'],
+    // NOTE: these overrides REPLACE Hydrogen's defaults per-directive, so the
+    // Shopify CDN must be listed explicitly or product images get blocked.
+    imgSrc: [
+      "'self'",
+      'data:',
+      'https://cdn.shopify.com',
+      'https://shopify.com',
+      'https://images.unsplash.com',
+    ],
+    connectSrc: ["'self'", 'https://cdn.shopify.com', 'https://images.unsplash.com'],
     styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
   });

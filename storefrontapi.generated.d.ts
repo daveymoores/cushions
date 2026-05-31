@@ -3,36 +3,6 @@
 /* eslint-disable */
 import type * as StorefrontAPI from '@shopify/hydrogen/storefront-api-types';
 
-export type CartLineFragment = Pick<
-  StorefrontAPI.CartLine,
-  'id' | 'quantity'
-> & {
-  attributes: Array<Pick<StorefrontAPI.Attribute, 'key' | 'value'>>;
-  cost: {
-    totalAmount: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-    amountPerQuantity: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-    compareAtAmountPerQuantity?: StorefrontAPI.Maybe<
-      Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
-    >;
-  };
-  merchandise: Pick<
-    StorefrontAPI.ProductVariant,
-    'id' | 'availableForSale' | 'requiresShipping' | 'title'
-  > & {
-    compareAtPrice?: StorefrontAPI.Maybe<
-      Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>
-    >;
-    price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-    image?: StorefrontAPI.Maybe<
-      Pick<StorefrontAPI.Image, 'id' | 'url' | 'altText' | 'width' | 'height'>
-    >;
-    product: Pick<StorefrontAPI.Product, 'handle' | 'title' | 'id' | 'vendor'>;
-    selectedOptions: Array<
-      Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
-    >;
-  };
-};
-
 export type MoneyFragment = Pick<
   StorefrontAPI.MoneyV2,
   'amount' | 'currencyCode'
