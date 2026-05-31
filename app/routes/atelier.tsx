@@ -2,7 +2,7 @@ import type {Route} from './+types/atelier';
 import {StubPage} from '~/components/StubPage';
 
 export const meta: Route.MetaFunction = () => [
-  {title: 'The Atelier — Maison Lévantine'},
+  {title: 'The Atelier — Sisu'},
 ];
 
 export default function Atelier() {

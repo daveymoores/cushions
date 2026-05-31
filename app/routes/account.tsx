@@ -2,7 +2,7 @@ import type {Route} from './+types/account';
 import {StubPage} from '~/components/StubPage';
 
 export const meta: Route.MetaFunction = () => [
-  {title: 'Account — Maison Lévantine'},
+  {title: 'Account — Sisu'},
 ];
 
 export default function Account() {

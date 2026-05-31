@@ -4,24 +4,24 @@ import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
 import {CollectionCard} from '~/components/CollectionCard';
 import {collections} from '~/lib/mock-data';
-
-const USE_MOCK_DATA = true;
+import {COLLECTIONS_QUERY} from '~/lib/queries';
+import {toCollectionCard} from '~/lib/adapters';
+import {usesMockData} from '~/lib/storefront';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: 'Collections — Maison Lévantine'}];
+  return [{title: 'Collections — Sisu'}];
 };
 
-export async function loader(_args: Route.LoaderArgs) {
-  if (USE_MOCK_DATA) {
+export async function loader({context}: Route.LoaderArgs) {
+  if (usesMockData(context.env)) {
     return data({collections});
   }
 
-  // Real Shopify path:
-  // const {storefront} = _args.context;
-  // const {collections: result} = await storefront.query(COLLECTIONS_QUERY);
-  // return data({collections: result.nodes});
-
-  throw new Error('USE_MOCK_DATA is false but no real loader is wired up.');
+  const {collections: result} = await context.storefront.query(
+    COLLECTIONS_QUERY,
+    {variables: {first: 24}},
+  );
+  return data({collections: result.nodes.map(toCollectionCard)});
 }
 
 export default function CollectionsIndex() {

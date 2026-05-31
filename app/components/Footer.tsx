@@ -65,13 +65,13 @@ export function Footer() {
         <div className="border-t border-hairline pt-12 pb-14 flex flex-col items-center text-center gap-5">
           <SealMark size={22} className="text-ink" />
           <div className="wordmark text-[20px] text-ink">
-            Maison Lévantine
+            Sisu
           </div>
           <p className="eyebrow text-ash max-w-[420px]">
             Heirloom cushions · sewn to order in north London
           </p>
           <p className="caption mt-2 text-stone">
-            © {new Date().getFullYear()} Maison Lévantine. All rights reserved.
+            © {new Date().getFullYear()} Sisu. All rights reserved.
           </p>
         </div>
       </Container>

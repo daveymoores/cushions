@@ -4,31 +4,30 @@ import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
 import {ProductCard} from '~/components/ProductCard';
 import {getCollectionByHandle} from '~/lib/mock-data';
-
-const USE_MOCK_DATA = true;
+import {COLLECTION_QUERY} from '~/lib/queries';
+import {toCollection} from '~/lib/adapters';
+import {usesMockData} from '~/lib/storefront';
 
 export const meta: Route.MetaFunction = ({data: routeData}) => {
   const title = routeData?.collection?.title ?? 'Collection';
-  return [{title: `${title} — Maison Lévantine`}];
+  return [{title: `${title} — Sisu`}];
 };
 
-export async function loader({params}: Route.LoaderArgs) {
+export async function loader({params, context}: Route.LoaderArgs) {
   const {handle} = params;
   if (!handle) throw new Response('Not found', {status: 404});
 
-  if (USE_MOCK_DATA) {
+  if (usesMockData(context.env)) {
     const collection = getCollectionByHandle(handle);
     if (!collection) throw new Response('Not found', {status: 404});
     return data({collection});
   }
 
-  // Real Shopify path:
-  // const {storefront} = _args.context;
-  // const {collection} = await storefront.query(COLLECTION_QUERY, {variables: {handle}});
-  // if (!collection) throw new Response('Not found', {status: 404});
-  // return data({collection});
-
-  throw new Error('USE_MOCK_DATA is false but no real loader is wired up.');
+  const {collection} = await context.storefront.query(COLLECTION_QUERY, {
+    variables: {handle, first: 24},
+  });
+  if (!collection) throw new Response('Not found', {status: 404});
+  return data({collection: toCollection(collection)});
 }
 
 export default function CollectionPage() {

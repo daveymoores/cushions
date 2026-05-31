@@ -1,5 +1,5 @@
 /**
- * Mock data layer for Maison Lévantine.
+ * Mock data layer for Sisu.
  *
  * Types are intentionally shaped to match a small subset of the Shopify
  * Storefront API. When a real store is connected, the loaders can drop the
@@ -98,7 +98,7 @@ export const products: Product[] = [
     title: 'Maren Cushion in Bone Linen',
     description:
       'Hand-cut from heavyweight Belgian linen, finished with a slip-stitched closure and feather-down insert. Each piece is sewn to order in our atelier.',
-    vendor: 'Maison Lévantine',
+    vendor: 'Sisu',
     productType: 'Cushion',
     tags: ['linen', 'bone'],
     featuredImage: img('img-1', placeholderImages.productMaren, 'Maren cushion in bone linen'),
@@ -131,7 +131,7 @@ export const products: Product[] = [
     title: 'Aleppo Cushion in Aged Velvet',
     description:
       'A weighty cotton velvet, dyed in the Levant and softened by hand. The Aleppo carries the patina of long use from its first day.',
-    vendor: 'Maison Lévantine',
+    vendor: 'Sisu',
     productType: 'Cushion',
     tags: ['velvet', 'rust'],
     featuredImage: img('img-2', placeholderImages.productAleppo, 'Aleppo cushion in aged velvet'),
@@ -164,7 +164,7 @@ export const products: Product[] = [
     title: 'Sidon Cushion in Undyed Wool',
     description:
       'Spun from the fleece of mountain sheep and woven on a single loom in Tuscany. Sidon is intentionally pale, intentionally slow.',
-    vendor: 'Maison Lévantine',
+    vendor: 'Sisu',
     productType: 'Cushion',
     tags: ['wool', 'cream'],
     featuredImage: img('img-3', placeholderImages.productSidon, 'Sidon cushion in undyed wool'),

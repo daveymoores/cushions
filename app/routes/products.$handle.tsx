@@ -7,31 +7,30 @@ import {Money} from '~/components/Money';
 import {SealMark} from '~/components/SealMark';
 import {UnderlineLink} from '~/components/UnderlineLink';
 import {getProductByHandle} from '~/lib/mock-data';
-
-const USE_MOCK_DATA = true;
+import {PRODUCT_QUERY} from '~/lib/queries';
+import {toProduct} from '~/lib/adapters';
+import {usesMockData} from '~/lib/storefront';
 
 export const meta: Route.MetaFunction = ({data: routeData}) => {
   const title = routeData?.product?.title ?? 'Product';
-  return [{title: `${title} — Maison Lévantine`}];
+  return [{title: `${title} — Sisu`}];
 };
 
-export async function loader({params}: Route.LoaderArgs) {
+export async function loader({params, context}: Route.LoaderArgs) {
   const {handle} = params;
   if (!handle) throw new Response('Not found', {status: 404});
 
-  if (USE_MOCK_DATA) {
+  if (usesMockData(context.env)) {
     const product = getProductByHandle(handle);
     if (!product) throw new Response('Not found', {status: 404});
     return data({product});
   }
 
-  // Real Shopify path:
-  // const {storefront} = _args.context;
-  // const {product} = await storefront.query(PRODUCT_QUERY, {variables: {handle}});
-  // if (!product) throw new Response('Not found', {status: 404});
-  // return data({product});
-
-  throw new Error('USE_MOCK_DATA is false but no real loader is wired up.');
+  const {product} = await context.storefront.query(PRODUCT_QUERY, {
+    variables: {handle},
+  });
+  if (!product) throw new Response('Not found', {status: 404});
+  return data({product: toProduct(product)});
 }
 
 export default function ProductPage() {

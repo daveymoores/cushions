@@ -1,4 +1,4 @@
-# Maison Lévantine
+# Sisu
 
 Shopify Hydrogen storefront for an heirloom cushion brand. This is the
 **mock-data phase** — the design is finalised against typed fixtures so the

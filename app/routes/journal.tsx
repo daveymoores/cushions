@@ -2,7 +2,7 @@ import type {Route} from './+types/journal';
 import {StubPage} from '~/components/StubPage';
 
 export const meta: Route.MetaFunction = () => [
-  {title: 'Journal — Maison Lévantine'},
+  {title: 'Journal — Sisu'},
 ];
 
 export default function Journal() {

@@ -16,12 +16,21 @@ import {
   featuredCollection,
   placeholderImages,
 } from '~/lib/mock-data';
+import {COLLECTION_QUERY, COLLECTIONS_QUERY} from '~/lib/queries';
+import {toCollection, toCollectionCard} from '~/lib/adapters';
+import {usesMockData} from '~/lib/storefront';
 
-const USE_MOCK_DATA = true;
+/**
+ * Handle of the collection featured on the homepage hero strip.
+ * TODO: point this at the real Sisu featured collection once it exists in admin
+ * (e.g. 'the-atelier-collection'). For now it uses a populated sample collection
+ * so the strip renders live products.
+ */
+const FEATURED_HANDLE = 'automated-collection';
 
 export const meta: Route.MetaFunction = () => {
   return [
-    {title: 'Maison Lévantine — Quiet rooms, slowly furnished'},
+    {title: 'Sisu — Quiet rooms, slowly furnished'},
     {
       name: 'description',
       content:
@@ -30,28 +39,28 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export async function loader(_args: Route.LoaderArgs) {
-  if (USE_MOCK_DATA) {
+export async function loader({context}: Route.LoaderArgs) {
+  if (usesMockData(context.env)) {
     return {
       featuredCollection,
       browseCollections: collections,
     };
   }
 
-  // Real Shopify path — uncomment once a store is connected and remove the
-  // mock branch above. See the README for the full swap procedure.
-  //
-  // const {storefront} = _args.context;
-  // const [{collections: featured}, {collections: browse}] = await Promise.all([
-  //   storefront.query(FEATURED_COLLECTION_QUERY),
-  //   storefront.query(BROWSE_COLLECTIONS_QUERY),
-  // ]);
-  // return {
-  //   featuredCollection: featured.nodes[0],
-  //   browseCollections: browse.nodes,
-  // };
+  const {storefront} = context;
+  const [featuredResult, browseResult] = await Promise.all([
+    storefront.query(COLLECTION_QUERY, {
+      variables: {handle: FEATURED_HANDLE, first: 6},
+    }),
+    storefront.query(COLLECTIONS_QUERY, {variables: {first: 8}}),
+  ]);
 
-  throw new Error('USE_MOCK_DATA is false but no real loader is wired up.');
+  return {
+    featuredCollection: featuredResult.collection
+      ? toCollection(featuredResult.collection)
+      : {...featuredCollection, products: {nodes: []}},
+    browseCollections: browseResult.collections.nodes.map(toCollectionCard),
+  };
 }
 
 export default function Homepage() {

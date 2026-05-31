@@ -104,9 +104,9 @@ export function Header() {
           <Link
             to="/"
             className="wordmark text-[19px] sm:text-[24px] text-ink whitespace-nowrap"
-            aria-label="Maison Lévantine"
+            aria-label="Sisu"
           >
-            Maison Lévantine
+            Sisu
           </Link>
 
           {/* Right: account/cart on desktop, cart-only on mobile */}
@@ -210,7 +210,7 @@ function MobileNavDrawer({
     >
       <div className="flex flex-col h-full">
         <div className="flex items-center justify-between px-6 border-b border-hairline" style={{minHeight: 'var(--header-height)'}}>
-          <span className="wordmark text-[19px] text-ink">Maison Lévantine</span>
+          <span className="wordmark text-[19px] text-ink">Sisu</span>
           <button
             type="button"
             onClick={onClose}

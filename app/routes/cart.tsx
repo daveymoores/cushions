@@ -3,7 +3,7 @@ import {StubPage} from '~/components/StubPage';
 import {UnderlineLink} from '~/components/UnderlineLink';
 
 export const meta: Route.MetaFunction = () => [
-  {title: 'Cart — Maison Lévantine'},
+  {title: 'Cart — Sisu'},
 ];
 
 export default function Cart() {
