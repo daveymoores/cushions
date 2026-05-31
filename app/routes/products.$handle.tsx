@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useLoaderData, data} from 'react-router';
 import {CartForm} from '@shopify/hydrogen';
 import type {Route} from './+types/products.$handle';
@@ -53,6 +53,14 @@ export default function ProductPage() {
     product.variants.nodes.find((v) =>
       v.selectedOptions.every((o) => selectedOptions[o.name] === o.value),
     ) ?? product.variants.nodes[0];
+
+  // When the chosen variant has its own image, jump the main image to it.
+  const variantImageId = variant?.image?.id;
+  useEffect(() => {
+    if (!variantImageId) return;
+    const idx = product.images.findIndex((img) => img.id === variantImageId);
+    if (idx >= 0) setActiveImage(idx);
+  }, [variantImageId, product.images]);
 
   const objectRecord: {label: string; value: string}[] = [
     {label: 'Fiber', value: product.tags[0] ?? '—'},

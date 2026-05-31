@@ -19,9 +19,9 @@ const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
     title: 'Care',
     links: [
       {to: '/journal', label: 'How we make'},
-      {to: '/journal', label: 'Materials'},
+      {to: '/materials', label: 'Materials'},
       {to: '/journal', label: 'Repair & return'},
-      {to: '/journal', label: 'Shipping'},
+      {to: '/pages/shipping', label: 'Shipping'},
     ],
   },
   {

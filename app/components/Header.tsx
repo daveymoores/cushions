@@ -7,6 +7,7 @@ import {SealMark} from './SealMark';
 
 const PRIMARY_LINKS = [
   {to: '/collections', label: 'Shop'},
+  {to: '/materials', label: 'Materials'},
   {to: '/journal', label: 'Journal'},
   {to: '/atelier', label: 'Atelier'},
 ];
