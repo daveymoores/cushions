@@ -1,18 +1,11 @@
+import {useRouteLoaderData} from 'react-router';
+import type {RootLoader} from '~/root';
 import {Container} from './Container';
 import {UnderlineLink} from './UnderlineLink';
 import {Eyebrow} from './Eyebrow';
 import {SealMark} from './SealMark';
 
 const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
-  {
-    title: 'Shop',
-    links: [
-      {to: '/collections/linen', label: 'Linen'},
-      {to: '/collections/velvet', label: 'Velvet'},
-      {to: '/collections/wool', label: 'Wool'},
-      {to: '/collections/archive', label: 'Archive'},
-    ],
-  },
   {
     title: 'House',
     links: [
@@ -43,11 +36,27 @@ const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
 ];
 
 export function Footer() {
+  const rootData = useRouteLoaderData<RootLoader>('root');
+  const collections = rootData?.collections ?? [];
+
+  // Shop column is driven by live Shopify collections; falls back to a link to
+  // the collections index when none exist yet.
+  const shopColumn = {
+    title: 'Shop',
+    links:
+      collections.length > 0
+        ? collections.slice(0, 4).map((c) => ({
+            to: `/collections/${c.handle}`,
+            label: c.title,
+          }))
+        : [{to: '/collections', label: 'All collections'}],
+  };
+
   return (
     <footer className="bg-paper text-ink mt-32 border-t border-hairline">
       <Container>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8 pt-20 pb-16">
-          {COLUMNS.map((col) => (
+          {[shopColumn, ...COLUMNS].map((col) => (
             <div key={col.title}>
               <Eyebrow className="block mb-6">{col.title}</Eyebrow>
               <ul className="space-y-3 text-[13px] font-light text-ash">

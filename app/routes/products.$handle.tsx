@@ -66,7 +66,7 @@ export default function ProductPage() {
     <Container className="section-y">
       <div className="mb-12">
         <UnderlineLink
-          to="/collections/the-atelier-collection"
+          to="/collections"
           className="eyebrow text-ash hover:text-ink"
         >
           ← Back to the collection

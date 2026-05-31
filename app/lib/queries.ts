@@ -129,6 +129,19 @@ export const COLLECTIONS_QUERY = `#graphql
   ${COLLECTION_CARD_FRAGMENT}
 ` as const;
 
+/** Lightweight collection list for site navigation (header + footer). */
+export const NAV_COLLECTIONS_QUERY = `#graphql
+  query NavCollections($first: Int!) {
+    collections(first: $first) {
+      nodes {
+        id
+        handle
+        title
+      }
+    }
+  }
+` as const;
+
 /** Product detail page. */
 export const PRODUCT_QUERY = `#graphql
   query ProductByHandle($handle: String!) {

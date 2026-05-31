@@ -6,7 +6,7 @@ import {UnderlineLink} from './UnderlineLink';
 import {SealMark} from './SealMark';
 
 const PRIMARY_LINKS = [
-  {to: '/collections/the-atelier-collection', label: 'Shop'},
+  {to: '/collections', label: 'Shop'},
   {to: '/journal', label: 'Journal'},
   {to: '/atelier', label: 'Atelier'},
 ];
@@ -16,17 +16,14 @@ const SECONDARY_LINKS = [
   {to: '/cart', label: 'Cart', cartDot: true},
 ];
 
-const COLLECTION_LINKS = [
-  {to: '/collections/linen', label: 'Linen'},
-  {to: '/collections/velvet', label: 'Velvet'},
-  {to: '/collections/wool', label: 'Wool'},
-  {to: '/collections/archive', label: 'Archive'},
-];
+type NavCollection = {id: string; handle: string; title: string};
 
 export function Header() {
   const progressRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const rootData = useRouteLoaderData<RootLoader>('root');
+  const navCollections: NavCollection[] = rootData?.collections ?? [];
 
   useEffect(() => {
     let frame = 0;
@@ -134,7 +131,11 @@ export function Header() {
         style={{transform: 'scaleX(0)', willChange: 'transform'}}
       />
 
-      <MobileNavDrawer open={open} onClose={() => setOpen(false)} />
+      <MobileNavDrawer
+        open={open}
+        onClose={() => setOpen(false)}
+        collections={navCollections}
+      />
     </header>
   );
 }
@@ -196,9 +197,11 @@ function CloseIcon() {
 function MobileNavDrawer({
   open,
   onClose,
+  collections,
 }: {
   open: boolean;
   onClose: () => void;
+  collections: NavCollection[];
 }) {
   return (
     <div
@@ -244,22 +247,24 @@ function MobileNavDrawer({
             </ul>
           </div>
 
-          <div className="mb-10">
-            <span className="eyebrow block mb-5">By Material</span>
-            <ul className="space-y-3">
-              {COLLECTION_LINKS.map((l) => (
-                <li key={l.to}>
-                  <Link
-                    to={l.to}
-                    onClick={onClose}
-                    className="text-[15px] font-light text-ink"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {collections.length > 0 ? (
+            <div className="mb-10">
+              <span className="eyebrow block mb-5">Collections</span>
+              <ul className="space-y-3">
+                {collections.map((c) => (
+                  <li key={c.id}>
+                    <Link
+                      to={`/collections/${c.handle}`}
+                      onClick={onClose}
+                      className="text-[15px] font-light text-ink"
+                    >
+                      {c.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           <div>
             <span className="eyebrow block mb-5">Yours</span>

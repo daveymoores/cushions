@@ -55,9 +55,20 @@ export async function loader({context}: Route.LoaderArgs) {
     storefront.query(COLLECTIONS_QUERY, {variables: {first: 8}}),
   ]);
 
+  // If the configured featured collection doesn't exist in the store, fall back
+  // to the first available collection so the homepage strip is never empty.
+  let featured = featuredResult.collection;
+  const firstBrowse = browseResult.collections.nodes[0];
+  if (!featured && firstBrowse) {
+    const fallback = await storefront.query(COLLECTION_QUERY, {
+      variables: {handle: firstBrowse.handle, first: 6},
+    });
+    featured = fallback.collection;
+  }
+
   return {
-    featuredCollection: featuredResult.collection
-      ? toCollection(featuredResult.collection)
+    featuredCollection: featured
+      ? toCollection(featured)
       : {...featuredCollection, products: {nodes: []}},
     browseCollections: browseResult.collections.nodes.map(toCollectionCard),
   };
@@ -81,7 +92,7 @@ export default function Homepage() {
           </>
         }
         ctaLabel="Enter the atelier"
-        ctaTo="/collections/the-atelier-collection"
+        ctaTo="/collections"
       />
 
       <IntroStrip />
@@ -180,7 +191,7 @@ function FeaturedCollection({
             </h2>
           </div>
           <UnderlineLink
-            to="/collections/the-atelier-collection"
+            to="/collections"
             className="eyebrow text-ink self-start md:self-end"
             staticUnderline
           >

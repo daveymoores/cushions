@@ -13,6 +13,9 @@ import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
 import appStyles from '~/styles/app.css?url';
 import {PageLayout} from './components/PageLayout';
+import {NAV_COLLECTIONS_QUERY} from '~/lib/queries';
+import {usesMockData} from '~/lib/storefront';
+import {collections} from '~/lib/mock-data';
 
 export type RootLoader = typeof loader;
 
@@ -44,9 +47,26 @@ export function links() {
 }
 
 export async function loader({context}: Route.LoaderArgs) {
-  // The cart is needed app-wide (header count + cart page). Awaited here so the
-  // header can render the count synchronously without Suspense.
-  return {cart: await context.cart.get()};
+  // The cart + collection nav are needed app-wide (header/footer on every page).
+  // Awaited here so the header can render synchronously without Suspense.
+  const cart = await context.cart.get();
+
+  if (usesMockData(context.env)) {
+    return {
+      cart,
+      collections: collections.map((c) => ({
+        id: c.id,
+        handle: c.handle,
+        title: c.title,
+      })),
+    };
+  }
+
+  const {collections: result} = await context.storefront.query(
+    NAV_COLLECTIONS_QUERY,
+    {variables: {first: 8}},
+  );
+  return {cart, collections: result.nodes};
 }
 
 export function Layout({children}: {children?: React.ReactNode}) {
