@@ -4,6 +4,7 @@
   // app/lib/context.ts. The PUBLIC_* values are client-public and safe to
   // commit; SESSION_SECRET is set separately as a secret (see README/HANDOFF).
   "name": "sisu",
+  "account_id": "bc84abad431336eff149920646572ce3",
   "main": "dist/server/index.js",
   "compatibility_date": "2025-05-01",
   "compatibility_flags": ["nodejs_compat"],
