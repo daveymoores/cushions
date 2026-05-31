@@ -70,7 +70,10 @@ export async function loader({context, request}: Route.LoaderArgs) {
 
   const [navResult, contentResult] = await Promise.all([
     context.storefront.query(NAV_COLLECTIONS_QUERY, {variables: {first: 8}}),
-    context.storefront.query(SITE_CONTENT_QUERY),
+    // Short cache so edits to the homepage metaobject appear within ~seconds.
+    context.storefront.query(SITE_CONTENT_QUERY, {
+      cache: context.storefront.CacheShort(),
+    }),
   ]);
   return {
     cart,
