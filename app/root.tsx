@@ -13,10 +13,11 @@ import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
 import appStyles from '~/styles/app.css?url';
 import {PageLayout} from './components/PageLayout';
-import {NAV_COLLECTIONS_QUERY} from '~/lib/queries';
+import {NAV_COLLECTIONS_QUERY, SITE_CONTENT_QUERY} from '~/lib/queries';
 import {usesMockData} from '~/lib/storefront';
 import {collections} from '~/lib/mock-data';
 import {rootSeo} from '~/lib/seo';
+import {toSiteContent, type SiteContent} from '~/lib/content';
 
 export type RootLoader = typeof loader;
 
@@ -52,11 +53,13 @@ export async function loader({context, request}: Route.LoaderArgs) {
   // Awaited here so the header can render synchronously without Suspense.
   const cart = await context.cart.get();
   const seo = rootSeo(request);
+  const emptyContent: SiteContent = {};
 
   if (usesMockData(context.env)) {
     return {
       cart,
       seo,
+      content: emptyContent,
       collections: collections.map((c) => ({
         id: c.id,
         handle: c.handle,
@@ -65,11 +68,16 @@ export async function loader({context, request}: Route.LoaderArgs) {
     };
   }
 
-  const {collections: result} = await context.storefront.query(
-    NAV_COLLECTIONS_QUERY,
-    {variables: {first: 8}},
-  );
-  return {cart, seo, collections: result.nodes};
+  const [navResult, contentResult] = await Promise.all([
+    context.storefront.query(NAV_COLLECTIONS_QUERY, {variables: {first: 8}}),
+    context.storefront.query(SITE_CONTENT_QUERY),
+  ]);
+  return {
+    cart,
+    seo,
+    content: toSiteContent(contentResult),
+    collections: navResult.collections.nodes,
+  };
 }
 
 export function Layout({children}: {children?: React.ReactNode}) {

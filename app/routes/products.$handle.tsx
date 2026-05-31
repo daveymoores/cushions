@@ -62,12 +62,18 @@ export default function ProductPage() {
     if (idx >= 0) setActiveImage(idx);
   }, [variantImageId, product.images]);
 
+  // Editorial details come from `custom.*` product metafields, with sensible
+  // fallbacks so the record is never empty.
+  const d = product.details;
   const objectRecord: {label: string; value: string}[] = [
-    {label: 'Fiber', value: product.tags[0] ?? '—'},
-    {label: 'Origin', value: 'Sewn in north London'},
-    {label: 'Loom', value: 'Single-loom, small-batch'},
-    {label: 'Care', value: 'Cool wash · line dry · cool iron'},
-    {label: 'Repair', value: 'Mended for life — return when it tires'},
+    {label: 'Fiber', value: d?.fiber ?? product.tags[0] ?? '—'},
+    {label: 'Origin', value: d?.origin ?? 'Sewn in north London'},
+    {label: 'Loom', value: d?.loom ?? 'Single-loom, small-batch'},
+    {label: 'Care', value: d?.care ?? 'Cool wash · line dry · cool iron'},
+    {
+      label: 'Repair',
+      value: d?.repair ?? 'Mended for life — return when it tires',
+    },
   ];
 
   return (

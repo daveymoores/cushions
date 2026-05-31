@@ -36,6 +36,18 @@ export const PRODUCT_FRAGMENT = `#graphql
     vendor
     productType
     tags
+    metafields(
+      identifiers: [
+        {namespace: "custom", key: "fiber"}
+        {namespace: "custom", key: "origin"}
+        {namespace: "custom", key: "loom"}
+        {namespace: "custom", key: "care"}
+        {namespace: "custom", key: "repair"}
+      ]
+    ) {
+      key
+      value
+    }
     featuredImage {
       ...Image
     }
@@ -127,6 +139,32 @@ export const COLLECTIONS_QUERY = `#graphql
     }
   }
   ${COLLECTION_CARD_FRAGMENT}
+` as const;
+
+/**
+ * Site/editorial content from a singleton `homepage` metaobject
+ * (Settings → Custom data → Metaobjects). See app/lib/content.ts for fields.
+ */
+export const SITE_CONTENT_QUERY = `#graphql
+  query SiteContent {
+    metaobjects(type: "homepage", first: 1) {
+      nodes {
+        handle
+        fields {
+          key
+          value
+          reference {
+            ... on MediaImage {
+              image {
+                ...Image
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ${IMAGE_FRAGMENT}
 ` as const;
 
 /** Product + collection handles for the sitemap. */

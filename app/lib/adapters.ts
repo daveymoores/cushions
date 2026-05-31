@@ -56,6 +56,13 @@ function toVariant(v: ProductFragment['variants']['nodes'][number]): ProductVari
 }
 
 export function toProduct(p: ProductFragment): Product {
+  // metafields() returns entries aligned to the requested identifiers; map by key.
+  const mf = new Map(
+    (p.metafields ?? [])
+      .filter((m): m is NonNullable<typeof m> => Boolean(m))
+      .map((m) => [m.key, m.value]),
+  );
+
   return {
     id: p.id,
     handle: p.handle,
@@ -75,6 +82,13 @@ export function toProduct(p: ProductFragment): Product {
       values: o.optionValues.map((v) => v.name),
     })),
     variants: {nodes: p.variants.nodes.map(toVariant)},
+    details: {
+      fiber: mf.get('fiber') ?? null,
+      origin: mf.get('origin') ?? null,
+      loom: mf.get('loom') ?? null,
+      care: mf.get('care') ?? null,
+      repair: mf.get('repair') ?? null,
+    },
   };
 }
 

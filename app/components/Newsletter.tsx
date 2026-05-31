@@ -2,9 +2,11 @@ import {useState} from 'react';
 import {Container} from './Container';
 import {Eyebrow} from './Eyebrow';
 import {SealMark} from './SealMark';
+import {useSiteContent} from '~/lib/content';
 
 export function Newsletter() {
   const [submitted, setSubmitted] = useState(false);
+  const content = useSiteContent();
 
   return (
     <section id="newsletter" className="bg-paper section-y">
@@ -22,11 +24,11 @@ export function Newsletter() {
             <>
               <Eyebrow className="block mb-6">Letters</Eyebrow>
               <h2 className="display-h1 text-ink">
-                be the first to know
+                {content.newsletterHeading ?? 'be the first to know'}
               </h2>
               <p className="mt-6 text-ash text-[13px] leading-[1.7] font-light">
-                New makings, mending notes, and small studio dispatches — sent
-                sparingly, never sold.
+                {content.newsletterBody ??
+                  'New makings, mending notes, and small studio dispatches — sent sparingly, never sold.'}
               </p>
               <form
                 className="mt-10 flex items-end gap-5"

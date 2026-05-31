@@ -20,6 +20,7 @@ import {COLLECTION_QUERY, COLLECTIONS_QUERY} from '~/lib/queries';
 import {toCollection, toCollectionCard} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
 import {routeMeta, canonical} from '~/lib/seo';
+import {useSiteContent} from '~/lib/content';
 
 /**
  * Handle of the collection featured on the homepage hero strip.
@@ -76,24 +77,34 @@ export async function loader({context, request}: Route.LoaderArgs) {
   };
 }
 
+/** Render managed text (preserving line breaks) or fall back to designed JSX. */
+function heading(text: string | undefined, fallback: React.ReactNode) {
+  return text ? <span className="whitespace-pre-line">{text}</span> : fallback;
+}
+
 export default function Homepage() {
   const {featuredCollection: featured, browseCollections} =
     useLoaderData<typeof loader>();
+  const content = useSiteContent();
 
   return (
     <>
       <Hero
-        imageSrc={placeholderImages.heroLinen}
-        imageAlt="Bone-coloured linen cushion at rest on a low timber bench"
-        eyebrow="Spring · Twenty Twenty-Six"
-        heading={
+        imageSrc={content.heroImage?.url ?? placeholderImages.heroLinen}
+        imageAlt={
+          content.heroImage?.altText ??
+          'Bone-coloured linen cushion at rest on a low timber bench'
+        }
+        eyebrow={content.heroEyebrow ?? 'Spring · Twenty Twenty-Six'}
+        heading={heading(
+          content.heroHeading,
           <>
             quiet rooms,
             <br />
             slowly furnished
-          </>
-        }
-        ctaLabel="Enter the atelier"
+          </>,
+        )}
+        ctaLabel={content.heroCtaLabel ?? 'Enter the atelier'}
         ctaTo="/collections"
       />
 
@@ -101,14 +112,18 @@ export default function Homepage() {
 
       <EditorialSplit
         eyebrow="House Notes"
-        heading={
+        heading={heading(
+          content.mendingHeading,
           <>
             On the quiet art
             <br />
             of <span className="italic-stone">mending</span>
-          </>
+          </>,
+        )}
+        body={
+          content.mendingBody ??
+          'A cushion well-mended carries more of its life with it. Send yours back when the seam tires; we re-line, re-fill, or close the loose stitch by hand and return it. There is no charge, and no expiry.'
         }
-        body="A cushion well-mended carries more of its life with it. Send yours back when the seam tires; we re-line, re-fill, or close the loose stitch by hand and return it. There is no charge, and no expiry."
         ctaLabel="Read the journal"
         ctaTo="/journal"
         imageSrc={placeholderImages.editorialMending}
@@ -124,11 +139,12 @@ export default function Homepage() {
         imageSrc={placeholderImages.bleedAtelier}
         imageAlt="The atelier in low evening light"
         eyebrow="By appointment"
-        heading={
+        heading={heading(
+          content.commissionHeading,
           <>
             begin a <span className="italic">commission</span>
-          </>
-        }
+          </>,
+        )}
         ctaLabel="Begin a commission"
         ctaTo="/atelier"
       />
@@ -136,15 +152,19 @@ export default function Homepage() {
       <EditorialSplit
         reverse
         eyebrow="On Material"
-        heading={
+        heading={heading(
+          content.materialHeading,
           <>
             cloth that <span className="italic-stone">holds</span> its
             life
-          </>
+          </>,
+        )}
+        body={
+          content.materialBody ??
+          'We work with three cloths only: heavyweight Belgian linen, aged cotton velvet dyed in the Levant, and undyed mountain wool from a single Tuscan loom. Every fibre is chosen for the way it ages — softening, deepening, never tiring.'
         }
-        body="We work with three cloths only: heavyweight Belgian linen, aged cotton velvet dyed in the Levant, and undyed mountain wool from a single Tuscan loom. Every fibre is chosen for the way it ages — softening, deepening, never tiring."
         ctaLabel="See the materials"
-        ctaTo="/journal"
+        ctaTo="/materials"
         imageSrc={placeholderImages.collectionLinen}
         imageAlt="Stack of folded linen in raw cream"
       />
@@ -157,14 +177,20 @@ export default function Homepage() {
 }
 
 function IntroStrip() {
+  const content = useSiteContent();
   return (
     <section className="bg-paper section-y-sm">
       <Container>
         <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
           <SealMark size={16} className="text-ink/70 mb-6" />
-          <p className="display-h2 text-ink">
-            Linens hand-loomed in northeastern Lebanon, sewn by hand in north
-            London — <span className="italic-stone">made to be lived with</span>.
+          <p className="display-h2 text-ink whitespace-pre-line">
+            {content.intro ?? (
+              <>
+                Linens hand-loomed in northeastern Lebanon, sewn by hand in
+                north London —{' '}
+                <span className="italic-stone">made to be lived with</span>.
+              </>
+            )}
           </p>
         </div>
       </Container>

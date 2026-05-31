@@ -88,6 +88,24 @@ e.g. "Materials", "Stockists", homepage editorial blocks, lookbook entries.
   `image` (file → image). Add entries and they appear at **`/materials`**.
   This is the pattern a dev copies for any other custom content type.
 
+### d) Homepage & product editorial  ✅ wired
+All the homepage marketing copy and the product "object record" are editable in
+Shopify (with the current copy as fallback until you fill them in):
+
+- **Homepage / announcement bar** → a singleton metaobject of type **`homepage`**
+  (one entry). Fields: `announcement` (multi-line — one marquee line each),
+  `hero_eyebrow`, `hero_heading`, `hero_cta_label`, `hero_image`, `intro`,
+  `mending_heading`, `mending_body`, `material_heading`, `material_body`,
+  `commission_heading`, `newsletter_heading`, `newsletter_body`. (Full list in
+  `app/lib/content.ts`.) Enable **Storefront access** on the definition.
+- **Product object record** → product **metafields** in the `custom` namespace:
+  `fiber`, `origin`, `loom`, `care`, `repair` (single line text each). Set them
+  per product (Products → a product → Metafields). Enable Storefront access on
+  each metafield definition.
+
+> Note: headings authored in Shopify render as plain text — the hand-tuned
+> italic accents in the design only show on the built-in fallback copy.
+
 > **Metafields** (Settings → Custom data) are the related tool for adding extra
 > fields *to products/collections* — e.g. a "Care instructions" or "Fabric"
 > field on every product.
@@ -108,6 +126,10 @@ e.g. "Materials", "Stockists", homepage editorial blocks, lookbook entries.
    `/journal`.
 6. **Add a `material` Metaobject definition** (fields: name, description,
    image) with **Storefront access enabled**, then add entries → `/materials`.
+7. **Add a `homepage` Metaobject definition** (fields listed in §3d) with
+   Storefront access, then add one entry to control the homepage copy.
+8. **Add `custom` product metafields** (`fiber`, `origin`, `loom`, `care`,
+   `repair`) with Storefront access, and fill them per product.
 
 ---
 
@@ -150,6 +172,10 @@ The site needs a host that runs the Workers runtime. Two options:
 - Full redesign (typography, emblem, hero, product page)
 - Content from Shopify: Pages (`/atelier`, `/pages/<handle>`), Blog/Journal
   (`/journal`), and Metaobjects (`/materials`)
+- All homepage editorial + announcement bar editable via a `homepage`
+  metaobject; product object-record via `custom.*` metafields
+- SEO: per-page title/description/canonical, Open Graph + Twitter, JSON-LD
+  structured data (Product/Article/Breadcrumb/Organization), robots.txt, sitemap.xml
 
 **Not done yet**
 - Customer accounts (`/account` is a placeholder)

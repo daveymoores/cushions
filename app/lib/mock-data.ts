@@ -34,6 +34,15 @@ export type ProductVariant = {
   image: ImageT | null;
 };
 
+/** Editorial product details, sourced from `custom.*` metafields in Shopify. */
+export type ProductDetails = {
+  fiber: string | null;
+  origin: string | null;
+  loom: string | null;
+  care: string | null;
+  repair: string | null;
+};
+
 export type Product = {
   id: string;
   handle: string;
@@ -47,6 +56,7 @@ export type Product = {
   priceRange: {minVariantPrice: Money; maxVariantPrice: Money};
   variants: {nodes: ProductVariant[]};
   options: {name: string; values: string[]}[];
+  details?: ProductDetails;
 };
 
 export type Collection = {

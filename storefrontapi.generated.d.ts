@@ -17,6 +17,9 @@ export type ProductFragment = Pick<
   StorefrontAPI.Product,
   'id' | 'handle' | 'title' | 'description' | 'vendor' | 'productType' | 'tags'
 > & {
+  metafields: Array<
+    StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'key' | 'value'>>
+  >;
   featuredImage?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Image, 'id' | 'url' | 'altText' | 'width' | 'height'>
   >;
@@ -93,6 +96,11 @@ export type CollectionQuery = {
             | 'productType'
             | 'tags'
           > & {
+            metafields: Array<
+              StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Metafield, 'key' | 'value'>
+              >
+            >;
             featuredImage?: StorefrontAPI.Maybe<
               Pick<
                 StorefrontAPI.Image,
@@ -175,6 +183,31 @@ export type CollectionsQuery = {
   };
 };
 
+export type SiteContentQueryVariables = StorefrontAPI.Exact<{
+  [key: string]: never;
+}>;
+
+export type SiteContentQuery = {
+  metaobjects: {
+    nodes: Array<
+      Pick<StorefrontAPI.Metaobject, 'handle'> & {
+        fields: Array<
+          Pick<StorefrontAPI.MetaobjectField, 'key' | 'value'> & {
+            reference?: StorefrontAPI.Maybe<{
+              image?: StorefrontAPI.Maybe<
+                Pick<
+                  StorefrontAPI.Image,
+                  'id' | 'url' | 'altText' | 'width' | 'height'
+                >
+              >;
+            }>;
+          }
+        >;
+      }
+    >;
+  };
+};
+
 export type SitemapQueryVariables = StorefrontAPI.Exact<{
   first: StorefrontAPI.Scalars['Int']['input'];
 }>;
@@ -210,6 +243,9 @@ export type ProductByHandleQuery = {
       | 'productType'
       | 'tags'
     > & {
+      metafields: Array<
+        StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'key' | 'value'>>
+      >;
       featuredImage?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.Image, 'id' | 'url' | 'altText' | 'width' | 'height'>
       >;
@@ -354,13 +390,17 @@ export type MetaobjectsQuery = {
 };
 
 interface GeneratedQueryTypes {
-  '#graphql\n  query Collection($handle: String!, $first: Int!) {\n    collection(handle: $handle) {\n      id\n      handle\n      title\n      description\n      image {\n        ...Image\n      }\n      products(first: $first) {\n        nodes {\n          ...Product\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    handle\n    title\n    description\n    vendor\n    productType\n    tags\n    featuredImage {\n      ...Image\n    }\n    images(first: 8) {\n      nodes {\n        ...Image\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n      }\n    }\n    variants(first: 50) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          ...Money\n        }\n        compareAtPrice {\n          ...Money\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          ...Image\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n  #graphql\n  fragment Money on MoneyV2 {\n    amount\n    currencyCode\n  }\n\n\n': {
+  '#graphql\n  query Collection($handle: String!, $first: Int!) {\n    collection(handle: $handle) {\n      id\n      handle\n      title\n      description\n      image {\n        ...Image\n      }\n      products(first: $first) {\n        nodes {\n          ...Product\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    handle\n    title\n    description\n    vendor\n    productType\n    tags\n    metafields(\n      identifiers: [\n        {namespace: "custom", key: "fiber"}\n        {namespace: "custom", key: "origin"}\n        {namespace: "custom", key: "loom"}\n        {namespace: "custom", key: "care"}\n        {namespace: "custom", key: "repair"}\n      ]\n    ) {\n      key\n      value\n    }\n    featuredImage {\n      ...Image\n    }\n    images(first: 8) {\n      nodes {\n        ...Image\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n      }\n    }\n    variants(first: 50) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          ...Money\n        }\n        compareAtPrice {\n          ...Money\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          ...Image\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n  #graphql\n  fragment Money on MoneyV2 {\n    amount\n    currencyCode\n  }\n\n\n': {
     return: CollectionQuery;
     variables: CollectionQueryVariables;
   };
   '#graphql\n  query Collections($first: Int!) {\n    collections(first: $first) {\n      nodes {\n        ...CollectionCard\n      }\n    }\n  }\n  #graphql\n  fragment CollectionCard on Collection {\n    id\n    handle\n    title\n    description\n    image {\n      ...Image\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n\n': {
     return: CollectionsQuery;
     variables: CollectionsQueryVariables;
+  };
+  '#graphql\n  query SiteContent {\n    metaobjects(type: "homepage", first: 1) {\n      nodes {\n        handle\n        fields {\n          key\n          value\n          reference {\n            ... on MediaImage {\n              image {\n                ...Image\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n': {
+    return: SiteContentQuery;
+    variables: SiteContentQueryVariables;
   };
   '#graphql\n  query Sitemap($first: Int!) {\n    products(first: $first) {\n      nodes {\n        handle\n      }\n    }\n    collections(first: $first) {\n      nodes {\n        handle\n      }\n    }\n  }\n': {
     return: SitemapQuery;
@@ -370,7 +410,7 @@ interface GeneratedQueryTypes {
     return: NavCollectionsQuery;
     variables: NavCollectionsQueryVariables;
   };
-  '#graphql\n  query ProductByHandle($handle: String!) {\n    product(handle: $handle) {\n      ...Product\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    handle\n    title\n    description\n    vendor\n    productType\n    tags\n    featuredImage {\n      ...Image\n    }\n    images(first: 8) {\n      nodes {\n        ...Image\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n      }\n    }\n    variants(first: 50) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          ...Money\n        }\n        compareAtPrice {\n          ...Money\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          ...Image\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n  #graphql\n  fragment Money on MoneyV2 {\n    amount\n    currencyCode\n  }\n\n\n': {
+  '#graphql\n  query ProductByHandle($handle: String!) {\n    product(handle: $handle) {\n      ...Product\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    handle\n    title\n    description\n    vendor\n    productType\n    tags\n    metafields(\n      identifiers: [\n        {namespace: "custom", key: "fiber"}\n        {namespace: "custom", key: "origin"}\n        {namespace: "custom", key: "loom"}\n        {namespace: "custom", key: "care"}\n        {namespace: "custom", key: "repair"}\n      ]\n    ) {\n      key\n      value\n    }\n    featuredImage {\n      ...Image\n    }\n    images(first: 8) {\n      nodes {\n        ...Image\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n      }\n    }\n    variants(first: 50) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          ...Money\n        }\n        compareAtPrice {\n          ...Money\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          ...Image\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n  #graphql\n  fragment Money on MoneyV2 {\n    amount\n    currencyCode\n  }\n\n\n': {
     return: ProductByHandleQuery;
     variables: ProductByHandleQueryVariables;
   };
