@@ -7,27 +7,27 @@ import {getCollectionByHandle} from '~/lib/mock-data';
 import {COLLECTION_QUERY} from '~/lib/queries';
 import {toCollection} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
+import {routeMeta, collectionSeo} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = ({data: routeData}) => {
-  const title = routeData?.collection?.title ?? 'Collection';
-  return [{title: `${title} — Sisu`}];
-};
+export const meta: Route.MetaFunction = ({data, matches}) =>
+  routeMeta(matches, data?.seo);
 
-export async function loader({params, context}: Route.LoaderArgs) {
+export async function loader({params, context, request}: Route.LoaderArgs) {
   const {handle} = params;
   if (!handle) throw new Response('Not found', {status: 404});
 
   if (usesMockData(context.env)) {
     const collection = getCollectionByHandle(handle);
     if (!collection) throw new Response('Not found', {status: 404});
-    return data({collection});
+    return data({collection, seo: collectionSeo(collection, request)});
   }
 
   const {collection} = await context.storefront.query(COLLECTION_QUERY, {
     variables: {handle, first: 24},
   });
   if (!collection) throw new Response('Not found', {status: 404});
-  return data({collection: toCollection(collection)});
+  const adapted = toCollection(collection);
+  return data({collection: adapted, seo: collectionSeo(adapted, request)});
 }
 
 export default function CollectionPage() {

@@ -5,8 +5,10 @@ import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
 import {Money} from '~/components/Money';
 import {UnderlineLink} from '~/components/UnderlineLink';
+import {routeMeta, basicSeo} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = () => [{title: 'Cart — Sisu'}];
+export const meta: Route.MetaFunction = ({data, matches}) =>
+  routeMeta(matches, data?.seo);
 
 export async function action({request, context}: Route.ActionArgs) {
   const {cart} = context;
@@ -40,8 +42,11 @@ export async function action({request, context}: Route.ActionArgs) {
   );
 }
 
-export async function loader({context}: Route.LoaderArgs) {
-  return {cart: await context.cart.get()};
+export async function loader({context, request}: Route.LoaderArgs) {
+  return {
+    cart: await context.cart.get(),
+    seo: basicSeo({title: 'Cart', request, noIndex: true}),
+  };
 }
 
 export default function Cart() {

@@ -5,21 +5,30 @@ import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
 import {BLOG_QUERY} from '~/lib/queries';
 import {usesMockData} from '~/lib/storefront';
+import {routeMeta, basicSeo} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = () => [{title: 'Journal — Sisu'}];
+export const meta: Route.MetaFunction = ({data, matches}) =>
+  routeMeta(matches, data?.seo);
 
 /**
  * The Journal lists articles from a Shopify blog with the handle `journal`
  * (Online Store → Blog posts). Create the blog + posts in admin and they appear
  * here. Until then, the placeholder below is shown.
  */
-export async function loader({context}: Route.LoaderArgs) {
-  if (usesMockData(context.env)) return {articles: []};
+export async function loader({context, request}: Route.LoaderArgs) {
+  const seo = basicSeo({
+    title: 'Journal',
+    description:
+      'Dispatches from the atelier — on materials, mending, and the slow work of making cushions.',
+    request,
+  });
+
+  if (usesMockData(context.env)) return {articles: [], seo};
 
   const {blog} = await context.storefront.query(BLOG_QUERY, {
     variables: {handle: 'journal', first: 12},
   });
-  return {articles: blog?.articles.nodes ?? []};
+  return {articles: blog?.articles.nodes ?? [], seo};
 }
 
 export default function Journal() {

@@ -19,6 +19,7 @@ import {
 import {COLLECTION_QUERY, COLLECTIONS_QUERY} from '~/lib/queries';
 import {toCollection, toCollectionCard} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
+import {routeMeta, canonical} from '~/lib/seo';
 
 /**
  * Handle of the collection featured on the homepage hero strip.
@@ -28,20 +29,20 @@ import {usesMockData} from '~/lib/storefront';
  */
 const FEATURED_HANDLE = 'automated-collection';
 
-export const meta: Route.MetaFunction = () => {
-  return [
-    {title: 'Sisu — Quiet rooms, slowly furnished'},
-    {
-      name: 'description',
-      content:
-        'Heirloom cushions sewn to order in north London. Linen, velvet, and undyed wool, repaired for life.',
-    },
-  ];
-};
+export const meta: Route.MetaFunction = ({data, matches}) =>
+  routeMeta(matches, data?.seo);
 
-export async function loader({context}: Route.LoaderArgs) {
+export async function loader({context, request}: Route.LoaderArgs) {
+  const seo = {
+    title: 'Quiet rooms, slowly furnished',
+    description:
+      'Heirloom cushions sewn to order in north London. Linen, velvet, and undyed wool, repaired for life.',
+    url: canonical(request),
+  };
+
   if (usesMockData(context.env)) {
     return {
+      seo,
       featuredCollection,
       browseCollections: collections,
     };
@@ -67,6 +68,7 @@ export async function loader({context}: Route.LoaderArgs) {
   }
 
   return {
+    seo,
     featuredCollection: featured
       ? toCollection(featured)
       : {...featuredCollection, products: {nodes: []}},

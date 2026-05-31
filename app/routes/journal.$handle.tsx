@@ -5,12 +5,12 @@ import {Eyebrow} from '~/components/Eyebrow';
 import {UnderlineLink} from '~/components/UnderlineLink';
 import {ARTICLE_QUERY} from '~/lib/queries';
 import {usesMockData} from '~/lib/storefront';
+import {routeMeta, articleSeo} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = ({data: routeData}) => [
-  {title: `${routeData?.article?.title ?? 'Journal'} — Sisu`},
-];
+export const meta: Route.MetaFunction = ({data, matches}) =>
+  routeMeta(matches, data?.seo);
 
-export async function loader({params, context}: Route.LoaderArgs) {
+export async function loader({params, context, request}: Route.LoaderArgs) {
   const {handle} = params;
   if (!handle) throw new Response('Not found', {status: 404});
   if (usesMockData(context.env)) throw new Response('Not found', {status: 404});
@@ -20,7 +20,7 @@ export async function loader({params, context}: Route.LoaderArgs) {
   });
   const article = blog?.articleByHandle;
   if (!article) throw new Response('Not found', {status: 404});
-  return data({article});
+  return data({article, seo: articleSeo(article, request)});
 }
 
 export default function Article() {

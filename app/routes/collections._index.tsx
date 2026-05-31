@@ -7,21 +7,27 @@ import {collections} from '~/lib/mock-data';
 import {COLLECTIONS_QUERY} from '~/lib/queries';
 import {toCollectionCard} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
+import {routeMeta, basicSeo} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = () => {
-  return [{title: 'Collections — Sisu'}];
-};
+export const meta: Route.MetaFunction = ({data, matches}) =>
+  routeMeta(matches, data?.seo);
 
-export async function loader({context}: Route.LoaderArgs) {
+export async function loader({context, request}: Route.LoaderArgs) {
+  const seo = basicSeo({
+    title: 'Collections',
+    description: 'Browse cushion collections by material — linen, velvet, and undyed wool.',
+    request,
+  });
+
   if (usesMockData(context.env)) {
-    return data({collections});
+    return data({collections, seo});
   }
 
   const {collections: result} = await context.storefront.query(
     COLLECTIONS_QUERY,
     {variables: {first: 24}},
   );
-  return data({collections: result.nodes.map(toCollectionCard)});
+  return data({collections: result.nodes.map(toCollectionCard), seo});
 }
 
 export default function CollectionsIndex() {

@@ -129,6 +129,22 @@ export const COLLECTIONS_QUERY = `#graphql
   ${COLLECTION_CARD_FRAGMENT}
 ` as const;
 
+/** Product + collection handles for the sitemap. */
+export const SITEMAP_QUERY = `#graphql
+  query Sitemap($first: Int!) {
+    products(first: $first) {
+      nodes {
+        handle
+      }
+    }
+    collections(first: $first) {
+      nodes {
+        handle
+      }
+    }
+  }
+` as const;
+
 /** Lightweight collection list for site navigation (header + footer). */
 export const NAV_COLLECTIONS_QUERY = `#graphql
   query NavCollections($first: Int!) {

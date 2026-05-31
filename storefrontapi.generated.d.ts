@@ -175,6 +175,15 @@ export type CollectionsQuery = {
   };
 };
 
+export type SitemapQueryVariables = StorefrontAPI.Exact<{
+  first: StorefrontAPI.Scalars['Int']['input'];
+}>;
+
+export type SitemapQuery = {
+  products: {nodes: Array<Pick<StorefrontAPI.Product, 'handle'>>};
+  collections: {nodes: Array<Pick<StorefrontAPI.Collection, 'handle'>>};
+};
+
 export type NavCollectionsQueryVariables = StorefrontAPI.Exact<{
   first: StorefrontAPI.Scalars['Int']['input'];
 }>;
@@ -352,6 +361,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query Collections($first: Int!) {\n    collections(first: $first) {\n      nodes {\n        ...CollectionCard\n      }\n    }\n  }\n  #graphql\n  fragment CollectionCard on Collection {\n    id\n    handle\n    title\n    description\n    image {\n      ...Image\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n\n': {
     return: CollectionsQuery;
     variables: CollectionsQueryVariables;
+  };
+  '#graphql\n  query Sitemap($first: Int!) {\n    products(first: $first) {\n      nodes {\n        handle\n      }\n    }\n    collections(first: $first) {\n      nodes {\n        handle\n      }\n    }\n  }\n': {
+    return: SitemapQuery;
+    variables: SitemapQueryVariables;
   };
   '#graphql\n  query NavCollections($first: Int!) {\n    collections(first: $first) {\n      nodes {\n        id\n        handle\n        title\n      }\n    }\n  }\n': {
     return: NavCollectionsQuery;

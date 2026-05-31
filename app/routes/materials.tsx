@@ -5,8 +5,10 @@ import {Eyebrow} from '~/components/Eyebrow';
 import {METAOBJECTS_QUERY} from '~/lib/queries';
 import {toMaterial} from '~/lib/metaobject';
 import {usesMockData} from '~/lib/storefront';
+import {routeMeta, basicSeo} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = () => [{title: 'Materials — Sisu'}];
+export const meta: Route.MetaFunction = ({data, matches}) =>
+  routeMeta(matches, data?.seo);
 
 /**
  * Example of custom content via Metaobjects. Reads all metaobjects of type
@@ -14,13 +16,20 @@ export const meta: Route.MetaFunction = () => [{title: 'Materials — Sisu'}];
  * fields: name, description, and an optional image). Each entry you add in
  * admin appears here automatically.
  */
-export async function loader({context}: Route.LoaderArgs) {
-  if (usesMockData(context.env)) return {materials: []};
+export async function loader({context, request}: Route.LoaderArgs) {
+  const seo = basicSeo({
+    title: 'Materials',
+    description:
+      'The cloths we work — heavyweight Belgian linen, aged cotton velvet, and undyed mountain wool.',
+    request,
+  });
+
+  if (usesMockData(context.env)) return {materials: [], seo};
 
   const {metaobjects} = await context.storefront.query(METAOBJECTS_QUERY, {
     variables: {type: 'material', first: 24},
   });
-  return {materials: metaobjects.nodes.map(toMaterial)};
+  return {materials: metaobjects.nodes.map(toMaterial), seo};
 }
 
 export default function Materials() {

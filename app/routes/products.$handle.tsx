@@ -11,27 +11,27 @@ import {getProductByHandle} from '~/lib/mock-data';
 import {PRODUCT_QUERY} from '~/lib/queries';
 import {toProduct} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
+import {routeMeta, productSeo} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = ({data: routeData}) => {
-  const title = routeData?.product?.title ?? 'Product';
-  return [{title: `${title} — Sisu`}];
-};
+export const meta: Route.MetaFunction = ({data, matches}) =>
+  routeMeta(matches, data?.seo);
 
-export async function loader({params, context}: Route.LoaderArgs) {
+export async function loader({params, context, request}: Route.LoaderArgs) {
   const {handle} = params;
   if (!handle) throw new Response('Not found', {status: 404});
 
   if (usesMockData(context.env)) {
     const product = getProductByHandle(handle);
     if (!product) throw new Response('Not found', {status: 404});
-    return data({product});
+    return data({product, seo: productSeo(product, request)});
   }
 
   const {product} = await context.storefront.query(PRODUCT_QUERY, {
     variables: {handle},
   });
   if (!product) throw new Response('Not found', {status: 404});
-  return data({product: toProduct(product)});
+  const adapted = toProduct(product);
+  return data({product: adapted, seo: productSeo(adapted, request)});
 }
 
 export default function ProductPage() {

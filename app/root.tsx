@@ -16,6 +16,7 @@ import {PageLayout} from './components/PageLayout';
 import {NAV_COLLECTIONS_QUERY} from '~/lib/queries';
 import {usesMockData} from '~/lib/storefront';
 import {collections} from '~/lib/mock-data';
+import {rootSeo} from '~/lib/seo';
 
 export type RootLoader = typeof loader;
 
@@ -46,14 +47,16 @@ export function links() {
   ];
 }
 
-export async function loader({context}: Route.LoaderArgs) {
+export async function loader({context, request}: Route.LoaderArgs) {
   // The cart + collection nav are needed app-wide (header/footer on every page).
   // Awaited here so the header can render synchronously without Suspense.
   const cart = await context.cart.get();
+  const seo = rootSeo(request);
 
   if (usesMockData(context.env)) {
     return {
       cart,
+      seo,
       collections: collections.map((c) => ({
         id: c.id,
         handle: c.handle,
@@ -66,7 +69,7 @@ export async function loader({context}: Route.LoaderArgs) {
     NAV_COLLECTIONS_QUERY,
     {variables: {first: 8}},
   );
-  return {cart, collections: result.nodes};
+  return {cart, seo, collections: result.nodes};
 }
 
 export function Layout({children}: {children?: React.ReactNode}) {

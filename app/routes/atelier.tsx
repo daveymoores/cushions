@@ -6,10 +6,10 @@ import {Eyebrow} from '~/components/Eyebrow';
 import {SealMark} from '~/components/SealMark';
 import {PAGE_QUERY} from '~/lib/queries';
 import {usesMockData} from '~/lib/storefront';
+import {routeMeta, pageSeo, basicSeo} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = ({data}) => [
-  {title: `${data?.page?.title ?? 'The Atelier'} — Sisu`},
-];
+export const meta: Route.MetaFunction = ({data, matches}) =>
+  routeMeta(matches, data?.seo);
 
 /**
  * Editorial content for this page is pulled from a Shopify "Page" with the
@@ -17,13 +17,20 @@ export const meta: Route.MetaFunction = ({data}) => [
  * it updates here — no code change. If the page doesn't exist yet, we fall back
  * to the built-in placeholder below.
  */
-export async function loader({context}: Route.LoaderArgs) {
-  if (usesMockData(context.env)) return {page: null};
+export async function loader({context, request}: Route.LoaderArgs) {
+  const fallbackSeo = basicSeo({
+    title: 'The Atelier',
+    description:
+      'A small north London studio where each cushion is cut, sewn, and finished by hand. Visits and commissions by appointment.',
+    request,
+  });
+
+  if (usesMockData(context.env)) return {page: null, seo: fallbackSeo};
 
   const {page} = await context.storefront.query(PAGE_QUERY, {
     variables: {handle: 'atelier'},
   });
-  return {page};
+  return {page, seo: page ? pageSeo(page, request) : fallbackSeo};
 }
 
 export default function Atelier() {

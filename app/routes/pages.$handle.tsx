@@ -5,17 +5,17 @@ import {Eyebrow} from '~/components/Eyebrow';
 import {SealMark} from '~/components/SealMark';
 import {PAGE_QUERY} from '~/lib/queries';
 import {usesMockData} from '~/lib/storefront';
+import {routeMeta, pageSeo} from '~/lib/seo';
 
-export const meta: Route.MetaFunction = ({data: routeData}) => [
-  {title: `${routeData?.page?.title ?? 'Page'} — Sisu`},
-];
+export const meta: Route.MetaFunction = ({data, matches}) =>
+  routeMeta(matches, data?.seo);
 
 /**
  * Generic Shopify Page renderer. Any Page created in admin (Online Store →
  * Pages) is reachable at /pages/<handle> with zero code — e.g. a page with
  * handle `shipping` shows at /pages/shipping.
  */
-export async function loader({params, context}: Route.LoaderArgs) {
+export async function loader({params, context, request}: Route.LoaderArgs) {
   const {handle} = params;
   if (!handle) throw new Response('Not found', {status: 404});
   if (usesMockData(context.env)) throw new Response('Not found', {status: 404});
@@ -24,7 +24,7 @@ export async function loader({params, context}: Route.LoaderArgs) {
     variables: {handle},
   });
   if (!page) throw new Response('Not found', {status: 404});
-  return data({page});
+  return data({page, seo: pageSeo(page, request)});
 }
 
 export default function Page() {
