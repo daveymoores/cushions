@@ -59,30 +59,34 @@ it shows the first collection it finds. To pin a specific one, a developer sets
 Shopify can manage all the non-product content too. Three tools, from simplest
 to most powerful:
 
-### a) Pages — for static pages (About, Atelier, Shipping…)
+### a) Pages — for static pages (About, Atelier, Shipping…)  ✅ wired
 **Best for:** one-off pages with a heading and body text.
 - In admin: install the **Online Store** sales channel (free), then
-  **Online Store → Pages → Add page**.
-- The **handle** (in the page's URL settings) is how code finds it.
-- ✅ **Already wired as an example:** the **Atelier** page reads from a Shopify
-  Page with the handle `atelier`. Create that page and your text replaces the
-  placeholder — no code change. To add another page (e.g. "Shipping"), a dev
-  copies `app/routes/atelier.tsx` and changes the handle + route name.
+  **Online Store → Pages → Add page**. The **handle** is how code finds it.
+- **Any page is live at `/pages/<handle>`** automatically — e.g. a page with
+  handle `shipping` shows at `/pages/shipping`. No code needed.
+- The **Atelier** page (`/atelier`) is also wired specifically to a page with
+  handle `atelier`, so it keeps its own styling. Create that page and your text
+  replaces the placeholder.
 
-### b) Blog & Articles — for the Journal
+### b) Blog & Articles — for the Journal  ✅ wired
 **Best for:** dated posts with an author, image, and body (a journal/blog).
-- In admin: **Online Store → Blog posts**. Shopify gives you a blog and posts.
-- *Not wired yet* — the `/journal` page is still a placeholder. A dev can point
-  it at your blog (`blog(handle: "journal")`) when you're ready.
+- In admin: **Online Store → Blog posts**. Create a **blog with the handle
+  `journal`** and add posts to it.
+- The `/journal` page lists those posts; each is live at `/journal/<post-handle>`.
+  Until the blog exists, `/journal` shows the placeholder.
 
-### c) Metaobjects — for custom, repeatable content
+### c) Metaobjects — for custom, repeatable content  ✅ example wired
 **Best for:** structured content that isn't a product, page, or blog post —
 e.g. "Materials", "Stockists", homepage editorial blocks, lookbook entries.
 - In admin: **Settings → Custom data → Metaobjects → Add definition**. You
   design the fields (text, image, rich text, references…).
-- This is the most flexible ("metadata in Shopify") approach and works great
-  headless. *Not wired yet* — tell a dev the definition you create and they'll
-  render it.
+- ⚠️ **Crucial:** in the definition, enable **"Storefront access"** (a.k.a.
+  expose to the Storefront API) — otherwise the site can't read it.
+- **Example wired:** define a metaobject of type **`material`** with fields
+  `name` (single line text), `description` (multi line text), and optionally
+  `image` (file → image). Add entries and they appear at **`/materials`**.
+  This is the pattern a dev copies for any other custom content type.
 
 > **Metafields** (Settings → Custom data) are the related tool for adding extra
 > fields *to products/collections* — e.g. a "Care instructions" or "Fabric"
@@ -98,9 +102,12 @@ e.g. "Materials", "Stockists", homepage editorial blocks, lookbook entries.
    published won't show on the site.
 3. **Create real collections** (Linen, Velvet, Wool… whatever you sell) — these
    drive the nav automatically.
-4. **Create an `atelier` Page** to replace the placeholder Atelier copy.
-5. (Optional) **Create a `journal` blog** and tell a dev to wire it.
-6. (Optional) **Add Metaobject definitions** for any custom content.
+4. **Create an `atelier` Page** (and any others, e.g. `shipping`) — Atelier
+   shows at `/atelier`, the rest at `/pages/<handle>`.
+5. **Create a blog with handle `journal`** and add posts — they appear at
+   `/journal`.
+6. **Add a `material` Metaobject definition** (fields: name, description,
+   image) with **Storefront access enabled**, then add entries → `/materials`.
 
 ---
 
@@ -141,11 +148,13 @@ The site needs a host that runs the Workers runtime. Two options:
 - Live Shopify product, collection, and cart data (add / update / remove / checkout)
 - Dynamic, collection-driven navigation
 - Full redesign (typography, emblem, hero, product page)
-- Atelier page wired to Shopify Pages (example content pattern)
+- Content from Shopify: Pages (`/atelier`, `/pages/<handle>`), Blog/Journal
+  (`/journal`), and Metaobjects (`/materials`)
 
 **Not done yet**
-- Journal wired to a Shopify blog
 - Customer accounts (`/account` is a placeholder)
 - Product variant images don't switch when you pick an option
 - Cart is a full page (no slide-out drawer / optimistic UI)
 - Hosting not set up yet
+- The Journal/Materials pages aren't linked from the main nav yet (reachable by
+  URL); add nav links once you've created the content

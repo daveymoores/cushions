@@ -169,3 +169,81 @@ export const PAGE_QUERY = `#graphql
     }
   }
 ` as const;
+
+/** Blog index — the list of articles in a Shopify blog (e.g. handle "journal"). */
+export const BLOG_QUERY = `#graphql
+  query Blog($handle: String!, $first: Int!) {
+    blog(handle: $handle) {
+      title
+      articles(first: $first, sortKey: PUBLISHED_AT, reverse: true) {
+        nodes {
+          id
+          handle
+          title
+          excerpt
+          publishedAt
+          author: authorV2 {
+            name
+          }
+          image {
+            ...Image
+          }
+        }
+      }
+    }
+  }
+  ${IMAGE_FRAGMENT}
+` as const;
+
+/** A single blog article. */
+export const ARTICLE_QUERY = `#graphql
+  query Article($blog: String!, $handle: String!) {
+    blog(handle: $blog) {
+      articleByHandle(handle: $handle) {
+        id
+        title
+        contentHtml
+        publishedAt
+        author: authorV2 {
+          name
+        }
+        image {
+          ...Image
+        }
+        seo {
+          title
+          description
+        }
+      }
+    }
+  }
+  ${IMAGE_FRAGMENT}
+` as const;
+
+/**
+ * Metaobjects of a given type — for custom, repeatable content defined under
+ * Settings → Custom data → Metaobjects. Fields come back as generic key/value
+ * pairs; `reference` resolves file/image fields. See app/lib/metaobject.ts.
+ */
+export const METAOBJECTS_QUERY = `#graphql
+  query Metaobjects($type: String!, $first: Int!) {
+    metaobjects(type: $type, first: $first) {
+      nodes {
+        id
+        handle
+        fields {
+          key
+          value
+          reference {
+            ... on MediaImage {
+              image {
+                ...Image
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ${IMAGE_FRAGMENT}
+` as const;
