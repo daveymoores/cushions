@@ -9,3 +9,5 @@ node_modules
 .shopify
 .react-router
 tsconfig.tsbuildinfo
+.dev.vars
+.wrangler

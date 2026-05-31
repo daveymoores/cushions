@@ -158,9 +158,18 @@ The site needs a host that runs the Workers runtime. Two options:
 - **Shopify Oxygen (recommended):** free with any paid Shopify plan (~£25–30/mo
   Basic). Connect the GitHub repo in the **Hydrogen** sales channel, or run
   `npx shopify hydrogen deploy`. Handles env vars, previews, and caching.
-- **Cloudflare Workers:** cheaper hosting on its own, but needs manual setup
-  (`wrangler.toml` + a cache shim) and isn't officially supported. You still
-  need a paid Shopify plan to take orders, so Oxygen is usually simpler.
+- **Cloudflare Workers (set up & working):** doesn't need a paid Shopify plan —
+  good for a preview/dev link now. Config is in `wrangler.jsonc` + a cache shim
+  in `app/lib/context.ts`. To deploy:
+  1. Make a free account at dash.cloudflare.com
+  2. `npx wrangler login` (authorise in the browser)
+  3. `npx wrangler secret put SESSION_SECRET` → paste a long random string
+  4. `npm run deploy:cf` → prints your `https://sisu.<account>.workers.dev` URL
+
+  Local preview on the real runtime: `npm run preview:cf`. For push-to-deploy,
+  connect the GitHub repo under Cloudflare → Workers → sisu → Settings → Builds.
+  Note: this is unofficial (Hydrogen targets Oxygen), so a future Hydrogen
+  upgrade may need the shim/config revisited.
 
 ---
 
