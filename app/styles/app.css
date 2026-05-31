@@ -314,4 +314,32 @@
     mix-blend-mode: multiply;
     pointer-events: none;
   }
+
+  /* Rich-text body rendered from Shopify Pages / Articles. */
+  .prose-editorial > * + * {
+    margin-top: 1.25em;
+  }
+  .prose-editorial h2,
+  .prose-editorial h3 {
+    font-family: var(--font-display, serif);
+    color: var(--color-ink);
+    font-size: 1.4em;
+    line-height: 1.2;
+    margin-top: 1.8em;
+  }
+  .prose-editorial a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-editorial img {
+    width: 100%;
+    height: auto;
+    margin-top: 1.5em;
+  }
+  .prose-editorial ul,
+  .prose-editorial ol {
+    padding-left: 1.25em;
+    list-style: revert;
+  }
 }

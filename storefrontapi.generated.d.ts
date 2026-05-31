@@ -247,6 +247,20 @@ export type ProductByHandleQuery = {
   >;
 };
 
+export type PageQueryVariables = StorefrontAPI.Exact<{
+  handle: StorefrontAPI.Scalars['String']['input'];
+}>;
+
+export type PageQuery = {
+  page?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Page, 'id' | 'title' | 'body'> & {
+      seo?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Seo, 'title' | 'description'>
+      >;
+    }
+  >;
+};
+
 interface GeneratedQueryTypes {
   '#graphql\n  query Collection($handle: String!, $first: Int!) {\n    collection(handle: $handle) {\n      id\n      handle\n      title\n      description\n      image {\n        ...Image\n      }\n      products(first: $first) {\n        nodes {\n          ...Product\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    handle\n    title\n    description\n    vendor\n    productType\n    tags\n    featuredImage {\n      ...Image\n    }\n    images(first: 8) {\n      nodes {\n        ...Image\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n      }\n    }\n    variants(first: 50) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          ...Money\n        }\n        compareAtPrice {\n          ...Money\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          ...Image\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n  #graphql\n  fragment Money on MoneyV2 {\n    amount\n    currencyCode\n  }\n\n\n': {
     return: CollectionQuery;
@@ -263,6 +277,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query ProductByHandle($handle: String!) {\n    product(handle: $handle) {\n      ...Product\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    handle\n    title\n    description\n    vendor\n    productType\n    tags\n    featuredImage {\n      ...Image\n    }\n    images(first: 8) {\n      nodes {\n        ...Image\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n      }\n    }\n    variants(first: 50) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          ...Money\n        }\n        compareAtPrice {\n          ...Money\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          ...Image\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n  #graphql\n  fragment Money on MoneyV2 {\n    amount\n    currencyCode\n  }\n\n\n': {
     return: ProductByHandleQuery;
     variables: ProductByHandleQueryVariables;
+  };
+  '#graphql\n  query Page($handle: String!) {\n    page(handle: $handle) {\n      id\n      title\n      body\n      seo {\n        title\n        description\n      }\n    }\n  }\n': {
+    return: PageQuery;
+    variables: PageQueryVariables;
   };
 }
 

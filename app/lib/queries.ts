@@ -151,3 +151,21 @@ export const PRODUCT_QUERY = `#graphql
   }
   ${PRODUCT_FRAGMENT}
 ` as const;
+
+/**
+ * A Shopify "Page" (Online Store → Pages) — for editorial/static content like
+ * the Atelier or an About page. `body` is rich-text HTML authored in admin.
+ */
+export const PAGE_QUERY = `#graphql
+  query Page($handle: String!) {
+    page(handle: $handle) {
+      id
+      title
+      body
+      seo {
+        title
+        description
+      }
+    }
+  }
+` as const;

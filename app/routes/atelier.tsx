@@ -1,20 +1,63 @@
+import {useLoaderData} from 'react-router';
 import type {Route} from './+types/atelier';
 import {StubPage} from '~/components/StubPage';
+import {Container} from '~/components/Container';
+import {Eyebrow} from '~/components/Eyebrow';
+import {SealMark} from '~/components/SealMark';
+import {PAGE_QUERY} from '~/lib/queries';
+import {usesMockData} from '~/lib/storefront';
 
-export const meta: Route.MetaFunction = () => [
-  {title: 'The Atelier — Sisu'},
+export const meta: Route.MetaFunction = ({data}) => [
+  {title: `${data?.page?.title ?? 'The Atelier'} — Sisu`},
 ];
 
+/**
+ * Editorial content for this page is pulled from a Shopify "Page" with the
+ * handle `atelier` (Online Store → Pages). Edit the copy in Shopify admin and
+ * it updates here — no code change. If the page doesn't exist yet, we fall back
+ * to the built-in placeholder below.
+ */
+export async function loader({context}: Route.LoaderArgs) {
+  if (usesMockData(context.env)) return {page: null};
+
+  const {page} = await context.storefront.query(PAGE_QUERY, {
+    variables: {handle: 'atelier'},
+  });
+  return {page};
+}
+
 export default function Atelier() {
+  const {page} = useLoaderData<typeof loader>();
+
+  if (!page) {
+    // Fallback copy until an `atelier` Page is created in Shopify admin.
+    return (
+      <StubPage
+        eyebrow="By Appointment"
+        title={
+          <>
+            The <span className="italic-stone">atelier</span>
+          </>
+        }
+        body="A small north London studio where each cushion is cut, sewn, and finished by hand. Visits and commissions are accepted by appointment from spring."
+      />
+    );
+  }
+
   return (
-    <StubPage
-      eyebrow="By Appointment"
-      title={
-        <>
-          The <span className="italic-stone">atelier</span>
-        </>
-      }
-      body="A small north London studio where each cushion is cut, sewn, and finished by hand. Visits and commissions are accepted by appointment from spring."
-    />
+    <section className="section-y bg-paper">
+      <Container>
+        <div className="max-w-2xl">
+          <SealMark size={14} className="text-ink/70 mb-6" />
+          <Eyebrow className="block mb-5">By Appointment</Eyebrow>
+          <h1 className="display-h1 text-ink">{page.title}</h1>
+          <div
+            className="prose-editorial mt-8 text-ash text-[14px] leading-[1.7] font-light"
+            // Page body is trusted rich-text authored in your own Shopify admin.
+            dangerouslySetInnerHTML={{__html: page.body}}
+          />
+        </div>
+      </Container>
+    </section>
   );
 }
