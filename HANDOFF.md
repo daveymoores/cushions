@@ -21,9 +21,10 @@ Open the URL it prints (usually http://localhost:3000). Edits to code or to your
 Shopify catalog show up on refresh.
 
 The Shopify connection lives in a file called `.env` (already set up). It points
-at the live store via the **Headless** sales channel. If `.env` is ever missing,
-copy `.env.example` to `.env` and fill in the values from
-Shopify admin → Settings → Apps → **Headless** → your storefront.
+at the live store via the **Hydrogen** sales channel. If `.env` is ever missing,
+run `npx shopify hydrogen env pull` — the repo is linked to the Sisu storefront,
+and the command writes the current values (then re-add any local-only extras
+from `.env.example`).
 
 > If `PUBLIC_STORE_DOMAIN` in `.env` is set to `mock.shop`, the site runs on
 > built-in fake data (handy for design work with no store). With the real
@@ -44,8 +45,8 @@ These update the live site automatically:
 | Change prices, run a sale | **Products** (compare-at price shows as a sale) |
 
 **Important:** for anything to appear on this storefront, it must be **published
-to the Headless channel**. When editing a product or collection, check the
-"Publishing" / sales-channels box and make sure **Headless** is ticked.
+to the Hydrogen channel**. When editing a product or collection, check the
+"Publishing" / sales-channels box and make sure **Hydrogen** is ticked.
 
 ### The homepage featured collection
 The big "The Collection" strip on the homepage shows one collection. By default
@@ -116,7 +117,7 @@ Shopify (with the current copy as fallback until you fill them in):
 
 1. **Install the Online Store sales channel** (free) — unlocks Pages, Blog
    posts, and Navigation menus for the Storefront API to read.
-2. **Publish products & collections to the Headless channel** — anything not
+2. **Publish products & collections to the Hydrogen channel** — anything not
    published won't show on the site.
 3. **Create real collections** (Linen, Velvet, Wool… whatever you sell) — these
    drive the nav automatically.
@@ -215,9 +216,10 @@ hosting the site).
 - Customer accounts (`/account` is a placeholder)
 - Product variant images don't switch when you pick an option
 - Cart is a full page (no slide-out drawer / optimistic UI)
-- Hosting: the code targets Oxygen (see §6), but the Hydrogen sales channel /
-  GitHub connection isn't set up yet
-- Analytics: PostHog is wired in (EU cloud), but stays switched off until
-  `PUBLIC_POSTHOG_KEY` is set — see §6
 - The Journal/Materials pages aren't linked from the main nav yet (reachable by
   URL); add nav links once you've created the content
+
+**Done since (Aug 2026)** — hosting is live: the Hydrogen sales channel is
+installed on the Sisu store (gqrjsh-ha.myshopify.com), the GitHub connection
+deploys `main` to Oxygen, and PostHog is active with `PUBLIC_POSTHOG_KEY` set
+in production. See `docs/OWNERS-GUIDE.md` and `LAUNCH.md` for current state.

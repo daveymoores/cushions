@@ -19,7 +19,7 @@ export async function loader({params, context, request}: Route.LoaderArgs) {
   if (usesMockData(context.env)) {
     const collection = getCollectionByHandle(handle);
     if (!collection) throw new Response('Not found', {status: 404});
-    return data({collection, seo: collectionSeo(collection, request)});
+    return data({collection, seo: collectionSeo(collection, request, context.env)});
   }
 
   const {collection} = await context.storefront.query(COLLECTION_QUERY, {
@@ -27,7 +27,7 @@ export async function loader({params, context, request}: Route.LoaderArgs) {
   });
   if (!collection) throw new Response('Not found', {status: 404});
   const adapted = toCollection(collection);
-  return data({collection: adapted, seo: collectionSeo(adapted, request)});
+  return data({collection: adapted, seo: collectionSeo(adapted, request, context.env)});
 }
 
 export default function CollectionPage() {

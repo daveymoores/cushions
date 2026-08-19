@@ -21,6 +21,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
     description:
       'Dispatches from the atelier — on materials, mending, and the slow work of making cushions.',
     request,
+    env: context.env,
   });
 
   if (usesMockData(context.env)) return {articles: [], seo};

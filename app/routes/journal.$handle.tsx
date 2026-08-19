@@ -8,7 +8,7 @@ import {usesMockData} from '~/lib/storefront';
 import {routeMeta, articleSeo} from '~/lib/seo';
 
 export const meta: Route.MetaFunction = ({data, matches}) =>
-  routeMeta(matches, data?.seo);
+  routeMeta(matches, data?.seo, 'article');
 
 export async function loader({params, context, request}: Route.LoaderArgs) {
   const {handle} = params;
@@ -20,7 +20,7 @@ export async function loader({params, context, request}: Route.LoaderArgs) {
   });
   const article = blog?.articleByHandle;
   if (!article) throw new Response('Not found', {status: 404});
-  return data({article, seo: articleSeo(article, request)});
+  return data({article, seo: articleSeo(article, request, context.env)});
 }
 
 export default function Article() {

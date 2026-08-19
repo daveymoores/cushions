@@ -17,6 +17,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
     title: 'Collections',
     description: 'Browse cushion collections by material — linen, velvet, and undyed wool.',
     request,
+    env: context.env,
   });
 
   if (usesMockData(context.env)) {

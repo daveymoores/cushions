@@ -22,6 +22,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
     description:
       'The cloths we work — heavyweight Belgian linen, aged cotton velvet, and undyed mountain wool.',
     request,
+    env: context.env,
   });
 
   if (usesMockData(context.env)) return {materials: [], seo};

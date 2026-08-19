@@ -5,8 +5,10 @@ import {routeMeta, basicSeo} from '~/lib/seo';
 export const meta: Route.MetaFunction = ({data, matches}) =>
   routeMeta(matches, data?.seo);
 
-export async function loader({request}: Route.LoaderArgs) {
-  return {seo: basicSeo({title: 'Account', request, noIndex: true})};
+export async function loader({context, request}: Route.LoaderArgs) {
+  return {
+    seo: basicSeo({title: 'Account', request, env: context.env, noIndex: true}),
+  };
 }
 
 export default function Account() {

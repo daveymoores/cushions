@@ -14,7 +14,7 @@ import {usesMockData} from '~/lib/storefront';
 import {routeMeta, productSeo} from '~/lib/seo';
 
 export const meta: Route.MetaFunction = ({data, matches}) =>
-  routeMeta(matches, data?.seo);
+  routeMeta(matches, data?.seo, 'product');
 
 export async function loader({params, context, request}: Route.LoaderArgs) {
   const {handle} = params;
@@ -23,7 +23,7 @@ export async function loader({params, context, request}: Route.LoaderArgs) {
   if (usesMockData(context.env)) {
     const product = getProductByHandle(handle);
     if (!product) throw new Response('Not found', {status: 404});
-    return data({product, seo: productSeo(product, request)});
+    return data({product, seo: productSeo(product, request, context.env)});
   }
 
   const {product} = await context.storefront.query(PRODUCT_QUERY, {
@@ -31,7 +31,7 @@ export async function loader({params, context, request}: Route.LoaderArgs) {
   });
   if (!product) throw new Response('Not found', {status: 404});
   const adapted = toProduct(product);
-  return data({product: adapted, seo: productSeo(adapted, request)});
+  return data({product: adapted, seo: productSeo(adapted, request, context.env)});
 }
 
 export default function ProductPage() {

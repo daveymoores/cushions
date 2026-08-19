@@ -210,11 +210,20 @@ export type SiteContentQuery = {
 
 export type SitemapQueryVariables = StorefrontAPI.Exact<{
   first: StorefrontAPI.Scalars['Int']['input'];
+  blog: StorefrontAPI.Scalars['String']['input'];
 }>;
 
 export type SitemapQuery = {
-  products: {nodes: Array<Pick<StorefrontAPI.Product, 'handle'>>};
-  collections: {nodes: Array<Pick<StorefrontAPI.Collection, 'handle'>>};
+  products: {nodes: Array<Pick<StorefrontAPI.Product, 'handle' | 'updatedAt'>>};
+  collections: {
+    nodes: Array<Pick<StorefrontAPI.Collection, 'handle' | 'updatedAt'>>;
+  };
+  pages: {nodes: Array<Pick<StorefrontAPI.Page, 'handle' | 'updatedAt'>>};
+  blog?: StorefrontAPI.Maybe<{
+    articles: {
+      nodes: Array<Pick<StorefrontAPI.Article, 'handle' | 'publishedAt'>>;
+    };
+  }>;
 };
 
 export type NavCollectionsQueryVariables = StorefrontAPI.Exact<{
@@ -402,7 +411,7 @@ interface GeneratedQueryTypes {
     return: SiteContentQuery;
     variables: SiteContentQueryVariables;
   };
-  '#graphql\n  query Sitemap($first: Int!) {\n    products(first: $first) {\n      nodes {\n        handle\n      }\n    }\n    collections(first: $first) {\n      nodes {\n        handle\n      }\n    }\n  }\n': {
+  '#graphql\n  query Sitemap($first: Int!, $blog: String!) {\n    products(first: $first) {\n      nodes {\n        handle\n        updatedAt\n      }\n    }\n    collections(first: $first) {\n      nodes {\n        handle\n        updatedAt\n      }\n    }\n    pages(first: $first) {\n      nodes {\n        handle\n        updatedAt\n      }\n    }\n    blog(handle: $blog) {\n      articles(first: $first, sortKey: PUBLISHED_AT, reverse: true) {\n        nodes {\n          handle\n          publishedAt\n        }\n      }\n    }\n  }\n': {
     return: SitemapQuery;
     variables: SitemapQueryVariables;
   };

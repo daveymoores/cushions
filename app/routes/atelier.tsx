@@ -23,6 +23,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
     description:
       'A small north London studio where each cushion is cut, sewn, and finished by hand. Visits and commissions by appointment.',
     request,
+    env: context.env,
   });
 
   if (usesMockData(context.env)) return {page: null, seo: fallbackSeo};
@@ -30,7 +31,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
   const {page} = await context.storefront.query(PAGE_QUERY, {
     variables: {handle: 'atelier'},
   });
-  return {page, seo: page ? pageSeo(page, request) : fallbackSeo};
+  return {page, seo: page ? pageSeo(page, request, context.env) : fallbackSeo};
 }
 
 export default function Atelier() {

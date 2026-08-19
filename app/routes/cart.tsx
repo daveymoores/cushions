@@ -45,7 +45,7 @@ export async function action({request, context}: Route.ActionArgs) {
 export async function loader({context, request}: Route.LoaderArgs) {
   return {
     cart: await context.cart.get(),
-    seo: basicSeo({title: 'Cart', request, noIndex: true}),
+    seo: basicSeo({title: 'Cart', request, env: context.env, noIndex: true}),
   };
 }
 

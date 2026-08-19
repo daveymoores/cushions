@@ -16,5 +16,12 @@ declare global {
   interface Env {
     PUBLIC_POSTHOG_KEY?: string;
     PUBLIC_POSTHOG_HOST?: string;
+    /**
+     * Canonical public origin, e.g. `https://sisuhomeware.com` (no trailing
+     * slash). Pins canonicals, JSON-LD `url`, the sitemap and robots.txt to one
+     * host so the Oxygen preview domain never self-canonicalises as a duplicate
+     * site. Falls back to the request origin when unset — see `siteOrigin()`.
+     */
+    PUBLIC_SITE_URL?: string;
   }
 }

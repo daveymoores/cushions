@@ -38,7 +38,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
     title: 'Quiet rooms, slowly furnished',
     description:
       'Heirloom cushions sewn to order in north London. Linen, velvet, and undyed wool, repaired for life.',
-    url: canonical(request),
+    url: canonical(request, context.env),
   };
 
   if (usesMockData(context.env)) {

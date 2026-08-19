@@ -169,15 +169,31 @@ export const SITE_CONTENT_QUERY = `#graphql
 
 /** Product + collection handles for the sitemap. */
 export const SITEMAP_QUERY = `#graphql
-  query Sitemap($first: Int!) {
+  query Sitemap($first: Int!, $blog: String!) {
     products(first: $first) {
       nodes {
         handle
+        updatedAt
       }
     }
     collections(first: $first) {
       nodes {
         handle
+        updatedAt
+      }
+    }
+    pages(first: $first) {
+      nodes {
+        handle
+        updatedAt
+      }
+    }
+    blog(handle: $blog) {
+      articles(first: $first, sortKey: PUBLISHED_AT, reverse: true) {
+        nodes {
+          handle
+          publishedAt
+        }
       }
     }
   }

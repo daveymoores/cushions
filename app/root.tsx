@@ -53,7 +53,6 @@ export async function loader({context, request}: Route.LoaderArgs) {
   // The cart + collection nav are needed app-wide (header/footer on every page).
   // Awaited here so the header can render synchronously without Suspense.
   const cart = await context.cart.get();
-  const seo = rootSeo(request);
   const emptyContent: SiteContent = {};
 
   // Only these two env vars are forwarded to the browser — never spread
@@ -66,7 +65,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
   if (usesMockData(context.env)) {
     return {
       cart,
-      seo,
+      seo: rootSeo(request, context.env),
       posthog,
       content: emptyContent,
       collections: collections.map((c) => ({
@@ -84,11 +83,14 @@ export async function loader({context, request}: Route.LoaderArgs) {
       cache: context.storefront.CacheShort(),
     }),
   ]);
+  const content = toSiteContent(contentResult);
   return {
     cart,
-    seo,
+    // The homepage hero doubles as the site-wide Open Graph image: routes that
+    // set their own `media` (products, collections, articles) override it.
+    seo: rootSeo(request, context.env, content.heroImage),
     posthog,
-    content: toSiteContent(contentResult),
+    content,
     collections: navResult.collections.nodes,
   };
 }
@@ -97,7 +99,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
 
   return (
-    <html lang="en">
+    <html lang="en-GB">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
