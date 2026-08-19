@@ -1,5 +1,5 @@
 import {Link, useLoaderData} from 'react-router';
-import type {Route} from './+types/journal';
+import type {Route} from './+types/journal._index';
 import {StubPage} from '~/components/StubPage';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
