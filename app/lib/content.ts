@@ -11,8 +11,8 @@
  *   hero_cta_label      single line text
  *   hero_image          file → image
  *   intro               multi-line text
- *   mending_heading     single line text
- *   mending_body        multi-line text
+ *   mending_heading     single line text  (now carries the deadstock story —
+ *   mending_body        multi-line text    key kept so admin entries don't break)
  *   material_heading    single line text
  *   material_body       multi-line text
  *   commission_heading  single line text

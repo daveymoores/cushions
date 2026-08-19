@@ -12,17 +12,17 @@ export async function loader({context, request}: Route.LoaderArgs) {
   const site = siteOrigin(request, context.env);
   const body = `# Sisu
 
-> Heirloom cushions, sewn to order in north London. Linen, cotton velvet and
-> undyed wool, cut and sewn by hand and repaired for life. Ships from the UK,
-> prices in GBP.
+> Cushions made from deadstock fabric — surplus rolls given a second life.
+> Cut and sewn in small batches in Amsterdam, feather-filled and finished by
+> hand. Every design is naturally limited.
 
 ## Docs
 
 - [Agent guide](${site}/agents.md): full description, key pages, commerce endpoints
-- [Collections](${site}/collections): all cushion collections, by material
-- [Materials](${site}/materials): the cloths we work and why
-- [The Atelier](${site}/atelier): how and where the work is done; commissions
-- [Journal](${site}/journal): notes on materials, mending and making
+- [Collections](${site}/collections): all cushion collections
+- [Fabrics](${site}/materials): the deadstock fabrics behind each cushion
+- [The Atelier](${site}/atelier): who makes the cushions, and how
+- [Journal](${site}/journal): notes on deadstock fabric and making
 
 ## Optional
 

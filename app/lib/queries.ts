@@ -38,11 +38,11 @@ export const PRODUCT_FRAGMENT = `#graphql
     tags
     metafields(
       identifiers: [
-        {namespace: "custom", key: "fiber"}
-        {namespace: "custom", key: "origin"}
-        {namespace: "custom", key: "loom"}
+        {namespace: "custom", key: "front_fabric"}
+        {namespace: "custom", key: "back_fabric"}
+        {namespace: "custom", key: "trim"}
+        {namespace: "custom", key: "insert"}
         {namespace: "custom", key: "care"}
-        {namespace: "custom", key: "repair"}
       ]
     ) {
       key

@@ -34,9 +34,18 @@ export function routeMeta(
   ogType: OgType = 'website',
 ) {
   const root = (matches?.[0]?.data as {seo?: SeoConfig} | undefined)?.seo;
-  const tags = [
-    ...((getSeoMeta(root ?? {}, routeSeo ?? {}) ?? []) as MetaDescriptor[]),
-  ];
+  const tags = (
+    (getSeoMeta(root ?? {}, routeSeo ?? {}) ?? []) as MetaDescriptor[]
+  ).map((tag) => {
+    // The title template appends " · Sisu" to every title, including the
+    // site-wide default — which already names the brand. Undo it there only,
+    // so route titles keep the suffix and the default reads as written.
+    const next: MetaDescriptor = {...tag};
+    for (const key of ['title', 'content'] as const) {
+      if (next[key] === TEMPLATED_SITE_TITLE) next[key] = SITE_TITLE;
+    }
+    return next;
+  });
 
   // `og:image:url` is what Hydrogen emits for object media; it carries the
   // same URL the bare `og:image` needs.
@@ -74,8 +83,15 @@ type SeoImageInput = {
   height?: number | null;
   altText?: string | null;
 } | null | undefined;
+/** Site-wide default title, used whenever a route sets none of its own. */
+export const SITE_TITLE = 'Sisu — cushions made from deadstock fabric';
+
+const TITLE_SUFFIX = ` · ${SITE_NAME}`;
+/** What the title template makes of the default title — see `routeMeta`. */
+const TEMPLATED_SITE_TITLE = SITE_TITLE + TITLE_SUFFIX;
+
 const SITE_DESCRIPTION =
-  'Heirloom cushions, sewn to order in north London. Linen, velvet, and undyed wool, repaired for life.';
+  'Cushions cut and sewn in small batches in Amsterdam from deadstock fabric — surplus rolls given a second life. Feather-filled, finished by hand, naturally limited.';
 
 type JsonLd = NonNullable<SeoConfig['jsonLd']>;
 
@@ -107,8 +123,8 @@ export function rootSeo(
 ): SeoConfig {
   const site = siteOrigin(request, env);
   return {
-    title: SITE_NAME,
-    titleTemplate: `%s · ${SITE_NAME}`,
+    title: SITE_TITLE,
+    titleTemplate: `%s${TITLE_SUFFIX}`,
     description: SITE_DESCRIPTION,
     url: site,
     // Root-level media is inherited by every route that sets none, so the

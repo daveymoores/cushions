@@ -62,18 +62,15 @@ export default function ProductPage() {
     if (idx >= 0) setActiveImage(idx);
   }, [variantImageId, product.images]);
 
-  // Editorial details come from `custom.*` product metafields, with sensible
-  // fallbacks so the record is never empty.
+  // The spec comes from `custom.*` product metafields, with sensible fallbacks
+  // so the record is never empty.
   const d = product.details;
   const objectRecord: {label: string; value: string}[] = [
-    {label: 'Fiber', value: d?.fiber ?? product.tags[0] ?? '—'},
-    {label: 'Origin', value: d?.origin ?? 'Sewn in north London'},
-    {label: 'Loom', value: d?.loom ?? 'Single-loom, small-batch'},
-    {label: 'Care', value: d?.care ?? 'Cool wash · line dry · cool iron'},
-    {
-      label: 'Repair',
-      value: d?.repair ?? 'Mended for life — return when it tires',
-    },
+    {label: 'Front fabric', value: d?.frontFabric ?? 'Deadstock fabric'},
+    {label: 'Back fabric', value: d?.backFabric ?? '—'},
+    {label: 'Trim', value: d?.trim ?? '—'},
+    {label: 'Insert', value: d?.insert ?? 'Duck feather, included'},
+    {label: 'Care', value: d?.care ?? 'Spot clean recommended'},
   ];
 
   return (
@@ -205,8 +202,8 @@ export default function ProductPage() {
           </div>
 
           <p className="caption mt-8 text-stone max-w-md">
-            Sewn to order — allow 14 to 21 days for completion. Returned
-            to you wrapped in unbleached cotton, with a mending card.
+            Cut and sewn in small batches in Amsterdam from deadstock fabric —
+            once a fabric is gone, that design won&rsquo;t be made again.
           </p>
         </div>
       </div>

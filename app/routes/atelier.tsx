@@ -21,7 +21,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
   const fallbackSeo = basicSeo({
     title: 'The Atelier',
     description:
-      'A small north London studio where each cushion is cut, sewn, and finished by hand. Visits and commissions by appointment.',
+      'A small homeware studio in Amsterdam, making cushions from deadstock fabric — cut, sewn and finished by hand in small batches.',
     request,
     env: context.env,
   });
@@ -47,7 +47,7 @@ export default function Atelier() {
             The <span className="italic-stone">atelier</span>
           </>
         }
-        body="A small north London studio where each cushion is cut, sewn, and finished by hand. Visits and commissions are accepted by appointment from spring."
+        body="A small homeware studio in Amsterdam, making cushions from deadstock fabric — surplus rolls from the interiors industry, cut and sewn in small batches and finished by hand."
       />
     );
   }

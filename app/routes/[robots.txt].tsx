@@ -13,7 +13,7 @@ import {siteOrigin} from '~/lib/seo';
 export async function loader({context, request}: Route.LoaderArgs) {
   const site = siteOrigin(request, context.env);
   const body = [
-    '# Sisu — heirloom cushions, sewn to order in north London.',
+    '# Sisu — cushions made from deadstock fabric, sewn in Amsterdam.',
     `# Agents: see ${site}/agents.md for a structured description of this store,`,
     `# and ${site}/llms.txt for the short form.`,
     '',

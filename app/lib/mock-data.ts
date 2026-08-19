@@ -34,13 +34,16 @@ export type ProductVariant = {
   image: ImageT | null;
 };
 
-/** Editorial product details, sourced from `custom.*` metafields in Shopify. */
+/**
+ * The product spec, sourced from `custom.*` metafields in Shopify:
+ * `front_fabric`, `back_fabric`, `trim`, `insert`, `care`.
+ */
 export type ProductDetails = {
-  fiber: string | null;
-  origin: string | null;
-  loom: string | null;
+  frontFabric: string | null;
+  backFabric: string | null;
+  trim: string | null;
+  insert: string | null;
   care: string | null;
-  repair: string | null;
 };
 
 export type Product = {
@@ -244,7 +247,7 @@ export const featuredCollection: Collection = {
   handle: 'the-atelier-collection',
   title: 'The Atelier Collection',
   description:
-    'Three pieces, made slowly. Cut, hand-finished, and sent from our atelier in north London.',
+    'Three pieces, made slowly. Cut, sewn and hand-finished in small batches in Amsterdam.',
   image: img(
     'col-featured',
     placeholderImages.heroLinen,

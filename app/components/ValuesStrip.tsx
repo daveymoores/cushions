@@ -5,18 +5,18 @@ import {SealMark} from './SealMark';
 const VALUES = [
   {
     eyebrow: 'i.',
-    title: 'Sewn to order',
-    body: 'Each piece is cut and finished only after you place your commission. Nothing kept on a shelf.',
+    title: 'Deadstock fabric',
+    body: 'Surplus rolls from the interiors industry, bought from EU suppliers and kept out of landfill.',
   },
   {
     eyebrow: 'ii.',
-    title: 'Repaired for life',
-    body: 'Send it back when it tires. We mend, re-line, or re-fill — for as long as the cushion is yours.',
+    title: 'Naturally limited',
+    body: 'Each fabric run is finite. When a roll is used up, that design won’t be made again.',
   },
   {
     eyebrow: 'iii.',
-    title: 'Slowly made',
-    body: 'Small batches, single-loom cloth, and a patient pace. We release new pieces twice a year.',
+    title: 'Sewn in Amsterdam',
+    body: 'Cut and sewn in small batches, filled with feather inserts and finished by hand.',
   },
 ];
 

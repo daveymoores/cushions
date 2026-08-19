@@ -23,21 +23,19 @@ import {routeMeta, canonical} from '~/lib/seo';
 import {useSiteContent} from '~/lib/content';
 
 /**
- * Handle of the collection featured on the homepage hero strip.
- * TODO: point this at the real Sisu featured collection once it exists in admin
- * (e.g. 'the-atelier-collection'). For now it uses a populated sample collection
- * so the strip renders live products.
+ * Handle of the collection featured on the homepage hero strip — the launch
+ * collection in admin. If it doesn't exist yet, the loader falls back to the
+ * first available collection so the strip is never empty.
  */
-const FEATURED_HANDLE = 'automated-collection';
+const FEATURED_HANDLE = 'cushions';
 
 export const meta: Route.MetaFunction = ({data, matches}) =>
   routeMeta(matches, data?.seo);
 
 export async function loader({context, request}: Route.LoaderArgs) {
+  // Title and description are left to the site-wide defaults in `rootSeo` —
+  // the homepage is the page those defaults describe.
   const seo = {
-    title: 'Quiet rooms, slowly furnished',
-    description:
-      'Heirloom cushions sewn to order in north London. Linen, velvet, and undyed wool, repaired for life.',
     url: canonical(request, context.env),
   };
 
@@ -93,18 +91,18 @@ export default function Homepage() {
         imageSrc={content.heroImage?.url ?? placeholderImages.heroLinen}
         imageAlt={
           content.heroImage?.altText ??
-          'Bone-coloured linen cushion at rest on a low timber bench'
+          'A deadstock-fabric cushion at rest on a low sofa'
         }
-        eyebrow={content.heroEyebrow ?? 'Spring · Twenty Twenty-Six'}
+        eyebrow={content.heroEyebrow ?? 'First collection · Amsterdam'}
         heading={heading(
           content.heroHeading,
           <>
-            quiet rooms,
+            good fabric,
             <br />
-            slowly furnished
+            given a second life
           </>,
         )}
-        ctaLabel={content.heroCtaLabel ?? 'Enter the atelier'}
+        ctaLabel={content.heroCtaLabel ?? 'Shop cushions'}
         ctaTo="/collections"
       />
 
@@ -115,19 +113,19 @@ export default function Homepage() {
         heading={heading(
           content.mendingHeading,
           <>
-            On the quiet art
+            Nothing new,
             <br />
-            of <span className="italic-stone">mending</span>
+            nothing <span className="italic-stone">wasted</span>
           </>,
         )}
         body={
           content.mendingBody ??
-          'A cushion well-mended carries more of its life with it. Send yours back when the seam tires; we re-line, re-fill, or close the loose stitch by hand and return it. There is no charge, and no expiry.'
+          'Every Sisu cushion starts as fabric that already exists — deadstock sourced from EU suppliers, kept out of landfill and given a second life. Because each fabric run is finite, every design is naturally limited: when a roll is used up, that exact cushion won’t be made again.'
         }
         ctaLabel="Read the journal"
         ctaTo="/journal"
         imageSrc={placeholderImages.editorialMending}
-        imageAlt="Hands mending a piece of linen"
+        imageAlt="A folded length of patterned deadstock fabric"
       />
 
       <FeaturedCollection
@@ -138,14 +136,14 @@ export default function Homepage() {
       <BleedSection
         imageSrc={placeholderImages.bleedAtelier}
         imageAlt="The atelier in low evening light"
-        eyebrow="By appointment"
+        eyebrow="In the studio"
         heading={heading(
           content.commissionHeading,
           <>
-            begin a <span className="italic">commission</span>
+            cut and sewn in <span className="italic">small batches</span>
           </>,
         )}
-        ctaLabel="Begin a commission"
+        ctaLabel="About Sisu"
         ctaTo="/atelier"
       />
 
@@ -161,12 +159,12 @@ export default function Homepage() {
         )}
         body={
           content.materialBody ??
-          'We work with three cloths only: heavyweight Belgian linen, aged cotton velvet dyed in the Levant, and undyed mountain wool from a single Tuscan loom. Every fibre is chosen for the way it ages — softening, deepening, never tiring.'
+          'Heavyweight upholstery jacquards, ribbed velvets and woven geometrics, rescued from designer surplus. Each cushion is tracked individually — face fabric, backing and fringe — because quantities are inherently limited.'
         }
-        ctaLabel="See the materials"
+        ctaLabel="See the fabrics"
         ctaTo="/materials"
         imageSrc={placeholderImages.collectionLinen}
-        imageAlt="Stack of folded linen in raw cream"
+        imageAlt="A stack of folded surplus fabric"
       />
 
       <BrowseByCollection collections={browseCollections} />
@@ -186,8 +184,8 @@ function IntroStrip() {
           <p className="display-h2 text-ink whitespace-pre-line">
             {content.intro ?? (
               <>
-                Linens hand-loomed in northeastern Lebanon, sewn by hand in
-                north London —{' '}
+                Cushions made from deadstock fabric, cut and sewn in small
+                batches in Amsterdam —{' '}
                 <span className="italic-stone">made to be lived with</span>.
               </>
             )}

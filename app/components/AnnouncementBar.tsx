@@ -2,10 +2,10 @@ import {MarqueeText} from './MarqueeText';
 import {useSiteContent} from '~/lib/content';
 
 const FALLBACK_MESSAGES = [
-  'Sewn to order in north London',
-  'Complimentary mending, for life',
-  'Made slowly, in small batches',
-  'Now accepting commissions for spring',
+  'Made from deadstock fabric',
+  'Sewn in small batches in Amsterdam',
+  'Filled with feather inserts, finished by hand',
+  'Once a fabric is gone, it’s gone',
 ];
 
 export function AnnouncementBar() {

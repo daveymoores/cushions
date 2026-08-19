@@ -15,7 +15,8 @@ export const meta: Route.MetaFunction = ({data, matches}) =>
 export async function loader({context, request}: Route.LoaderArgs) {
   const seo = basicSeo({
     title: 'Collections',
-    description: 'Browse cushion collections by material — linen, velvet, and undyed wool.',
+    description:
+      'Browse the cushions — cut and sewn in small batches in Amsterdam from deadstock fabric.',
     request,
     env: context.env,
   });

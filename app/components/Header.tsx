@@ -7,7 +7,7 @@ import {SealMark} from './SealMark';
 
 const PRIMARY_LINKS = [
   {to: '/collections', label: 'Shop'},
-  {to: '/materials', label: 'Materials'},
+  {to: '/materials', label: 'Fabrics'},
   {to: '/journal', label: 'Journal'},
   {to: '/atelier', label: 'Atelier'},
 ];
@@ -288,7 +288,7 @@ function MobileNavDrawer({
         <div className="border-t border-hairline px-6 py-8 flex flex-col items-center gap-3">
           <SealMark size={18} className="text-ink/70" />
           <p className="caption text-ash text-center">
-            Heirloom cushions, sewn to order in north London
+            Cushions made from deadstock fabric, sewn in Amsterdam
           </p>
         </div>
       </div>

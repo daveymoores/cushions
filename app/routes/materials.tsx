@@ -18,9 +18,9 @@ export const meta: Route.MetaFunction = ({data, matches}) =>
  */
 export async function loader({context, request}: Route.LoaderArgs) {
   const seo = basicSeo({
-    title: 'Materials',
+    title: 'Fabrics',
     description:
-      'The cloths we work — heavyweight Belgian linen, aged cotton velvet, and undyed mountain wool.',
+      'The deadstock fabrics behind each cushion — upholstery jacquards, ribbed velvets and woven geometrics, rescued from designer surplus.',
     request,
     env: context.env,
   });

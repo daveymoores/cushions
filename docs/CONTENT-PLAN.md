@@ -86,11 +86,59 @@ Naming/hygiene: fix "CAMAL" → "CAMEL" filenames on upload; ignore `OLD/` and `
 - Are commissions actually offered (homepage section + current site copy says so)?
 - Company/VAT details if wanted in schema (legalName, vatID — optional but good for AI attribution)
 
-## 7. Execution order
+## 7. Execution plan (detailed)
 
-1. **Now (no blockers):** draft all missing product copy + homepage/about/fabrics copy for approval;
-   produce card/gallery crops; upload products to Shopify as drafts (photos + metafields), create
-   collection, homepage + material metaobject entries; metafield relabel code change.
-2. **After Jessie's facts:** prices, delivery/returns/contact pages, publish products.
-3. **Imagery second pass:** hero outpainting/wide banner, og-image.
-4. **Then:** flip domain target = launch; GSC sitemap submit, Merchant Center (needs policy pages).
+### Phase 1 — no blockers (Claude, ~today)
+
+**1a. Copy drafts → one review doc (`docs/COPY-DRAFTS.md`) for Jessie**
+- Inspect Parker + Ada photos and draft their descriptions in the established format
+  (openers grounded in what the fabric actually looks like; construction facts from the brief)
+- Adapt Leonie Teal copy for Navy and Orange (colour story per variant)
+- Correct Renee Camel (back fabric wording)
+- Homepage metaobject: all 13 fields (announcement lines, hero copy, intro, deadstock story,
+  fabrics section, commission, newsletter)
+- About page (atelier route) from founder story — sisu-etymology paragraph included but marked optional
+- 7 fabric entries for /materials (one per swatch)
+- New site-wide SEO title/description defaults
+
+**1b. Imagery prep (scripted, output to `sisu-content/UPLOAD-READY/`)**
+- Fix CAMAL→CAMEL names; normalize to `renee-cream-front.png` style
+- Renee landscape fronts → 3:4 card crops (keep originals for gallery)
+- og-image 1200×630 crop from best lifestyle close-up
+- Gallery sets per product: front, lifestyle close-up, back, swatch
+- **Hero banner: NOT produceable from existing assets** — spec for Jessie's AI workflow:
+  2560×1440 (16:9) landscape interior scene featuring a real cushion, subject centred-left,
+  text-safe lower-left quadrant, will be darkened ~20% under white text
+
+**1c. Shopify admin data entry (browser)**
+- 4 products as **drafts**: Renee (Cream/Camel variants), Leonie (Teal/Navy/Orange), Parker, Ada —
+  images, sizes, metafields; placeholder £0 prices flagged DO-NOT-PUBLISH until real prices
+- Collection `cushions` ("Cushions") with all four; publish products to Hydrogen channel
+- Homepage metaobject entry + 7 material entries (swatch uploads)
+- Blog with handle `journal`
+- Products stay drafts until copy approved + prices set
+
+**1d. Code tweaks (small)**
+- Metafield relabel: replace fiber/origin/loom/care/repair with front_fabric/back_fabric/trim/insert/care
+  (queries + product-page labels + recreate admin definitions — no data exists yet, safe)
+- `FEATURED_HANDLE` → `cushions`
+- Nav/footer label pass: "Materials"→"Fabrics" if approved; remove/repoint dead footer links
+
+### Phase 2 — needs Jessie/David (parallel to phase 1)
+- Prices per design/size ⛔
+- Shipping/returns/contact facts ⛔ → then I write Delivery/Returns/Contact/Privacy/Terms pages
+- Hero banner asset per spec above
+- Review + approve `docs/COPY-DRAFTS.md` (mark edits inline, I apply them)
+
+### Phase 3 — assembly (Claude, after approvals)
+- Apply approved copy to admin (metaobjects, products), set real prices, publish products
+- Policy pages live; footer links repointed
+- `env push` PUBLIC_SITE_URL to production (David, interactive)
+- Full staff-gated review of the site with real content
+
+### Phase 4 — launch
+- Flip domain Target → Sisu (Production)
+- Verify apex 200 / www 301, MCP endpoint paths, sitemap on live domain
+- GSC: submit sitemap; Bing WMT + IndexNow
+- Merchant Center free listings (needs policy pages) + Agentic storefronts toggle + ChatGPT channel
+- Announce; start the reviews/mentions program (Trustpilot profile, press list)

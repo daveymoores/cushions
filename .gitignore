@@ -10,3 +10,5 @@ node_modules
 .react-router
 tsconfig.tsbuildinfo
 sisu-content alias
+.sisu-loader-secret
+.sisu-loader-token

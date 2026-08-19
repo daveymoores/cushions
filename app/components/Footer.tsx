@@ -11,17 +11,15 @@ const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
     links: [
       {to: '/atelier', label: 'The Atelier'},
       {to: '/journal', label: 'Journal'},
-      {to: '/atelier', label: 'Commissions'},
-      {to: '/atelier', label: 'Mending'},
+      {to: '/journal', label: 'How we make'},
     ],
   },
   {
     title: 'Care',
     links: [
-      {to: '/journal', label: 'How we make'},
-      {to: '/materials', label: 'Materials'},
-      {to: '/journal', label: 'Repair & return'},
+      {to: '/materials', label: 'Fabrics'},
       {to: '/pages/shipping', label: 'Shipping'},
+      {to: '/pages/returns', label: 'Returns'},
     ],
   },
   {
@@ -29,8 +27,8 @@ const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
     links: [
       {to: '/account', label: 'Account'},
       {to: '/#newsletter', label: 'Newsletter'},
-      {to: '/journal', label: 'Contact'},
-      {to: '/journal', label: 'Press'},
+      {to: '/pages/contact', label: 'Contact'},
+      {to: '/pages/contact', label: 'Press'},
     ],
   },
 ];
@@ -77,7 +75,7 @@ export function Footer() {
             Sisu
           </div>
           <p className="eyebrow text-ash max-w-[420px]">
-            Heirloom cushions · sewn to order in north London
+            Cushions made from deadstock fabric · sewn in Amsterdam
           </p>
           <p className="caption mt-2 text-stone">
             © {new Date().getFullYear()} Sisu. All rights reserved.

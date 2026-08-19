@@ -19,7 +19,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
   const seo = basicSeo({
     title: 'Journal',
     description:
-      'Dispatches from the atelier — on materials, mending, and the slow work of making cushions.',
+      'Notes from the studio — on deadstock fabric, and how a Sisu cushion is made.',
     request,
     env: context.env,
   });
@@ -44,7 +44,7 @@ export default function Journal() {
             The <span className="italic-stone">journal</span>
           </>
         }
-        body="Quiet dispatches from the atelier — on materials, mending, and the slow work of making cushions one at a time. Coming soon."
+        body="Notes from the studio — on deadstock fabric, the suppliers we buy from, and how a Sisu cushion is made. Coming soon."
       />
     );
   }

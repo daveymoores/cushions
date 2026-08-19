@@ -28,7 +28,7 @@ export function Newsletter() {
               </h2>
               <p className="mt-6 text-ash text-[13px] leading-[1.7] font-light">
                 {content.newsletterBody ??
-                  'New makings, mending notes, and small studio dispatches — sent sparingly, never sold.'}
+                  'New fabrics arrive in small quantities and sell through quickly. Leave your email to hear when a new design lands.'}
               </p>
               <form
                 className="mt-10 flex items-end gap-5"

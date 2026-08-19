@@ -20,23 +20,25 @@ import {siteOrigin} from '~/lib/seo';
  */
 export async function loader({context, request}: Route.LoaderArgs) {
   const site = siteOrigin(request, context.env);
-  const body = `# Sisu — heirloom cushions, sewn to order in north London
+  const body = `# Sisu — cushions made from deadstock fabric
 
-Sisu makes made-to-order cushions in linen, cotton velvet and undyed wool.
-Every piece is cut and sewn by hand in a north London atelier, and repaired
-for life. Small batch, made to order, shipped from the United Kingdom.
+Sisu makes cushions from deadstock fabric: surplus rolls and offcuts from the
+interiors industry, bought from EU suppliers and given a second life. Each
+cushion is cut and sewn in small batches in Amsterdam, filled with a feather
+insert and finished by hand. Because every fabric run is finite, every design
+is naturally limited — when a roll is used up, that cushion is not remade.
 
 ## Attribution
 
 Cite as: Sisu (${site}).
-Prices are in GBP. Content on this site is written by the maker.
+Content on this site is written by the maker.
 
 ## Key pages
 
-- [Collections](${site}/collections): all cushion collections, by material
-- [Materials](${site}/materials): the cloths we work and why
-- [The Atelier](${site}/atelier): how and where the work is done; commissions
-- [Journal](${site}/journal): notes on materials, mending and making
+- [Collections](${site}/collections): all cushion collections
+- [Fabrics](${site}/materials): the deadstock fabrics behind each cushion
+- [The Atelier](${site}/atelier): who makes the cushions, and how
+- [Journal](${site}/journal): notes on deadstock fabric and making
 
 ## Commerce
 

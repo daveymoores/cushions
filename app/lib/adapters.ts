@@ -83,11 +83,11 @@ export function toProduct(p: ProductFragment): Product {
     })),
     variants: {nodes: p.variants.nodes.map(toVariant)},
     details: {
-      fiber: mf.get('fiber') ?? null,
-      origin: mf.get('origin') ?? null,
-      loom: mf.get('loom') ?? null,
+      frontFabric: mf.get('front_fabric') ?? null,
+      backFabric: mf.get('back_fabric') ?? null,
+      trim: mf.get('trim') ?? null,
+      insert: mf.get('insert') ?? null,
       care: mf.get('care') ?? null,
-      repair: mf.get('repair') ?? null,
     },
   };
 }
