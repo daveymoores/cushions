@@ -93,6 +93,15 @@ export function toProduct(p: ProductFragment): Product {
   };
 }
 
+/**
+ * Shopify auto-creates a "Home page" collection (handle `frontpage`) that we
+ * never want to render. The Storefront API's `collections(query:)` argument
+ * can't filter by handle, so filter it out in JS wherever collections are listed.
+ */
+export function isVisibleCollection(c: {handle: string}): boolean {
+  return c.handle !== 'frontpage';
+}
+
 /** Collection list card — no products needed. */
 export function toCollectionCard(c: CollectionCardFragment): Collection {
   return {

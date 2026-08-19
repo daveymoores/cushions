@@ -86,4 +86,6 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [ ] Inventory tracking OFF on all variants (always purchasable) — enable + set stock before real launch
 - [ ] Approve/adjust: About page sisu-etymology line, commission section wording, journal posts
 - [ ] Hero: interim portrait image in place — produce the wide 2560×1440 banner per CONTENT-PLAN §5
+- [ ] Homepage section images (added 2026-08-19): `mending_image`/`commission_image`/`material_image` fields on the homepage metaobject, filled with interim picks (Renee camel lifestyle / Leonie navy lifestyle / Ada swatch) — swap for real editorial shots in admin, no code needed. Commission slot wants a wide landscape image.
+- [x] Materials page deduped: Burgundy Elephant Walk cream/camel entries merged into one (fringe variants, not separate fabrics); auto "Home page" collection hidden from browse grid, /collections and nav (2026-08-19)
 - [ ] Delete the default `news` blog (unused; journal is separate)

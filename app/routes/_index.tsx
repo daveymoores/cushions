@@ -17,7 +17,11 @@ import {
   placeholderImages,
 } from '~/lib/mock-data';
 import {COLLECTION_QUERY, COLLECTIONS_QUERY} from '~/lib/queries';
-import {toCollection, toCollectionCard} from '~/lib/adapters';
+import {
+  isVisibleCollection,
+  toCollection,
+  toCollectionCard,
+} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
 import {routeMeta, canonical} from '~/lib/seo';
 import {useSiteContent} from '~/lib/content';
@@ -55,10 +59,13 @@ export async function loader({context, request}: Route.LoaderArgs) {
     storefront.query(COLLECTIONS_QUERY, {variables: {first: 8}}),
   ]);
 
+  const browseNodes =
+    browseResult.collections.nodes.filter(isVisibleCollection);
+
   // If the configured featured collection doesn't exist in the store, fall back
   // to the first available collection so the homepage strip is never empty.
   let featured = featuredResult.collection;
-  const firstBrowse = browseResult.collections.nodes[0];
+  const firstBrowse = browseNodes[0];
   if (!featured && firstBrowse) {
     const fallback = await storefront.query(COLLECTION_QUERY, {
       variables: {handle: firstBrowse.handle, first: 6},
@@ -71,7 +78,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
     featuredCollection: featured
       ? toCollection(featured)
       : {...featuredCollection, products: {nodes: []}},
-    browseCollections: browseResult.collections.nodes.map(toCollectionCard),
+    browseCollections: browseNodes.map(toCollectionCard),
   };
 }
 
@@ -124,8 +131,11 @@ export default function Homepage() {
         }
         ctaLabel="Read the journal"
         ctaTo="/journal"
-        imageSrc={placeholderImages.editorialMending}
-        imageAlt="A folded length of patterned deadstock fabric"
+        imageSrc={content.mendingImage?.url ?? placeholderImages.editorialMending}
+        imageAlt={
+          content.mendingImage?.altText ??
+          'A folded length of patterned deadstock fabric'
+        }
       />
 
       <FeaturedCollection
@@ -134,8 +144,10 @@ export default function Homepage() {
       />
 
       <BleedSection
-        imageSrc={placeholderImages.bleedAtelier}
-        imageAlt="The atelier in low evening light"
+        imageSrc={content.commissionImage?.url ?? placeholderImages.bleedAtelier}
+        imageAlt={
+          content.commissionImage?.altText ?? 'The atelier in low evening light'
+        }
         eyebrow="In the studio"
         heading={heading(
           content.commissionHeading,
@@ -163,8 +175,10 @@ export default function Homepage() {
         }
         ctaLabel="See the fabrics"
         ctaTo="/materials"
-        imageSrc={placeholderImages.collectionLinen}
-        imageAlt="A stack of folded surplus fabric"
+        imageSrc={content.materialImage?.url ?? placeholderImages.collectionLinen}
+        imageAlt={
+          content.materialImage?.altText ?? 'A stack of folded surplus fabric'
+        }
       />
 
       <BrowseByCollection collections={browseCollections} />

@@ -13,9 +13,12 @@
  *   intro               multi-line text
  *   mending_heading     single line text  (now carries the deadstock story —
  *   mending_body        multi-line text    key kept so admin entries don't break)
+ *   mending_image       file → image
  *   material_heading    single line text
  *   material_body       multi-line text
+ *   material_image      file → image
  *   commission_heading  single line text
+ *   commission_image    file → image
  *   newsletter_heading  single line text
  *   newsletter_body     multi-line text
  */
@@ -36,9 +39,12 @@ export type SiteContent = {
   intro?: string;
   mendingHeading?: string;
   mendingBody?: string;
+  mendingImage?: ImageT | null;
   materialHeading?: string;
   materialBody?: string;
+  materialImage?: ImageT | null;
   commissionHeading?: string;
+  commissionImage?: ImageT | null;
   newsletterHeading?: string;
   newsletterBody?: string;
 };
@@ -76,9 +82,12 @@ export function toSiteContent(query: SiteContentQuery): SiteContent {
     intro: text('intro'),
     mendingHeading: text('mending_heading'),
     mendingBody: text('mending_body'),
+    mendingImage: imageFromRef(fields.get('mending_image')),
     materialHeading: text('material_heading'),
     materialBody: text('material_body'),
+    materialImage: imageFromRef(fields.get('material_image')),
     commissionHeading: text('commission_heading'),
+    commissionImage: imageFromRef(fields.get('commission_image')),
     newsletterHeading: text('newsletter_heading'),
     newsletterBody: text('newsletter_body'),
   };

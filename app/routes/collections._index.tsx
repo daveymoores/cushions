@@ -5,7 +5,7 @@ import {Eyebrow} from '~/components/Eyebrow';
 import {CollectionCard} from '~/components/CollectionCard';
 import {collections} from '~/lib/mock-data';
 import {COLLECTIONS_QUERY} from '~/lib/queries';
-import {toCollectionCard} from '~/lib/adapters';
+import {isVisibleCollection, toCollectionCard} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
 import {routeMeta, basicSeo} from '~/lib/seo';
 
@@ -29,7 +29,10 @@ export async function loader({context, request}: Route.LoaderArgs) {
     COLLECTIONS_QUERY,
     {variables: {first: 24}},
   );
-  return data({collections: result.nodes.map(toCollectionCard), seo});
+  return data({
+    collections: result.nodes.filter(isVisibleCollection).map(toCollectionCard),
+    seo,
+  });
 }
 
 export default function CollectionsIndex() {

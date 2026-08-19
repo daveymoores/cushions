@@ -19,6 +19,7 @@ import {usesMockData} from '~/lib/storefront';
 import {collections} from '~/lib/mock-data';
 import {rootSeo} from '~/lib/seo';
 import {toSiteContent, type SiteContent} from '~/lib/content';
+import {isVisibleCollection} from '~/lib/adapters';
 
 export type RootLoader = typeof loader;
 
@@ -91,7 +92,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
     seo: rootSeo(request, context.env, content.heroImage),
     posthog,
     content,
-    collections: navResult.collections.nodes,
+    collections: navResult.collections.nodes.filter(isVisibleCollection),
   };
 }
 
