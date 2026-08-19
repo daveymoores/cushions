@@ -19,8 +19,17 @@ export default async function handleRequest(
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
-    // NOTE: these overrides REPLACE Hydrogen's defaults per-directive, so the
-    // Shopify CDN must be listed explicitly or product images get blocked.
+    // NOTE on how these overrides combine with Hydrogen's defaults:
+    //   - `defaultSrc`, `connectSrc`, `styleSrc`, `baseUri` and `frameAncestors`
+    //     are MERGED with Hydrogen's defaults (see `addCspDirective` in
+    //     @shopify/hydrogen), so nothing listed here can knock out the Shopify
+    //     CDN, the shop domains, or the dev-only localhost/websocket entries.
+    //   - `imgSrc` and `fontSrc` have no Hydrogen default, so what's listed
+    //     here is the whole directive.
+    // We deliberately do NOT set `scriptSrc`: Hydrogen has no default for it,
+    // so declaring one would stop scripts falling back to `defaultSrc` and
+    // silently drop cdn.shopify.com (and localhost in dev). Script hosts are
+    // added to `defaultSrc` instead.
     imgSrc: [
       "'self'",
       'data:',
@@ -28,7 +37,17 @@ export default async function handleRequest(
       'https://shopify.com',
       'https://images.unsplash.com',
     ],
-    connectSrc: ["'self'", 'https://cdn.shopify.com', 'https://images.unsplash.com'],
+    // eu-assets.i.posthog.com serves posthog-js's lazily loaded extension
+    // bundles (session recorder, surveys, toolbar) — they're <script> loads,
+    // hence defaultSrc; eu.i.posthog.com is the event ingest endpoint.
+    defaultSrc: ['https://eu-assets.i.posthog.com'],
+    connectSrc: [
+      "'self'",
+      'https://cdn.shopify.com',
+      'https://images.unsplash.com',
+      'https://eu.i.posthog.com',
+      'https://eu-assets.i.posthog.com',
+    ],
     styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
   });

@@ -153,23 +153,48 @@ After changing any Shopify query, run `npm run codegen` then `npm run typecheck`
 
 ## 6. Deploying it live
 
-The site needs a host that runs the Workers runtime. Two options:
+The site is hosted on **Shopify Oxygen** — Shopify's own hosting for Hydrogen
+storefronts. It's included with any paid Shopify plan (~£25–30/mo Basic), and
+it's the only deployment target this repo is set up for.
 
-- **Shopify Oxygen (recommended):** free with any paid Shopify plan (~£25–30/mo
-  Basic). Connect the GitHub repo in the **Hydrogen** sales channel, or run
-  `npx shopify hydrogen deploy`. Handles env vars, previews, and caching.
-- **Cloudflare Workers (set up & working):** doesn't need a paid Shopify plan —
-  good for a preview/dev link now. Config is in `wrangler.jsonc` + a cache shim
-  in `app/lib/context.ts`. To deploy:
-  1. Make a free account at dash.cloudflare.com
-  2. `npx wrangler login` (authorise in the browser)
-  3. `npx wrangler secret put SESSION_SECRET` → paste a long random string
-  4. `npm run deploy:cf` → prints your `https://sisu.<account>.workers.dev` URL
+### One-time setup
 
-  Local preview on the real runtime: `npm run preview:cf`. For push-to-deploy,
-  connect the GitHub repo under Cloudflare → Workers → sisu → Settings → Builds.
-  Note: this is unofficial (Hydrogen targets Oxygen), so a future Hydrogen
-  upgrade may need the shim/config revisited.
+1. In Shopify admin, install the **Hydrogen** sales channel
+   (Settings → Apps and sales channels → Shopify App Store → "Hydrogen").
+2. In the Hydrogen channel, **create a storefront** for this shop.
+3. Choose **Connect to GitHub** and pick this repository, with `main` as the
+   production branch. Shopify adds a GitHub Action to the repo that builds and
+   deploys on every push.
+4. In the Hydrogen channel → **Storefront settings → Environments**, set the
+   environment variables for the Production environment:
+   - `SESSION_SECRET` — a long random string (signs the session cookie)
+   - `PUBLIC_POSTHOG_KEY` — the PostHog project API key
+   - `PUBLIC_POSTHOG_HOST` — `https://eu.i.posthog.com`
+
+   The Shopify storefront variables (`PUBLIC_STORE_DOMAIN`,
+   `PUBLIC_STOREFRONT_API_TOKEN`, `PUBLIC_STOREFRONT_ID`,
+   `PUBLIC_CHECKOUT_DOMAIN`) are injected by Oxygen automatically once the
+   storefront is linked — you don't set those by hand.
+
+   ⚠️ If `PUBLIC_POSTHOG_KEY` is missing or blank, the site still works but
+   **analytics silently do nothing** — that's deliberate (it keeps local dev
+   clean), so it won't show up as an error. Double-check it's set.
+
+### Day-to-day
+
+- **Push to `main` → it deploys.** Every other branch gets its own preview URL.
+- To deploy by hand from a terminal: `npx shopify hydrogen deploy`.
+- `npm run preview` builds and serves the production bundle locally on the same
+  runtime Oxygen uses — worth doing before a push if you've changed the server.
+- To pull the Oxygen environment variables into a local `.env`:
+  `npx shopify hydrogen env pull`.
+
+### Custom domain
+
+Point the domain at the storefront in Shopify admin (Settings → Domains) once
+the Oxygen deployment is live; Shopify issues the TLS certificate. DNS for
+`sisuhomeware.com` is managed at Cloudflare (DNS only — Cloudflare is *not*
+hosting the site).
 
 ---
 
@@ -190,6 +215,9 @@ The site needs a host that runs the Workers runtime. Two options:
 - Customer accounts (`/account` is a placeholder)
 - Product variant images don't switch when you pick an option
 - Cart is a full page (no slide-out drawer / optimistic UI)
-- Hosting not set up yet
+- Hosting: the code targets Oxygen (see §6), but the Hydrogen sales channel /
+  GitHub connection isn't set up yet
+- Analytics: PostHog is wired in (EU cloud), but stays switched off until
+  `PUBLIC_POSTHOG_KEY` is set — see §6
 - The Journal/Materials pages aren't linked from the main nav yet (reachable by
   URL); add nav links once you've created the content

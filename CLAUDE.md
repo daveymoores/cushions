@@ -1,5 +1,9 @@
 # Cushions — working agreement for Claude Code
 
+## Launch checklist
+
+`LAUNCH.md` at the repo root tracks the sisuhomeware.com go-live checklist (deploy, DNS, analytics, deferred items like email). Read it at the start of launch-related work and keep its statuses current as tasks complete.
+
 ## Orchestrator model
 
 In this repo, act as an **orchestrator**: delegate substantive work to subagents via the Agent tool rather than doing it all inline, and reserve your own context for planning, coordinating, and synthesizing results.

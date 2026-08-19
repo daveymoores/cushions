@@ -32,9 +32,46 @@ Other useful scripts:
 
 ```bash
 npm run build       # production build
+npm run preview     # build, then serve the production bundle on mini-oxygen
 npm run typecheck   # tsc --noEmit
 npm run lint        # eslint
 ```
+
+## Deployment
+
+**Shopify Oxygen is the only deployment target.** The build (`shopify hydrogen
+build`) emits an Oxygen worker via the `oxygen()` Vite plugin, and
+`react-router.config.ts` uses Hydrogen's preset — there is no alternate host
+configured.
+
+Deploys are driven by the **Hydrogen sales channel's GitHub integration**:
+connect this repo to a Hydrogen storefront in Shopify admin with `main` as the
+production branch, and Shopify installs a GitHub Action that builds and deploys
+on every push (other branches get preview URLs). `npx shopify hydrogen deploy`
+does the same thing manually from a terminal.
+
+Environment variables live in the Hydrogen channel under **Storefront settings →
+Environments**, not in this repo. Set `SESSION_SECRET`, `PUBLIC_POSTHOG_KEY`,
+and `PUBLIC_POSTHOG_HOST` there; the `PUBLIC_STORE_DOMAIN` /
+`PUBLIC_STOREFRONT_API_TOKEN` / `PUBLIC_STOREFRONT_ID` /
+`PUBLIC_CHECKOUT_DOMAIN` values are injected by Oxygen automatically. Pull them
+down locally with `npx shopify hydrogen env pull`.
+
+## Analytics
+
+PostHog (EU cloud) is initialised client-side from
+`app/components/PostHogAnalytics.tsx`,
+rendered by `app/root.tsx`. It reads `PUBLIC_POSTHOG_KEY` and
+`PUBLIC_POSTHOG_HOST`, which the root loader forwards to the browser. **If the
+key is empty or missing, PostHog never initialises** — so local dev without
+keys sends no events, and a production deploy with an unset key silently
+records nothing. Pageviews (including client-side route changes) are captured
+automatically via the History API; no manual `capture()` calls are needed.
+
+The PostHog hosts are allow-listed in the CSP in `app/entry.server.tsx` —
+`https://eu.i.posthog.com` for the ingest endpoint and
+`https://eu-assets.i.posthog.com` for the lazily loaded extension bundles
+(session recorder, surveys, toolbar).
 
 ## Mock-data layer
 

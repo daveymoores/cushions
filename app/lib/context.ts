@@ -9,17 +9,15 @@ declare global {
 }
 
 /**
- * Open a cache that works on both Oxygen and Cloudflare Workers.
- * Oxygen supports named caches (`caches.open('hydrogen')`); Cloudflare Workers
- * only exposes `caches.default`. Fall back gracefully so the same build runs
- * on either host.
+ * Oxygen (and mini-oxygen, used by `npm run dev`) supports named caches via
+ * `caches.open('hydrogen')`. Fall back to an in-memory cache on any runtime
+ * where the Cache API is unavailable so the app still boots.
  */
 async function openCache(): Promise<Cache> {
   try {
     return await caches.open('hydrogen');
   } catch {
-    const fallback = (caches as unknown as {default?: Cache}).default;
-    return fallback ?? (new InMemoryCache() as unknown as Cache);
+    return new InMemoryCache() as unknown as Cache;
   }
 }
 

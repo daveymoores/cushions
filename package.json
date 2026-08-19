@@ -8,8 +8,6 @@
     "build": "shopify hydrogen build --codegen",
     "dev": "shopify hydrogen dev --codegen",
     "preview": "shopify hydrogen preview --build",
-    "deploy:cf": "npm run build && npx wrangler@4 deploy",
-    "preview:cf": "npm run build && npx wrangler@4 dev",
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "react-router typegen && tsc --noEmit",
     "codegen": "shopify hydrogen codegen && react-router typegen"
@@ -20,6 +18,7 @@
     "graphql": "^16.10.0",
     "graphql-tag": "^2.12.6",
     "isbot": "^5.1.22",
+    "posthog-js": "^1.418.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router": "7.14.0",

@@ -13,6 +13,7 @@ import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
 import appStyles from '~/styles/app.css?url';
 import {PageLayout} from './components/PageLayout';
+import {PostHogAnalytics} from './components/PostHogAnalytics';
 import {NAV_COLLECTIONS_QUERY, SITE_CONTENT_QUERY} from '~/lib/queries';
 import {usesMockData} from '~/lib/storefront';
 import {collections} from '~/lib/mock-data';
@@ -55,10 +56,18 @@ export async function loader({context, request}: Route.LoaderArgs) {
   const seo = rootSeo(request);
   const emptyContent: SiteContent = {};
 
+  // Only these two env vars are forwarded to the browser — never spread
+  // `context.env`, which holds SESSION_SECRET and the API tokens.
+  const posthog = {
+    key: context.env.PUBLIC_POSTHOG_KEY ?? '',
+    host: context.env.PUBLIC_POSTHOG_HOST ?? 'https://eu.i.posthog.com',
+  };
+
   if (usesMockData(context.env)) {
     return {
       cart,
       seo,
+      posthog,
       content: emptyContent,
       collections: collections.map((c) => ({
         id: c.id,
@@ -78,6 +87,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
   return {
     cart,
     seo,
+    posthog,
     content: toSiteContent(contentResult),
     collections: navResult.collections.nodes,
   };
@@ -106,9 +116,12 @@ export function Layout({children}: {children?: React.ReactNode}) {
 
 export default function App() {
   return (
-    <PageLayout>
-      <Outlet />
-    </PageLayout>
+    <>
+      <PostHogAnalytics />
+      <PageLayout>
+        <Outlet />
+      </PageLayout>
+    </>
   );
 }
 
