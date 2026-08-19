@@ -69,3 +69,21 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [ ] Write real policy/contact pages (shipping, returns, contact) — footer currently links to 404s/journal; also unlocks Organization/Offer schema fields and Merchant Center
 - [ ] After cutover verify: apex serves 200 (if it still 301s to myshopify.com, change the PRIMARY DOMAIN setting too, not just Target); curl POST /api/mcp; check /*.data endpoints
 - [ ] P1 backlog in the audit: full sitemap restructure with lastmod (journal+pages missing today), richer Organization/Product JSON-LD (needs sku in queries), image srcset/CDN params, newsletter form actually submits nowhere (adjacent bug)
+
+## Content first pass — DONE 2026-08-19 (dummy pass for Jessie's review)
+
+- [x] All 4 products live on the private preview (Renee ×2 colours, Leonie ×3, Parker, Ada) at €150, publishing + variant images + spec metafields verified via Storefront API
+- [x] Cushions collection, homepage + 7 fabric metaobjects, Journal blog (2 posts), About/Delivery/Returns/Contact pages
+- [x] Code aligned (Fabrics nav, new metafield labels, SISU fallback copy, descriptionHtml rendering)
+- [x] Admin API app `sisu-content-loader` created for bulk loads — **revoke or keep**: Dev Dashboard → sisu-content-loader; token in gitignored `.sisu-loader-token` (expires ~24h)
+
+### Review punch list (for the make-it-legit pass — see docs/COPY-DRAFTS.md markers)
+- [ ] Real prices per design/size (all €150 placeholder)
+- [ ] Delivery/Returns/Contact page facts (marked DUMMY in page HTML comments)
+- [ ] Product sizes not shown for Renee/Parker/Ada (spec metafields have no size field — decide: add size metafield or put in descriptions)
+- [ ] Renee Camel: corrected copy exists in COPY-DRAFTS but product shows Cream copy; back-fabric composition ⚠️
+- [ ] Parker/Ada back fabric says "Cotton-blend" (placeholder), sizes assumed 50×50
+- [ ] Inventory tracking OFF on all variants (always purchasable) — enable + set stock before real launch
+- [ ] Approve/adjust: About page sisu-etymology line, commission section wording, journal posts
+- [ ] Hero: interim portrait image in place — produce the wide 2560×1440 banner per CONTENT-PLAN §5
+- [ ] Delete the default `news` blog (unused; journal is separate)
