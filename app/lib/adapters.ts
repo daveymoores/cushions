@@ -68,6 +68,7 @@ export function toProduct(p: ProductFragment): Product {
     handle: p.handle,
     title: p.title,
     description: p.description,
+    descriptionHtml: p.descriptionHtml,
     vendor: p.vendor,
     productType: p.productType,
     tags: p.tags,

@@ -132,9 +132,16 @@ export default function ProductPage() {
 
           <div className="mt-8 w-10 h-px bg-hairline" aria-hidden="true" />
 
-          <p className="mt-8 text-ash text-[14px] leading-[1.7] font-light max-w-md">
-            {product.description}
-          </p>
+          {product.descriptionHtml ? (
+            <div
+              className="mt-8 text-ash text-[14px] leading-[1.7] font-light max-w-md space-y-4"
+              dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
+            />
+          ) : (
+            <p className="mt-8 text-ash text-[14px] leading-[1.7] font-light max-w-md">
+              {product.description}
+            </p>
+          )}
 
           {product.options.map((option) => (
             <div key={option.name} className="mt-10">

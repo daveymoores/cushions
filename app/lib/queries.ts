@@ -33,6 +33,7 @@ export const PRODUCT_FRAGMENT = `#graphql
     handle
     title
     description
+    descriptionHtml
     vendor
     productType
     tags
