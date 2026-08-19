@@ -5,7 +5,7 @@ import {Eyebrow} from '~/components/Eyebrow';
 import {ProductCard} from '~/components/ProductCard';
 import {getCollectionByHandle} from '~/lib/mock-data';
 import {COLLECTION_QUERY} from '~/lib/queries';
-import {toCollection} from '~/lib/adapters';
+import {isVisibleCollection, toCollection} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
 import {routeMeta, collectionSeo} from '~/lib/seo';
 
@@ -15,6 +15,10 @@ export const meta: Route.MetaFunction = ({data, matches}) =>
 export async function loader({params, context, request}: Route.LoaderArgs) {
   const {handle} = params;
   if (!handle) throw new Response('Not found', {status: 404});
+  // Shopify's auto-created "frontpage" collection is never rendered.
+  if (!isVisibleCollection({handle})) {
+    throw new Response('Not found', {status: 404});
+  }
 
   if (usesMockData(context.env)) {
     const collection = getCollectionByHandle(handle);

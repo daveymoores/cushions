@@ -66,9 +66,17 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [ ] After go-live: verify site in **Bing Webmaster Tools** + enable IndexNow (Bing feeds ChatGPT search); watch GSC's "Generative AI performance" report (UK rollout)
 - [ ] GSC split: add domain property + DNS TXT verification NOW (harmless while private); submit sitemap only AFTER go-live
 - [ ] **Google Merchant Center free listings** — the single highest-leverage AI-shopping action (Google AI Mode/Gemini ground shopping answers in Merchant Center). Free, UK-eligible. Set `identifier_exists: false` for handmade goods. Needs shipping/returns policy pages first.
-- [ ] Write real policy/contact pages (shipping, returns, contact) — footer currently links to 404s/journal; also unlocks Organization/Offer schema fields and Merchant Center
+- [ ] Review policy/contact page copy (pages exist: shipping "Delivery", returns, contact, atelier "About SISU" — footer links all resolve as of 2026-08-19 audit); real facts still needed → unlocks Organization/Offer schema fields and Merchant Center
 - [ ] After cutover verify: apex serves 200 (if it still 301s to myshopify.com, change the PRIMARY DOMAIN setting too, not just Target); curl POST /api/mcp; check /*.data endpoints
-- [ ] P1 backlog in the audit: full sitemap restructure with lastmod (journal+pages missing today), richer Organization/Product JSON-LD (needs sku in queries), image srcset/CDN params, newsletter form actually submits nowhere (adjacent bug)
+- [ ] P1 backlog in the audit: richer Organization/Product JSON-LD (needs sku in queries), image srcset/CDN params
+
+## Site-wiring audit — 2026-08-19 (open decisions)
+
+- [ ] **Newsletter backend**: form shows "Thank you" but sends the email nowhere (Newsletter.tsx preventDefault + local state only). Needs a real destination — options: server action + Admin API customerCreate w/ marketing consent (needs a runtime Admin token in Oxygen env), or Klaviyo/Mailchimp. Until wired, subscribers are silently lost.
+- [ ] **Account link**: header + footer link to an admitted placeholder page ("wired up in a follow-up step"). Decide: hide the links until Customer Accounts is built, or build it. Checkout itself is unaffected (Shopify-hosted).
+- [ ] **Press footer link** duplicates Contact (/pages/contact); no press page exists. Remove or create page.
+- [ ] Consider deep-linking hero "Shop cushions" / "Browse all pieces" straight to /collections/cushions (collections index has only one collection).
+- [ ] Optional upgrade: cart drawer/aside on add-to-cart (currently inline confirmation added 2026-08-19).
 
 ## Content first pass — DONE 2026-08-19 (dummy pass for Jessie's review)
 

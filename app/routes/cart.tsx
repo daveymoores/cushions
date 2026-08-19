@@ -1,5 +1,5 @@
 import {data, useLoaderData} from 'react-router';
-import {CartForm, type CartReturn} from '@shopify/hydrogen';
+import {CartForm, flattenConnection, type CartReturn} from '@shopify/hydrogen';
 import type {Route} from './+types/cart';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
@@ -51,7 +51,9 @@ export async function loader({context, request}: Route.LoaderArgs) {
 
 export default function Cart() {
   const {cart} = useLoaderData<typeof loader>();
-  const lines = cart?.lines?.nodes ?? [];
+  // Hydrogen's default cart query returns `lines.edges[].node`;
+  // flattenConnection handles both edges and nodes shapes.
+  const lines = cart?.lines ? flattenConnection(cart.lines) : [];
 
   if (!cart || lines.length === 0) {
     return (

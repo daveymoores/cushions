@@ -182,29 +182,60 @@ export default function ProductPage() {
                   : [],
               }}
             >
-              <button
-                type="submit"
-                disabled={!variant?.availableForSale}
-                className="arrow-link text-ink disabled:opacity-50"
-              >
-                <span>
-                  {variant?.availableForSale ? 'Add to cart' : 'Sold out'}
-                </span>
-                <svg
-                  viewBox="0 0 24 1"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                >
-                  <line
-                    x1="0"
-                    y1="0.5"
-                    x2="24"
-                    y2="0.5"
-                    stroke="currentColor"
-                    strokeWidth="1"
-                  />
-                </svg>
-              </button>
+              {(fetcher) => {
+                const adding = fetcher.state !== 'idle';
+                const errorMessage: string | undefined =
+                  fetcher.data?.errors?.[0]?.message;
+                const added =
+                  !adding && Boolean(fetcher.data?.cart) && !errorMessage;
+                return (
+                  <>
+                    <button
+                      type="submit"
+                      disabled={!variant?.availableForSale || adding}
+                      className="arrow-link text-ink disabled:opacity-50"
+                    >
+                      <span>
+                        {adding
+                          ? 'Adding…'
+                          : variant?.availableForSale
+                            ? 'Add to cart'
+                            : 'Sold out'}
+                      </span>
+                      <svg
+                        viewBox="0 0 24 1"
+                        preserveAspectRatio="none"
+                        aria-hidden="true"
+                      >
+                        <line
+                          x1="0"
+                          y1="0.5"
+                          x2="24"
+                          y2="0.5"
+                          stroke="currentColor"
+                          strokeWidth="1"
+                        />
+                      </svg>
+                    </button>
+                    {errorMessage ? (
+                      <p className="caption mt-5 text-stone" role="alert">
+                        {errorMessage}
+                      </p>
+                    ) : added ? (
+                      <p className="caption mt-5 text-ash">
+                        Added —{' '}
+                        <UnderlineLink
+                          to="/cart"
+                          staticUnderline
+                          className="text-ash hover:text-ink"
+                        >
+                          view cart
+                        </UnderlineLink>
+                      </p>
+                    ) : null}
+                  </>
+                );
+              }}
             </CartForm>
           </div>
 

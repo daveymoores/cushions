@@ -1,5 +1,6 @@
 import type {Route} from './+types/[sitemap.xml]';
 import {SITEMAP_QUERY} from '~/lib/queries';
+import {isVisibleCollection} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
 import {siteOrigin} from '~/lib/seo';
 
@@ -42,7 +43,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
         loc: `${origin}/products/${p.handle}`,
         lastmod: p.updatedAt,
       })),
-      ...collections.nodes.map((c) => ({
+      ...collections.nodes.filter(isVisibleCollection).map((c) => ({
         loc: `${origin}/collections/${c.handle}`,
         lastmod: c.updatedAt,
       })),

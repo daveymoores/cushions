@@ -11,14 +11,14 @@ const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
     links: [
       {to: '/atelier', label: 'The Atelier'},
       {to: '/journal', label: 'Journal'},
-      {to: '/journal', label: 'How we make'},
+      {to: '/journal/how-a-sisu-cushion-is-made', label: 'How we make'},
     ],
   },
   {
     title: 'Care',
     links: [
       {to: '/materials', label: 'Fabrics'},
-      {to: '/pages/shipping', label: 'Shipping'},
+      {to: '/pages/shipping', label: 'Delivery'},
       {to: '/pages/returns', label: 'Returns'},
     ],
   },
