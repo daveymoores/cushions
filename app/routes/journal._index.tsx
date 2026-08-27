@@ -3,6 +3,7 @@ import type {Route} from './+types/journal._index';
 import {StubPage} from '~/components/StubPage';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
+import {ResponsiveImage} from '~/components/ResponsiveImage';
 import {BLOG_QUERY} from '~/lib/queries';
 import {usesMockData} from '~/lib/storefront';
 import {routeMeta, basicSeo} from '~/lib/seo';
@@ -68,10 +69,12 @@ export default function Journal() {
             >
               {article.image ? (
                 <div className="product-card-image aspect-[4/5]">
-                  <img
+                  {/* 1 col, 2 from md, 3 from lg, `gap-x-10` = 40px gutters. */}
+                  <ResponsiveImage
                     src={article.image.url}
                     alt={article.image.altText ?? article.title}
-                    loading="lazy"
+                    aspectRatio="4/5"
+                    sizes="(min-width: 1320px) 376px, (min-width: 1024px) calc((100vw - 192px) / 3), (min-width: 768px) calc((100vw - 88px) / 2), calc(100vw - 48px)"
                     className="w-full h-full object-cover image-grade"
                   />
                 </div>

@@ -1,6 +1,7 @@
 import type {ReactNode} from 'react';
 import {Container} from './Container';
 import {Eyebrow} from './Eyebrow';
+import {ResponsiveImage} from './ResponsiveImage';
 import {SealMark} from './SealMark';
 import {UnderlineLink} from './UnderlineLink';
 
@@ -33,10 +34,14 @@ export function EditorialSplit({
             className={`lg:col-span-5 ${reverse ? 'lg:col-start-8' : 'lg:col-start-1'}`}
           >
             <div className="aspect-[4/5] overflow-hidden bg-bone">
-              <img
+              {/* 5 of 12 columns with `lg:gap-0`, inside a 1320px container
+                  padded 24px (56px from lg): 5/12 of `100vw - 112px`, capped
+                  at 5/12 of 1208px. Full width below lg. */}
+              <ResponsiveImage
                 src={imageSrc}
                 alt={imageAlt}
-                loading="lazy"
+                aspectRatio="4/5"
+                sizes="(min-width: 1320px) 504px, (min-width: 1024px) calc((100vw - 112px) * 5 / 12), calc(100vw - 48px)"
                 className="w-full h-full object-cover image-grade"
               />
             </div>

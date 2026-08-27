@@ -5,6 +5,7 @@ import type {Route} from './+types/products.$handle';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
 import {Money} from '~/components/Money';
+import {ResponsiveImage} from '~/components/ResponsiveImage';
 import {ProductInSitu} from '~/components/ProductInSitu';
 import {SealMark} from '~/components/SealMark';
 import {UnderlineLink} from '~/components/UnderlineLink';
@@ -100,10 +101,15 @@ export default function ProductPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
           <div className="lg:col-span-7">
             <figure className="aspect-[4/5] bg-bone overflow-hidden">
-              <img
+              {/* 7 of 12 columns with `lg:gap-20` (80px) gutters: the slot is
+                  (7W - 5*80px)/12 of the container's content width W, which for
+                  W = 100vw - 112px simplifies to 58.33vw - 99px. */}
+              <ResponsiveImage
                 src={image.url}
                 alt={image.altText ?? product.title}
-                loading="eager"
+                aspectRatio="4/5"
+                sizes="(min-width: 1320px) 672px, (min-width: 1024px) calc(58.33vw - 99px), calc(100vw - 48px)"
+                priority
                 className="w-full h-full object-cover image-grade"
               />
             </figure>
@@ -124,10 +130,13 @@ export default function ProductPage() {
                         i === activeImage ? 'var(--color-ink)' : 'var(--color-hairline)',
                     }}
                   >
-                    <img
+                    {/* Fixed 80px square (`w-20`), so this gets 1x/2x/3x
+                        descriptors rather than a `sizes` list. */}
+                    <ResponsiveImage
                       src={img.url}
                       alt=""
-                      loading="lazy"
+                      width={80}
+                      height={80}
                       className="w-full h-full object-cover image-grade"
                     />
                   </button>

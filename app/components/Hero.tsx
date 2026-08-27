@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import type {ReactNode} from 'react';
 import {Link} from 'react-router';
+import {ResponsiveImage} from './ResponsiveImage';
 
 type Props = {
   imageSrc: string;
@@ -30,10 +31,13 @@ export function Hero({imageSrc, imageAlt, eyebrow, heading, ctaLabel, ctaTo}: Pr
       className="relative w-full overflow-hidden noise-overlay"
       style={{height: '85vh', minHeight: '480px'}}
     >
-      <img
+      {/* Full-bleed, so the slot is always the viewport width. No aspect
+          ratio: the band is 85vh tall, so the crop depends on the viewport. */}
+      <ResponsiveImage
         src={imageSrc}
         alt={imageAlt}
-        loading="eager"
+        sizes="100vw"
+        priority
         className="absolute inset-0 w-full h-full object-cover image-grade"
       />
       <div

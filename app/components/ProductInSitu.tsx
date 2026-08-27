@@ -12,6 +12,7 @@
 import type {ImageT} from '~/lib/mock-data';
 import {Container} from './Container';
 import {Eyebrow} from './Eyebrow';
+import {ResponsiveImage} from './ResponsiveImage';
 import {SealMark} from './SealMark';
 
 type Props = {
@@ -51,10 +52,15 @@ export function ProductInSitu({images, productTitle}: Props) {
           <div className="insitu-solo mt-12 lg:mt-16">
             <figure>
               <div className="insitu-frame aspect-[4/3] lg:aspect-[3/2]">
-                <img
+                {/* `.insitu-solo` is padded by `--insitu-inset` / `--insitu-gutter`
+                    (24px, 56px from lg; the inset also absorbs the container's
+                    auto-centring past 1320px), and the figure takes 1/1.6 of
+                    that from sm up. No `aspectRatio`: the frame is 4/3 below lg
+                    and 3/2 above, so the crop is breakpoint-dependent. */}
+                <ResponsiveImage
                   src={images[0].url}
                   alt={caption(images[0], productTitle)}
-                  loading="lazy"
+                  sizes="(min-width: 1320px) calc((50vw + 548px) / 1.6), (min-width: 1024px) calc((100vw - 112px) / 1.6), (min-width: 640px) calc((100vw - 48px) / 1.6), calc(100vw - 48px)"
                   className="w-full h-full object-cover image-grade"
                 />
               </div>
@@ -75,10 +81,15 @@ export function ProductInSitu({images, productTitle}: Props) {
             {images.map((img, i) => (
               <figure key={img.id}>
                 <div className="insitu-frame aspect-square">
-                  <img
+                  {/* Flex row of `--insitu-cols` items (1.2 / 1.9 / 2.5, but 2
+                      when `data-count="2"`) separated by `--insitu-gap`, inside
+                      the band's leading inset. Sized for the widest case at each
+                      breakpoint so the value is never short. */}
+                  <ResponsiveImage
                     src={img.url}
                     alt={caption(img, productTitle)}
-                    loading="lazy"
+                    aspectRatio="1/1"
+                    sizes="(min-width: 1320px) calc((50vw + 516px) / 2), (min-width: 1024px) calc((100vw - 144px) / 2), (min-width: 640px) calc((100vw - 66px) / 1.9), calc((100vw - 52px) / 1.2)"
                     className="w-full h-full object-cover image-grade"
                   />
                 </div>

@@ -2,6 +2,7 @@ import {useLoaderData} from 'react-router';
 import type {Route} from './+types/materials';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
+import {ResponsiveImage} from '~/components/ResponsiveImage';
 import {METAOBJECTS_QUERY} from '~/lib/queries';
 import {toMaterial} from '~/lib/metaobject';
 import {usesMockData} from '~/lib/storefront';
@@ -62,10 +63,12 @@ export default function Materials() {
               >
                 {m.image ? (
                   <div className="aspect-[4/3] bg-bone overflow-hidden">
-                    <img
+                    {/* 1 col, 2 from lg with `lg:gap-16` (64px) gutters. */}
+                    <ResponsiveImage
                       src={m.image.url}
                       alt={m.image.altText ?? m.name}
-                      loading="lazy"
+                      aspectRatio="4/3"
+                      sizes="(min-width: 1320px) 572px, (min-width: 1024px) calc((100vw - 176px) / 2), calc(100vw - 48px)"
                       className="w-full h-full object-cover image-grade"
                     />
                   </div>
