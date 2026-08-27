@@ -4,6 +4,7 @@ import type {Route} from './+types/cart';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
 import {Money} from '~/components/Money';
+import {ResponsiveImage} from '~/components/ResponsiveImage';
 import {UnderlineLink} from '~/components/UnderlineLink';
 import {routeMeta, basicSeo} from '~/lib/seo';
 
@@ -136,12 +137,15 @@ function CartLineRow({line}: {line: CartLine}) {
   return (
     <li className="grid grid-cols-12 gap-5 py-7 border-b border-hairline">
       <div className="col-span-3 sm:col-span-2">
+        {/* 3 of 12 columns (2 from sm) with `gap-5` (20px) gutters, inside the
+            8-of-12 lines column — a ~113px thumbnail at most. */}
         <div className="aspect-[4/5] bg-bone overflow-hidden">
           {image ? (
-            <img
+            <ResponsiveImage
               src={image.url}
               alt={image.altText ?? merchandise.product.title}
-              loading="lazy"
+              aspectRatio="4/5"
+              sizes="(min-width: 1320px) 113px, (min-width: 1024px) calc((200vw - 304px) / 18 - 17px), (min-width: 640px) calc((100vw - 268px) / 6 + 20px), calc((100vw - 268px) / 4 + 40px)"
               className="w-full h-full object-cover image-grade"
             />
           ) : null}

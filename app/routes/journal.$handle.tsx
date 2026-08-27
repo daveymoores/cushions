@@ -2,6 +2,7 @@ import {useLoaderData, data} from 'react-router';
 import type {Route} from './+types/journal.$handle';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
+import {ResponsiveImage} from '~/components/ResponsiveImage';
 import {UnderlineLink} from '~/components/UnderlineLink';
 import {ARTICLE_QUERY} from '~/lib/queries';
 import {usesMockData} from '~/lib/storefront';
@@ -50,10 +51,14 @@ export default function Article() {
 
           {article.image ? (
             <div className="aspect-[16/9] bg-bone overflow-hidden mt-10">
-              <img
+              {/* Capped by `max-w-2xl` (672px); below that it's the container
+                  content width, so the two meet at a 720px viewport. */}
+              <ResponsiveImage
                 src={article.image.url}
                 alt={article.image.altText ?? article.title}
-                loading="eager"
+                aspectRatio="16/9"
+                sizes="(min-width: 720px) 672px, calc(100vw - 48px)"
+                priority
                 className="w-full h-full object-cover image-grade"
               />
             </div>

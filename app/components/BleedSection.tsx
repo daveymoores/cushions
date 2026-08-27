@@ -1,5 +1,6 @@
 import type {ReactNode} from 'react';
 import {Link} from 'react-router';
+import {ResponsiveImage} from './ResponsiveImage';
 
 type Props = {
   imageSrc: string;
@@ -23,10 +24,11 @@ export function BleedSection({
       className="relative w-full overflow-hidden noise-overlay"
       style={{height: '88vh', minHeight: '520px'}}
     >
-      <img
+      {/* Full-bleed like the hero, but below the fold, so it stays lazy. */}
+      <ResponsiveImage
         src={imageSrc}
         alt={imageAlt}
-        loading="lazy"
+        sizes="100vw"
         className="absolute inset-0 w-full h-full object-cover image-grade"
       />
       <div
