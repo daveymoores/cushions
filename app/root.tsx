@@ -35,6 +35,15 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 
 export function links() {
   return [
+    // The wordmark is above the fold on every page, so the self-hosted
+    // Sophillia face is preloaded to avoid a swap flash on the logo.
+    {
+      rel: 'preload',
+      as: 'font',
+      type: 'font/woff2',
+      href: '/fonts/sophillia-regular.woff2',
+      crossOrigin: 'anonymous' as const,
+    },
     {rel: 'preconnect', href: 'https://fonts.googleapis.com'},
     {
       rel: 'preconnect',
@@ -43,7 +52,7 @@ export function links() {
     },
     {
       rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Cinzel:wght@400;500&family=Hanken+Grotesk:wght@300;400;500&display=swap',
+      href: 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Hanken+Grotesk:wght@300;400;500&display=swap',
     },
     {rel: 'preconnect', href: 'https://images.unsplash.com'},
     {rel: 'icon', type: 'image/svg+xml', href: favicon},

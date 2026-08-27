@@ -102,7 +102,7 @@ export function Header() {
           {/* Center: wordmark */}
           <Link
             to="/"
-            className="wordmark text-[19px] sm:text-[24px] text-ink whitespace-nowrap"
+            className="wordmark text-[26px] sm:text-[32px] text-ink whitespace-nowrap"
             aria-label="Sisu"
           >
             Sisu
@@ -219,7 +219,7 @@ function MobileNavDrawer({
     >
       <div className="flex flex-col h-full">
         <div className="flex items-center justify-between px-6 border-b border-hairline" style={{minHeight: 'var(--header-height)'}}>
-          <span className="wordmark text-[19px] text-ink">Sisu</span>
+          <span className="wordmark text-[26px] text-ink">Sisu</span>
           <button
             type="button"
             onClick={onClose}
