@@ -57,6 +57,11 @@ export type Product = {
   tags: string[];
   featuredImage: ImageT;
   images: ImageT[];
+  /**
+   * Curated lifestyle photography from the `custom.in_situ_images` metafield.
+   * Undefined when the merchant hasn't set it — see `~/lib/product-media`.
+   */
+  inSituImages?: ImageT[];
   priceRange: {minVariantPrice: Money; maxVariantPrice: Money};
   variants: {nodes: ProductVariant[]};
   options: {name: string; values: string[]}[];

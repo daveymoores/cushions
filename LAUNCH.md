@@ -17,6 +17,7 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [x] Fresh merchant store created: "Sisu" (gqrjsh-ha.myshopify.com), Basic plan
 - [x] Repo `.env` updated to new store via `hydrogen env pull` (linked storefront: Sisu)
 - [x] Metaobject definitions (`material`: name/description/image; `homepage`: all 13 fields, keys verified) and `custom.*` product metafields (fiber, origin, loom, care, repair) created in the new store with Storefront API access on
+- [x] `custom.in_situ_images` product metafield (File list, images only, Storefront `PUBLIC_READ`) created 2026-08-27 and populated for all four products. It decides which photographs appear in the "Lived with" section on the product page; everything not listed stays in the main carousel. **New products need this set, or their lifestyle shots stay in the carousel** — see `app/lib/product-media.ts`.
 - [ ] Delete the old dev store after cutover (optional)
 - [x] Hydrogen sales channel installed
 - [x] GitHub connected; Shopify's workflow PR merged; lockfile fix pushed (@emnapi optional deps)
@@ -51,8 +52,39 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 ## Access control / go-live switch
 
 - [i] Site is currently PRIVATE by design: sisuhomeware.com targets the password-protected Online Store; the real Hydrogen site is only on the staff-gated o2.myshopify.dev URL.
-- [ ] **GO-LIVE SWITCH:** Shopify admin → Settings → Domains → sisuhomeware.com → Target → change "Online Store" to "Sisu (Production)". One dropdown; do when David + Jessie are ready.
-- [ ] Accounts plan: transfer store ownership to Jessie (jessiebrewin.nl@gmail.com) — she is the merchant/content editor; David re-joins via collaborator access from the Far Harbour dev org (free, doesn't count toward Basic's 1-user limit). Basic plan allows only 1 admin user, so do NOT try to add her as staff.
+- [ ] **GO-LIVE SWITCH:** Shopify admin → Settings → Domains → sisuhomeware.com → Target → change "Online Store" to "Sisu (Production)". One dropdown — but do it **after** the ownership transfer below, not before.
+- [ ] Accounts plan: transfer store ownership to Jessie (jessiebrewin.nl@gmail.com) — she is the merchant/content editor; David re-joins via collaborator access from the Far Harbour Partner org (free, does not count toward the staff limit). Basic allows **0** staff accounts beyond the owner (verified against Shopify's plan user-limits page 2026-08-27), so do NOT try to add her as staff. Ordering matters: any real order taken before the transfer pays out to David's bank account and books the tax in his name.
+
+### Ownership handover runbook (do in one sitting, together)
+
+**Prep (David, before the session)**
+- [ ] Check Settings → Payments. If **Shopify Payments was never activated**, do nothing here — Jessie activates it herself after the transfer and there is no cleanup. If it *is* active in David's name, note it: the store transfer does **not** move the Payments account, and changing its business details requires a **Shopify Support ticket** — open that early, it is the long pole and payouts can be held during re-verification.
+- [ ] Confirm 2FA is enabled on the Far Harbour Partner account (mandatory for collaborator accounts).
+- [ ] Jessie has a Shopify login on jessiebrewin.nl@gmail.com (a plain account — she does **not** need a Partner account).
+
+**Transfer (David)** — DONE (users list 2026-08-27: Jessie Brewin = Store owner, David Moores = Administrator, both Active)
+- [x] Settings → General → Organizations and store transfers → Manage → "Transfer store to a new owner outside your business" → re-authenticate → enter jessiebrewin.nl@gmail.com. Invite expires after **7 days**. (If the store sits inside the Far Harbour Partner org, the transfer starts from the Partner dashboard instead — same outcome, different menu.)
+
+**Accept (Jessie)**
+- [x] Transfer email → Get started → log in → Accept store → Create new organization ("Sisu").
+- [ ] Settings → Billing: her card (Basic plan bill moves to her).
+- [ ] Settings → Payments — **only if Payments was never activated**: she activates Shopify Payments in her name / her bank account. If it was already active in David's name, this step does nothing; it is resolved by the Support ticket from Prep.
+- [ ] Settings → General: store contact email → hers. Settings → Notifications: sender + reply-to email → hers. **The transfer does not re-route outbound mail** — without this, order confirmations, customer replies and Shopify alerts keep landing in David's inbox.
+- [ ] Check tax details.
+
+**Re-admit David** — he already shows as Administrator post-transfer, but the *kind* of access is unconfirmed
+- [ ] **Determine whether David's access is a collaborator seat or a staff/org user.** Test: Partner dashboard → Stores — if gqrjsh-ha.myshopify.com is listed there, it is collaborator access (free, uncapped). If it is NOT listed, he is occupying a staff seat, which Basic does not include — expect Shopify to flag it. Fix by removing the staff user and re-entering via collaborator request (code from Settings → Users and permissions → Collaborators).
+- [ ] Confirm his permissions include **Apps and channels** (needed for the Hydrogen channel, `hydrogen env pull/push` and Oxygen).
+
+**Security (both users show a red crossed-shield in the users list = two-step auth not enabled)**
+- [ ] Jessie: enable 2FA — she is the store owner and holds billing/payouts.
+- [ ] David: enable 2FA — **mandatory** for collaborator accounts, so this may be what is blocking/limiting his access type.
+
+**Verify before closing the laptop**
+- [x] David can run `npx shopify hydrogen env pull` post-transfer — verified 2026-08-27 ("No changes to your .env file"), so Hydrogen channel + Oxygen env access survived the ownership transfer.
+- [ ] Push one trivial commit to `main` — CI deploy should still pass (`OXYGEN_DEPLOYMENT_TOKEN_1000171225` is storefront-scoped, not user-scoped, but confirm rather than assume).
+- [ ] Domain still shows Connected under Settings → Domains.
+- [ ] Transfer complete. Note this is a **gate before** go-live, not the last one — the punch list above (real prices, inventory tracking, Delivery/Returns/Contact facts, `journal` blog handle) still stands between here and flipping the GO-LIVE SWITCH.
 
 ## SEO / AI discoverability (from docs/SEO-AI-AUDIT.md, 2026-08-19)
 
@@ -69,6 +101,7 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [ ] Review policy/contact page copy (pages exist: shipping "Delivery", returns, contact, atelier "About SISU" — footer links all resolve as of 2026-08-19 audit); real facts still needed → unlocks Organization/Offer schema fields and Merchant Center
 - [ ] After cutover verify: apex serves 200 (if it still 301s to myshopify.com, change the PRIMARY DOMAIN setting too, not just Target); curl POST /api/mcp; check /*.data endpoints
 - [ ] P1 backlog in the audit: richer Organization/Product JSON-LD (needs sku in queries), image srcset/CDN params
+- [~] **Product images were being truncated on the live site** — `PRODUCT_FRAGMENT` requested `images(first: 8)` while Leonie has 12, so her orange-back shot and all three fabric swatches have never rendered for anyone. Raised to 20 on the `worktree-product-insitu-imagery` branch (in-situ imagery work); ships when that branch merges. Note `PRODUCT_FRAGMENT` is shared with `COLLECTION_QUERY`, so collection cards now fetch 20 images each — negligible at four products, but a lighter fragment for the grid is the tidier fix if the catalogue grows.
 
 ## Site-wiring audit — 2026-08-19 (open decisions)
 

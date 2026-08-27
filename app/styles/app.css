@@ -327,6 +327,131 @@
     pointer-events: none;
   }
 
+  /* Product page "In situ" section — see app/components/ProductInSitu.tsx. */
+  .insitu-frame {
+    overflow: hidden;
+    background-color: var(--color-bone);
+  }
+  .insitu-frame img {
+    transition: transform 1800ms var(--ease-quiet);
+    will-change: transform;
+  }
+  .insitu-frame:hover img {
+    transform: scale(1.02);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .insitu-frame img {
+      transition: none;
+    }
+    .insitu-frame:hover img {
+      transform: none;
+    }
+  }
+
+  /* Full-bleed contact sheet on bone.
+
+     `--insitu-inset` reproduces the left edge of `.container-page` — its auto
+     centring plus its gutter — as a percentage of the band. The band and the
+     container are both block children of the same box, so that percentage
+     resolves against the very width the container centres in, and the first
+     photograph lands on the heading's left edge exactly. (`100vw` would be out
+     by the width of the scrollbar.) There is no matching right inset: the row
+     is meant to run off the right edge, which is what says "there is more".
+
+     `contain` stops sideways scroll chaining without blocking the page's
+     vertical scroll. */
+  .insitu-band {
+    --insitu-gutter: 24px;
+    --insitu-gap: 20px;
+    --insitu-inset: max(
+      var(--insitu-gutter),
+      calc((100% - var(--container-page)) / 2 + var(--insitu-gutter))
+    );
+  }
+  @media (min-width: 1024px) {
+    .insitu-band {
+      --insitu-gutter: 56px;
+      --insitu-gap: 32px;
+    }
+  }
+
+  .insitu-scroller {
+    /* Photographs across the band. Deliberately kept under 3 at every width so
+       that a three-shot set always runs past the right edge instead of
+       stopping short of it in a field of bone. */
+    --insitu-cols: 1.2;
+    display: flex;
+    gap: var(--insitu-gap);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    padding-inline-start: var(--insitu-inset);
+    /* Snapping without this would drag the first item off the inset and undo
+       the alignment above. */
+    scroll-padding-inline-start: var(--insitu-inset);
+  }
+  .insitu-scroller > * {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    /* 100% here is the row's content box: the band minus the leading inset. */
+    width: calc(
+      (
+          100% - var(--insitu-gutter) - (var(--insitu-cols) - 1) *
+            var(--insitu-gap)
+        ) /
+        var(--insitu-cols)
+    );
+  }
+  /* Trailing inset as a flex item rather than padding-inline-end, which flex
+     scroll containers have a long history of dropping. Without it the last
+     photograph can never be scrolled clear of the edge. The row's own `gap`
+     sits in front of this spacer and counts towards the inset, so the spacer
+     is the remainder — otherwise a row that exactly fits still scrolls by one
+     gap and pretends there is something more to see. */
+  .insitu-scroller::after {
+    content: '';
+    flex: 0 0 max(0px, calc(var(--insitu-gutter) - var(--insitu-gap)));
+  }
+  .insitu-scroller:focus-visible {
+    outline: 1px solid var(--color-ink);
+    outline-offset: -1px;
+  }
+  @media (min-width: 640px) {
+    .insitu-scroller {
+      --insitu-cols: 1.9;
+    }
+    /* Two shots fit the band exactly: there is nothing to scroll to, so don't
+       imply there is. */
+    .insitu-scroller[data-count='2'] {
+      --insitu-cols: 2;
+    }
+  }
+  @media (min-width: 1024px) {
+    .insitu-scroller {
+      --insitu-cols: 2.5;
+    }
+    .insitu-scroller[data-count='2'] {
+      --insitu-cols: 2;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .insitu-scroller {
+      scroll-snap-type: none;
+    }
+  }
+
+  /* One photograph: same left edge, no bleed, no number. It takes a share of
+     the band a little larger than a two-shot row's, so a single shot never
+     reads as the small, accidental one. */
+  .insitu-solo {
+    padding-inline: var(--insitu-inset) var(--insitu-gutter);
+  }
+  @media (min-width: 640px) {
+    .insitu-solo > figure {
+      width: calc(100% / 1.6);
+    }
+  }
+
   /* Rich-text body rendered from Shopify Pages / Articles. */
   .prose-editorial > * + * {
     margin-top: 1.25em;

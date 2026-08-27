@@ -60,8 +60,15 @@ export function toProduct(p: ProductFragment): Product {
   const mf = new Map(
     (p.metafields ?? [])
       .filter((m): m is NonNullable<typeof m> => Boolean(m))
-      .map((m) => [m.key, m.value]),
+      .map((m) => [m.key, m]),
   );
+
+  // `custom.in_situ_images` (list.file_reference) — the merchant's curated
+  // lifestyle set. Absent definition → no entry → undefined, and
+  // `groupProductMedia` falls back to the alt-text convention.
+  const inSituImages = (mf.get('in_situ_images')?.references?.nodes ?? [])
+    .map((n) => (n && 'image' in n && n.image ? toImage(n.image) : null))
+    .filter((i): i is ImageT => i !== null);
 
   return {
     id: p.id,
@@ -74,6 +81,7 @@ export function toProduct(p: ProductFragment): Product {
     tags: p.tags,
     featuredImage: toImage(p.featuredImage),
     images: p.images.nodes.map(toImage),
+    inSituImages: inSituImages.length > 0 ? inSituImages : undefined,
     priceRange: {
       minVariantPrice: toMoney(p.priceRange.minVariantPrice),
       maxVariantPrice: toMoney(p.priceRange.maxVariantPrice),
@@ -84,11 +92,11 @@ export function toProduct(p: ProductFragment): Product {
     })),
     variants: {nodes: p.variants.nodes.map(toVariant)},
     details: {
-      frontFabric: mf.get('front_fabric') ?? null,
-      backFabric: mf.get('back_fabric') ?? null,
-      trim: mf.get('trim') ?? null,
-      insert: mf.get('insert') ?? null,
-      care: mf.get('care') ?? null,
+      frontFabric: mf.get('front_fabric')?.value ?? null,
+      backFabric: mf.get('back_fabric')?.value ?? null,
+      trim: mf.get('trim')?.value ?? null,
+      insert: mf.get('insert')?.value ?? null,
+      care: mf.get('care')?.value ?? null,
     },
   };
 }

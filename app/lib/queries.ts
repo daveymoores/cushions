@@ -44,15 +44,27 @@ export const PRODUCT_FRAGMENT = `#graphql
         {namespace: "custom", key: "trim"}
         {namespace: "custom", key: "insert"}
         {namespace: "custom", key: "care"}
+        {namespace: "custom", key: "in_situ_images"}
       ]
     ) {
       key
       value
+      # Only custom.in_situ_images (list.file_reference) resolves references;
+      # the text metafields above return null here. See app/lib/product-media.ts.
+      references(first: 10) {
+        nodes {
+          ... on MediaImage {
+            image {
+              ...Image
+            }
+          }
+        }
+      }
     }
     featuredImage {
       ...Image
     }
-    images(first: 8) {
+    images(first: 20) {
       nodes {
         ...Image
       }
