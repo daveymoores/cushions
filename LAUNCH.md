@@ -8,7 +8,7 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [x] Remove Cloudflare Workers deployment (wrangler.jsonc, cache shim, deploy scripts) — verified: typecheck, build, lint clean
 - [x] Add PostHog (posthog-js 1.418.1, EU region, env-var driven, CSP verified live in browser) — no-ops when key is empty
 - [x] Fill `PUBLIC_POSTHOG_KEY` in `.env` (project "SISU", id 252430, eu.posthog.com)
-- [x] Mock-data question resolved: there is NO flag to flip — `app/lib/storefront.ts` uses mock data only when `PUBLIC_STORE_DOMAIN` is unset/mock.shop. Production already serves live store data with designed fallbacks; content added in admin appears immediately. (Point `FEATURED_HANDLE` in `app/routes/_index.tsx` at a real collection once one exists.)
+- [x] Mock-data question resolved: there is NO flag to flip — `app/lib/storefront.ts` uses mock data only when `PUBLIC_STORE_DOMAIN` is unset/mock.shop. Production already serves live store data with designed fallbacks; content added in admin appears immediately. (`FEATURED_HANDLE` in `app/routes/_index.tsx` now resolves to the live `cushions` collection — verified 2026-08-27.)
 - [x] Migration pushed to `main`; deploy pipeline green
 
 ## Shopify / Oxygen (David, in Shopify admin)
@@ -16,7 +16,7 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [!] **Store swap required.** The SISU store (sisu-yswysm5o) is a Dev-Dashboard development store in a developer org: it cannot take a real plan, cannot create Hydrogen storefronts, and can never serve public traffic. Its content is disposable dummy data (confirmed 2026-08-19); only the `homepage` + `material` metaobject definitions need recreating on the new store.
 - [x] Fresh merchant store created: "Sisu" (gqrjsh-ha.myshopify.com), Basic plan
 - [x] Repo `.env` updated to new store via `hydrogen env pull` (linked storefront: Sisu)
-- [x] Metaobject definitions (`material`: name/description/image; `homepage`: all 13 fields, keys verified) and `custom.*` product metafields (fiber, origin, loom, care, repair) created in the new store with Storefront API access on
+- [x] Metaobject definitions (`material`: name/description/image; `homepage`: all **16** fields, keys verified live 2026-08-27 — the earlier "13" was wrong) and `custom.*` product metafields (front_fabric, back_fabric, trim, insert, care — **corrected 2026-08-27**; the earlier fiber/origin/loom/care/repair note was wrong) created in the new store with Storefront API access on
 - [x] `custom.in_situ_images` product metafield (File list, images only, Storefront `PUBLIC_READ`) created 2026-08-27 and populated for all four products. It decides which photographs appear in the "Lived with" section on the product page; everything not listed stays in the main carousel. **New products need this set, or their lifestyle shots stay in the carousel** — see `app/lib/product-media.ts`.
 - [ ] Delete the old dev store after cutover (optional)
 - [x] Hydrogen sales channel installed
@@ -101,11 +101,31 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [ ] Review policy/contact page copy (pages exist: shipping "Delivery", returns, contact, atelier "About SISU" — footer links all resolve as of 2026-08-19 audit); real facts still needed → unlocks Organization/Offer schema fields and Merchant Center
 - [ ] After cutover verify: apex serves 200 (if it still 301s to myshopify.com, change the PRIMARY DOMAIN setting too, not just Target); curl POST /api/mcp; check /*.data endpoints
 - [ ] P1 backlog in the audit: richer Organization/Product JSON-LD (needs sku in queries), image srcset/CDN params
-- [~] **Product images were being truncated on the live site** — `PRODUCT_FRAGMENT` requested `images(first: 8)` while Leonie has 12, so her orange-back shot and all three fabric swatches have never rendered for anyone. Raised to 20 on the `worktree-product-insitu-imagery` branch (in-situ imagery work); ships when that branch merges. Note `PRODUCT_FRAGMENT` is shared with `COLLECTION_QUERY`, so collection cards now fetch 20 images each — negligible at four products, but a lighter fragment for the grid is the tidier fix if the catalogue grows.
+- [x] **Product images were being truncated on the live site — FIXED 2026-08-27.** `PRODUCT_FRAGMENT` requested `images(first: 8)` while Leonie has 12, so her orange-back shot and all three fabric swatches had never rendered for anyone. Raised to 20. Note `PRODUCT_FRAGMENT` is shared with `COLLECTION_QUERY`, so collection cards now fetch 20 images each — negligible at four products, but a lighter fragment for the grid is the tidier fix if the catalogue grows.
+
+## Merchant hand-off docs — 2026-08-27
+
+- [x] `docs/SISU-UPDATING-YOUR-SITE.md` — plain-English guide for Jessie (task-first: prices, photos, homepage, fabrics, journal, info pages). Written against live store values, timestamped.
+- [x] `docs/SISU-AGENT-GUIDE.md` — reference manual for Jessie's AI assistant (field tables with verbatim fallbacks, do-not-rename handles, never-instruct list, escalate-to-David list, diagnostics).
+- [~] `docs/OWNERS-GUIDE.md` — being narrowed to a **David-only ops doc** (infrastructure table, deploy mechanics, env vars). Its content-editing half is superseded by the two above, and it carried stale metafield names + a stale featured-collection claim.
+- [i] Reads against the live store need **no Admin token and no MCP**: Storefront API with `PUBLIC_STOREFRONT_API_TOKEN` from `.env` (api 2026-04) returns metaobject field keys *and types*, metafield values, and all handles.
+
+### Issues surfaced while writing the docs
+
+- [x] **Responsive images — DONE 2026-08-27**, on branch `worktree-responsive-images` (commit `49f4e21`, rebased onto `a549ee4`). New `app/components/ResponsiveImage.tsx` routes Shopify-CDN URLs through Hydrogen's `Image` and hand-rolls a `w`-descriptor `srcSet` for the Unsplash placeholder fallbacks (live in production whenever a metaobject image field is blank). **15** slots converted, including the cart line thumbnail (~113px slot that was serving the full-resolution upload) and the four in `ProductInSitu.tsx` / the rebuilt product page. Verified by browser screenshot, not just typecheck/build/lint.
+  - Process note: an initial "visual regression" report was **wrong** — scripted `scrollTo` via the JS bridge leaves the tab hidden, Chrome does not fire IntersectionObserver in a hidden tab, so `loading="lazy"` images never ran source selection. The baseline only looked healthy because its untransformed URLs were warm in HTTP cache. **When checking images in a browser, scroll with real input and confirm `document.visibilityState === "visible"`.**
+  - Follow-up, not done: product images are ~1.5MB PNGs only ~896px wide, so on high-DPR phones the browser picks a candidate at/above the source width and gets the original back. The remaining lever is format conversion (`&format=jpg`/webp), untouched.
+- [x] **`npm run lint` was failing repo-wide** — eslint walked `.claude/worktrees/`, whose files are in no tsconfig project, producing 55 parser errors that masked all real output. Added `**/.claude/` to the ignores in `eslint.config.js`. Now 0 errors, 1 pre-existing warning (`MarqueeText.tsx` array-index key).
+- [ ] **`FALLBACK_IMAGE` 404s** (`app/lib/adapters.ts:22` → `cdn.shopify.com/static/images/examples/img-placeholder-1024x1024.png`, confirmed 404 on 2026-08-27). It is what renders for any product or collection with no image set, so those currently show alt text on a broken image. Pre-existing, launch-visible. Needs a decision: a local asset in `app/assets/`, an inline SVG/data-URI, or render nothing at all.
+- [ ] **Blank metafields assert false facts, not placeholders.** An empty `custom.insert` renders "Duck feather, included" and an empty `custom.care` renders "Spot clean recommended" on the live product page. That is wrong information, not a cosmetic fallback — audit before launch, or change the fallbacks to `—`.
+- [ ] **New products need two easily-missed steps**: tick the Hydrogen sales channel (untick = the product silently does not exist on the site) and add it to the **Cushions** collection (the homepage strip and `/collections/cushions` both read that specific collection). Documented in Jessie's guide.
+- [i] Homepage render order is Hero → Intro → House Notes → cushion strip → In the studio → On Material → browse → values → newsletter. (`IntroStrip` is *defined* far below where it is *called* — a trap when reading `_index.tsx` top to bottom.)
+- [i] Hydrogen's default sub-request cache is `max-age=1, stale-while-revalidate=86399`; only `app/root.tsx` sets `CacheShort`. Practical rule: an admin edit lands on the **second** page load. Nothing takes a day, and hard-refresh/cache-clearing does nothing (it is server-side).
+- [i] Do-not-rename handles, hardcoded in the site: blog `journal`, collection `cushions`, pages `atelier`/`shipping`/`returns`/`contact`, article `how-a-sisu-cushion-is-made`.
 
 ## Site-wiring audit — 2026-08-19 (open decisions)
 
-- [ ] **Newsletter backend**: form shows "Thank you" but sends the email nowhere (Newsletter.tsx preventDefault + local state only). Needs a real destination — options: server action + Admin API customerCreate w/ marketing consent (needs a runtime Admin token in Oxygen env), or Klaviyo/Mailchimp. Until wired, subscribers are silently lost.
+- [ ] **Newsletter backend — needs an owner before go-live.** Form shows "Thank you" but sends the email nowhere (Newsletter.tsx preventDefault + local state only). Needs a real destination — options: server action + Admin API customerCreate w/ marketing consent (needs a runtime Admin token in Oxygen env), or Klaviyo/Mailchimp. Until wired, subscribers are silently lost.
 - [ ] **Account link**: header + footer link to an admitted placeholder page ("wired up in a follow-up step"). Decide: hide the links until Customer Accounts is built, or build it. Checkout itself is unaffected (Shopify-hosted).
 - [ ] **Press footer link** duplicates Contact (/pages/contact); no press page exists. Remove or create page.
 - [ ] Consider deep-linking hero "Shop cushions" / "Browse all pieces" straight to /collections/cushions (collections index has only one collection).

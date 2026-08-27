@@ -31,6 +31,7 @@ export default [
       '**/*.graphql.ts',
       '**/*.generated.d.ts',
       '**/.react-router/',
+      '**/.claude/',
       '**/packages/hydrogen/dist/',
     ],
   },

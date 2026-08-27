@@ -4,6 +4,17 @@
 
 `LAUNCH.md` at the repo root tracks the sisuhomeware.com go-live checklist (deploy, DNS, analytics, deferred items like email). Read it at the start of launch-related work and keep its statuses current as tasks complete.
 
+## Merchant documentation lives in Notion, not this repo
+
+The two merchant-facing docs are **canonical in Notion**, not here. `docs/` holds only a
+pointer. If you change anything a merchant can see or edit — a metaobject field, a
+hardcoded handle, a fallback string, a nav label, cache behaviour, an image aspect ratio —
+**you must update the Notion pages in the same piece of work.** They go stale silently and
+the person relying on them is not technical.
+
+Read `docs/NOTION-DOCS.md` for the page IDs, the update procedure, and the list of code
+changes that require a doc update. Do not skip it because a change "looks internal".
+
 ## Deploys
 
 The GitHub Actions workflow is `on: [push]` with **no branch filter**, so a push to

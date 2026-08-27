@@ -12,3 +12,6 @@ tsconfig.tsbuildinfo
 sisu-content alias
 .sisu-loader-secret
 .sisu-loader-token
+
+# Claude Code scratch: agent worktrees
+.claude/worktrees/
