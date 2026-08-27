@@ -46,7 +46,11 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 
 ## Deferred (after launch)
 
-- [>] **Email for sisuhomeware.com** — no mailbox exists today; nothing blocks launch. When wanted: Cloudflare Email Routing for free forwarding (adds its own MX/SPF automatically), or a real host (e.g. Google Workspace) — then add MX, SPF, DKIM, DMARC records in Cloudflare.
+- [x] **Email for sisuhomeware.com — DONE 2026-08-27.** Cloudflare Email Routing live (forwarding only, free). Verified via public resolvers: MX ×3 `route1/2/3.mx.cloudflare.net`; **exactly one** SPF `v=spf1 include:_spf.mx.cloudflare.net ~all` (the stale `include:_spf.hostnet.nl` from the old registrar was deleted — two SPF records is a permerror that silently fails everything); DMARC `p=reject` now carries `rua=mailto:dmarc@sisuhomeware.com`; Cloudflare DKIM `cf2024-1._domainkey` present.
+  - Routing rules live: `hello@sisuhomeware.com` → jessiebrewin.nl@gmail.com; `dmarc@sisuhomeware.com` → daveymoores@gmail.com (aggregate reports are technical, they go to David). Catch-all deliberately **disabled** — it only harvests spam once the domain is public.
+  - **Forwarding only — she cannot send as `hello@`.** Replies come from her Gmail address. Sending as the domain needs an SMTP relay (Fastmail/Resend/Mailgun) or Google Workspace. Open decision.
+  - **Before pointing Shopify's sender address at the domain**, add Shopify's DKIM + SPF include FIRST. With `p=reject`, an unauthenticated sender means order confirmations are rejected outright, not delivered — and the failure is invisible from the Shopify side. The `rua` now gives visibility.
+  - Verifying DNS: query a **public resolver** (`dig MX sisuhomeware.com @1.1.1.1`). The local resolver caches negative answers for up to the SOA minimum (1800s) and direct-to-authoritative queries returned false empties from this machine — both reported "no MX" for records that were live.
 - [>] Delete the old Cloudflare Worker (`sisu`) after Oxygen cutover is confirmed
 
 ## Access control / go-live switch
@@ -69,7 +73,7 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [x] Transfer email → Get started → log in → Accept store → Create new organization ("Sisu").
 - [ ] Settings → Billing: her card (Basic plan bill moves to her).
 - [ ] Settings → Payments — **only if Payments was never activated**: she activates Shopify Payments in her name / her bank account. If it was already active in David's name, this step does nothing; it is resolved by the Support ticket from Prep.
-- [ ] Settings → General: store contact email → hers. Settings → Notifications: sender + reply-to email → hers. **The transfer does not re-route outbound mail** — without this, order confirmations, customer replies and Shopify alerts keep landing in David's inbox.
+- [x] Settings → General store contact email + Settings → Notifications sender/reply-to → hers (done 2026-08-27). The transfer does not re-route outbound mail, so this had to be set explicitly.
 - [ ] Check tax details.
 
 **Re-admit David** — he already shows as Administrator post-transfer, but the *kind* of access is unconfirmed
@@ -103,10 +107,12 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [ ] P1 backlog in the audit: richer Organization/Product JSON-LD (needs sku in queries), image srcset/CDN params
 - [x] **Product images were being truncated on the live site — FIXED 2026-08-27.** `PRODUCT_FRAGMENT` requested `images(first: 8)` while Leonie has 12, so her orange-back shot and all three fabric swatches had never rendered for anyone. Raised to 20. Note `PRODUCT_FRAGMENT` is shared with `COLLECTION_QUERY`, so collection cards now fetch 20 images each — negligible at four products, but a lighter fragment for the grid is the tidier fix if the catalogue grows.
 
-## Merchant hand-off docs — 2026-08-27
+## Merchant hand-off docs — 2026-08-27 (in Linear)
 
-- [x] `docs/SISU-UPDATING-YOUR-SITE.md` — plain-English guide for Jessie (task-first: prices, photos, homepage, fabrics, journal, info pages). Written against live store values, timestamped.
-- [x] `docs/SISU-AGENT-GUIDE.md` — reference manual for Jessie's AI assistant (field tables with verbatim fallbacks, do-not-rename handles, never-instruct list, escalate-to-David list, diagnostics).
+- [x] **Updating your site** — plain-English guide for Jessie. Linear doc `85333298-4df6-4e16-98af-d5f0f74b94dd` in the `Sisu — sisuhomeware.com launch` project. Written against live store values, timestamped.
+- [x] **Storefront operating manual** — reference for Jessie's AI assistant (field tables with verbatim fallbacks, do-not-rename handles, never-instruct list, escalate-to-David list, diagnostics). Linear doc `f154dccd-959d-4e71-aecd-c2fe1a12994e`.
+- [i] Both started as repo markdown, moved to Notion, then to **Linear** on 2026-08-27 — Jessie is already a Far Harbour member (`jessiebrewin.uk@gmail.com`), so no invite step. `docs/MERCHANT-DOCS.md` is the pointer + update procedure. Notion pages are tombstones pending manual deletion.
+- [ ] Delete the two tombstoned Notion pages + the `Sisu` parent (the Notion connection has no delete tool — David, in the Notion UI).
 - [~] `docs/OWNERS-GUIDE.md` — being narrowed to a **David-only ops doc** (infrastructure table, deploy mechanics, env vars). Its content-editing half is superseded by the two above, and it carried stale metafield names + a stale featured-collection claim.
 - [i] Reads against the live store need **no Admin token and no MCP**: Storefront API with `PUBLIC_STOREFRONT_API_TOKEN` from `.env` (api 2026-04) returns metaobject field keys *and types*, metafield values, and all handles.
 
@@ -116,7 +122,7 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
   - Process note: an initial "visual regression" report was **wrong** — scripted `scrollTo` via the JS bridge leaves the tab hidden, Chrome does not fire IntersectionObserver in a hidden tab, so `loading="lazy"` images never ran source selection. The baseline only looked healthy because its untransformed URLs were warm in HTTP cache. **When checking images in a browser, scroll with real input and confirm `document.visibilityState === "visible"`.**
   - Follow-up, not done: product images are ~1.5MB PNGs only ~896px wide, so on high-DPR phones the browser picks a candidate at/above the source width and gets the original back. The remaining lever is format conversion (`&format=jpg`/webp), untouched.
 - [x] **`npm run lint` was failing repo-wide** — eslint walked `.claude/worktrees/`, whose files are in no tsconfig project, producing 55 parser errors that masked all real output. Added `**/.claude/` to the ignores in `eslint.config.js`. Now 0 errors, 1 pre-existing warning (`MarqueeText.tsx` array-index key).
-- [ ] **`FALLBACK_IMAGE` 404s** (`app/lib/adapters.ts:22` → `cdn.shopify.com/static/images/examples/img-placeholder-1024x1024.png`, confirmed 404 on 2026-08-27). It is what renders for any product or collection with no image set, so those currently show alt text on a broken image. Pre-existing, launch-visible. Needs a decision: a local asset in `app/assets/`, an inline SVG/data-URI, or render nothing at all.
+- [~] **`FALLBACK_IMAGE` 404s — decision made 2026-08-27: render no image at all**, an empty block at each slot's aspect ratio (matching the existing `materials.tsx` `bg-bone` pattern), rather than substituting a placeholder. Implementation in progress. (`app/lib/adapters.ts:22` → `cdn.shopify.com/static/images/examples/img-placeholder-1024x1024.png`, confirmed 404 on 2026-08-27). It is what renders for any product or collection with no image set, so those currently show alt text on a broken image. Pre-existing, launch-visible. Needs a decision: a local asset in `app/assets/`, an inline SVG/data-URI, or render nothing at all.
 - [ ] **Blank metafields assert false facts, not placeholders.** An empty `custom.insert` renders "Duck feather, included" and an empty `custom.care` renders "Spot clean recommended" on the live product page. That is wrong information, not a cosmetic fallback — audit before launch, or change the fallbacks to `—`.
 - [ ] **New products need two easily-missed steps**: tick the Hydrogen sales channel (untick = the product silently does not exist on the site) and add it to the **Cushions** collection (the homepage strip and `/collections/cushions` both read that specific collection). Documented in Jessie's guide.
 - [i] Homepage render order is Hero → Intro → House Notes → cushion strip → In the studio → On Material → browse → values → newsletter. (`IntroStrip` is *defined* far below where it is *called* — a trap when reading `_index.tsx` top to bottom.)
@@ -125,7 +131,7 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 
 ## Site-wiring audit — 2026-08-19 (open decisions)
 
-- [ ] **Newsletter backend — needs an owner before go-live.** Form shows "Thank you" but sends the email nowhere (Newsletter.tsx preventDefault + local state only). Needs a real destination — options: server action + Admin API customerCreate w/ marketing consent (needs a runtime Admin token in Oxygen env), or Klaviyo/Mailchimp. Until wired, subscribers are silently lost.
+- [~] **Newsletter backend — assigned to Jessie as [FAR-109](https://linear.app/far-harbour/issue/FAR-109/decide-where-newsletter-sign-ups-should-go)** (destination is her call: Shopify customers w/ marketing consent, Klaviyo, or Mailchimp; David wires it once she picks). Form shows "Thank you" but sends the email nowhere (Newsletter.tsx preventDefault + local state only). Needs a real destination — options: server action + Admin API customerCreate w/ marketing consent (needs a runtime Admin token in Oxygen env), or Klaviyo/Mailchimp. Until wired, subscribers are silently lost.
 - [ ] **Account link**: header + footer link to an admitted placeholder page ("wired up in a follow-up step"). Decide: hide the links until Customer Accounts is built, or build it. Checkout itself is unaffected (Shopify-hosted).
 - [ ] **Press footer link** duplicates Contact (/pages/contact); no press page exists. Remove or create page.
 - [ ] Consider deep-linking hero "Shop cushions" / "Browse all pieces" straight to /collections/cushions (collections index has only one collection).
