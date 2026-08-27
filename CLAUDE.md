@@ -4,6 +4,46 @@
 
 `LAUNCH.md` at the repo root tracks the sisuhomeware.com go-live checklist (deploy, DNS, analytics, deferred items like email). Read it at the start of launch-related work and keep its statuses current as tasks complete.
 
+## Deploys
+
+The GitHub Actions workflow is `on: [push]` with **no branch filter**, so a push to
+*any* branch builds and deploys. `main` is bound to the **Production** environment
+(`npx shopify hydrogen env list` to confirm); every other branch lands on Preview.
+Pushing to main is therefore a production deploy, not just "a deploy" — currently
+harmless because the domain still points at the password-protected Online Store,
+but that stops being true at go-live.
+
+## Static assets and CSP — the trap that has cost us twice
+
+On Oxygen the built CSS is served from **cdn.shopify.com**, so every `url()` inside
+it resolves against that origin rather than the app's. Anything the CSS references
+is a cross-origin load, and the CSP directive governing it must list
+`https://cdn.shopify.com` — `'self'` does not cover it.
+
+`imgSrc` already lists the CDN, which is why CSS-referenced images have always
+worked and hidden the problem. `fontSrc` did not, so a self-hosted woff2 was
+blocked and the wordmark silently rendered in the Georgia fallback (fixed
+2026-08-27, `app/entry.server.tsx`).
+
+Rules that follow from this:
+
+1. **Fonts and other CSS-referenced assets belong in `app/assets/`**, imported so
+   Vite emits them as hashed files — not in `public/`. A `public/` path in CSS
+   resolves to the CDN while a hardcoded `/…` preload in `root.tsx` points at the
+   app origin: the same file fetched twice, preload never used.
+2. **Overrides to `createContentSecurityPolicy` REPLACE a directive's default,
+   they don't extend it** — for `imgSrc` and `fontSrc` especially, which have no
+   Hydrogen default at all. Re-list `https://cdn.shopify.com` explicitly.
+3. **Verify in a browser, not with `curl`.** `curl` doesn't enforce CSP, and a
+   successful `fetch()` proves nothing about a font — `fetch` is governed by
+   `connectSrc`, font loads by `fontSrc`. The diagnostic that actually works:
+   `[...document.fonts].map(f => f.family + ':' + f.status)`; a blocked face
+   reads `error`. Then read the `content-security-policy` response header and
+   check the specific directive.
+
+This class of failure is always silent: the page renders, the asset just isn't
+there. Assume nothing loaded until you have seen it load.
+
 ## Orchestrator model
 
 In this repo, act as an **orchestrator**: delegate substantive work to subagents via the Agent tool rather than doing it all inline, and reserve your own context for planning, coordinating, and synthesizing results.
