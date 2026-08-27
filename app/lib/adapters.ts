@@ -16,20 +16,10 @@ import type {
   Collection,
 } from '~/lib/mock-data';
 
-/** Shown when a Shopify object has no image set. */
-const FALLBACK_IMAGE: ImageT = {
-  id: 'fallback',
-  url: 'https://cdn.shopify.com/static/images/examples/img-placeholder-1024x1024.png',
-  altText: null,
-  width: 1024,
-  height: 1024,
-};
-
 type ApiImage = ProductFragment['featuredImage'];
 type ApiMoney = ProductFragment['priceRange']['minVariantPrice'];
 
-function toImage(img: ApiImage): ImageT {
-  if (!img) return FALLBACK_IMAGE;
+function toImage(img: NonNullable<ApiImage>): ImageT {
   return {
     id: img.id ?? img.url,
     url: img.url,
@@ -37,6 +27,15 @@ function toImage(img: ApiImage): ImageT {
     width: img.width ?? 0,
     height: img.height ?? 0,
   };
+}
+
+/**
+ * Nullable slots (a product with no featured image, a collection with no
+ * image) map to `null` rather than a stand-in photograph: the call sites
+ * render the empty frame at their own aspect ratio instead.
+ */
+function toImageOrNull(img: ApiImage): ImageT | null {
+  return img ? toImage(img) : null;
 }
 
 function toMoney(money: ApiMoney): Money {
@@ -79,7 +78,7 @@ export function toProduct(p: ProductFragment): Product {
     vendor: p.vendor,
     productType: p.productType,
     tags: p.tags,
-    featuredImage: toImage(p.featuredImage),
+    featuredImage: toImageOrNull(p.featuredImage),
     images: p.images.nodes.map(toImage),
     inSituImages: inSituImages.length > 0 ? inSituImages : undefined,
     priceRange: {
@@ -117,7 +116,7 @@ export function toCollectionCard(c: CollectionCardFragment): Collection {
     handle: c.handle,
     title: c.title,
     description: c.description,
-    image: toImage(c.image),
+    image: toImageOrNull(c.image),
     products: {nodes: []},
   };
 }

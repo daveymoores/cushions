@@ -55,7 +55,8 @@ export type Product = {
   vendor: string;
   productType: string;
   tags: string[];
-  featuredImage: ImageT;
+  /** Null when the merchant hasn't set a photograph — the slot renders empty. */
+  featuredImage: ImageT | null;
   images: ImageT[];
   /**
    * Curated lifestyle photography from the `custom.in_situ_images` metafield.
@@ -73,7 +74,8 @@ export type Collection = {
   handle: string;
   title: string;
   description: string;
-  image: ImageT;
+  /** Null when the merchant hasn't set a photograph — the slot renders empty. */
+  image: ImageT | null;
   products: {nodes: Product[]};
 };
 
