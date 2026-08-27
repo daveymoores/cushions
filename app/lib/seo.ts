@@ -184,6 +184,10 @@ export function productSeo(
   const url = canonical(request, env);
   const site = siteOrigin(request, env);
   const inStock = product.variants.nodes.some((v) => v.availableForSale);
+  // A product with no photography must omit `image` entirely — an empty array
+  // is a malformed Product for Google's rich results, and there is no stand-in
+  // URL to emit in its place.
+  const images = product.images.map((i) => i.url);
   return {
     title: product.title,
     description:
@@ -196,7 +200,7 @@ export function productSeo(
         '@type': 'Product',
         name: product.title,
         description: product.description,
-        image: product.images.map((i) => i.url),
+        image: images.length > 0 ? images : undefined,
         brand: {'@type': 'Brand', name: product.vendor || SITE_NAME},
         offers: {
           '@type': 'Offer',

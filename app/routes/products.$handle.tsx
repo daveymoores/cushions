@@ -9,7 +9,7 @@ import {ResponsiveImage} from '~/components/ResponsiveImage';
 import {ProductInSitu} from '~/components/ProductInSitu';
 import {SealMark} from '~/components/SealMark';
 import {UnderlineLink} from '~/components/UnderlineLink';
-import {getProductByHandle} from '~/lib/mock-data';
+import {getProductByHandle, type ImageT} from '~/lib/mock-data';
 import {PRODUCT_QUERY} from '~/lib/queries';
 import {toProduct} from '~/lib/adapters';
 import {groupProductMedia} from '~/lib/product-media';
@@ -47,7 +47,10 @@ export default function ProductPage() {
   const carouselImages = media.carousel;
 
   const [activeImage, setActiveImage] = useState(0);
-  const image = carouselImages[activeImage] ?? carouselImages[0];
+  // Undefined when the product has no photographs at all — the frame below
+  // renders empty rather than reaching for a stand-in image.
+  const image: ImageT | undefined =
+    carouselImages[activeImage] ?? carouselImages[0];
 
   // Track the chosen option values and resolve them to a concrete variant.
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(
@@ -101,17 +104,19 @@ export default function ProductPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
           <div className="lg:col-span-7">
             <figure className="aspect-[4/5] bg-bone overflow-hidden">
-              {/* 7 of 12 columns with `lg:gap-20` (80px) gutters: the slot is
-                  (7W - 5*80px)/12 of the container's content width W, which for
-                  W = 100vw - 112px simplifies to 58.33vw - 99px. */}
-              <ResponsiveImage
-                src={image.url}
-                alt={image.altText ?? product.title}
-                aspectRatio="4/5"
-                sizes="(min-width: 1320px) 672px, (min-width: 1024px) calc(58.33vw - 99px), calc(100vw - 48px)"
-                priority
-                className="w-full h-full object-cover image-grade"
-              />
+              {image ? (
+                /* 7 of 12 columns with `lg:gap-20` (80px) gutters: the slot is
+                   (7W - 5*80px)/12 of the container's content width W, which
+                   for W = 100vw - 112px simplifies to 58.33vw - 99px. */
+                <ResponsiveImage
+                  src={image.url}
+                  alt={image.altText ?? product.title}
+                  aspectRatio="4/5"
+                  sizes="(min-width: 1320px) 672px, (min-width: 1024px) calc(58.33vw - 99px), calc(100vw - 48px)"
+                  priority
+                  className="w-full h-full object-cover image-grade"
+                />
+              ) : null}
             </figure>
             {carouselImages.length > 1 ? (
               <div className="mt-4 flex flex-wrap gap-3">
