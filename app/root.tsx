@@ -11,6 +11,7 @@ import {
 } from 'react-router';
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
+import sophilliaFont from '~/assets/fonts/sophillia-regular.woff2';
 import appStyles from '~/styles/app.css?url';
 import {PageLayout} from './components/PageLayout';
 import {PostHogAnalytics} from './components/PostHogAnalytics';
@@ -41,7 +42,7 @@ export function links() {
       rel: 'preload',
       as: 'font',
       type: 'font/woff2',
-      href: '/fonts/sophillia-regular.woff2',
+      href: sophilliaFont,
       crossOrigin: 'anonymous' as const,
     },
     {rel: 'preconnect', href: 'https://fonts.googleapis.com'},

@@ -1,10 +1,13 @@
 @import 'tailwindcss';
 
-/* Sophillia — ligature serif used only for the "Sisu" wordmark. Self-hosted
-   from public/fonts so it isn't a third-party request on every page. */
+/* Sophillia — ligature serif used only for the "Sisu" wordmark. Imported from
+   app/assets so Vite emits it as a hashed asset: on Oxygen the built CSS is
+   served from the Shopify CDN, and a `/public` path here would resolve against
+   that CDN origin while the preload in root.tsx pointed at the app origin —
+   the same font fetched twice, from two URLs. */
 @font-face {
   font-family: 'Sophillia';
-  src: url('/fonts/sophillia-regular.woff2') format('woff2');
+  src: url('../assets/fonts/sophillia-regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;

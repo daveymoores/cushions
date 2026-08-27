@@ -49,7 +49,16 @@ export default async function handleRequest(
       'https://eu-assets.i.posthog.com',
     ],
     styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-    fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
+    // cdn.shopify.com is required: on Oxygen the built CSS is served from the
+    // Shopify CDN, so its @font-face `url()` resolves there too. Without this
+    // the self-hosted wordmark font is blocked and silently falls back to
+    // Georgia — `fetch()` still succeeds, because that is connectSrc's call.
+    fontSrc: [
+      "'self'",
+      'data:',
+      'https://cdn.shopify.com',
+      'https://fonts.gstatic.com',
+    ],
   });
 
   const body = await renderToReadableStream(
