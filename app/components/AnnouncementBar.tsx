@@ -19,7 +19,7 @@ export function AnnouncementBar() {
 
   return (
     <div
-      className="bg-ink text-paper/75 overflow-hidden"
+      className="bg-ink text-paper/90 overflow-hidden"
       style={{height: 'var(--announcement-height)'}}
     >
       <div className="flex h-full items-center">

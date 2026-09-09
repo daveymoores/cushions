@@ -288,22 +288,30 @@
 
   .marquee {
     display: flex;
+    /* Always the width of the bar, never the width of its overflowing track:
+       MarqueeText measures this element to decide how many copies it needs. */
+    flex: 1;
     overflow: hidden;
     user-select: none;
   }
+  /* MarqueeText measures one repeat unit — a full set of announcements plus
+     its trailing gap — after the webfonts load, and hands it over as
+     `--marquee-unit` together with a duration derived from it, so the speed
+     stays constant px/s however much text the merchant writes. The fallbacks
+     are what the server-rendered track animates with until then. */
   .marquee-track {
     display: flex;
     flex-shrink: 0;
     gap: 56px;
-    padding-inline: 28px;
-    animation: marquee 90s linear infinite;
+    will-change: transform;
+    animation: marquee var(--marquee-duration, 130s) linear infinite;
   }
   @keyframes marquee {
     from {
       transform: translateX(0);
     }
     to {
-      transform: translateX(-100%);
+      transform: translateX(calc(-1 * var(--marquee-unit, 50%)));
     }
   }
   @media (prefers-reduced-motion: reduce) {
