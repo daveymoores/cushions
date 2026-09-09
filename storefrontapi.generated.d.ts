@@ -268,15 +268,41 @@ export type NavCollectionsQuery = {
   };
 };
 
-export type MenuQueryVariables = StorefrontAPI.Exact<{
-  handle: StorefrontAPI.Scalars['String']['input'];
-}>;
-
-export type MenuQuery = {
-  menu?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.Menu, 'id'> & {
+export type NavMenuFragment = Pick<StorefrontAPI.Menu, 'id'> & {
+  items: Array<
+    Pick<StorefrontAPI.MenuItem, 'id' | 'title' | 'type' | 'url'> & {
       items: Array<
         Pick<StorefrontAPI.MenuItem, 'id' | 'title' | 'type' | 'url'>
+      >;
+    }
+  >;
+};
+
+export type MenusQueryVariables = StorefrontAPI.Exact<{
+  mainHandle: StorefrontAPI.Scalars['String']['input'];
+  footerHandle: StorefrontAPI.Scalars['String']['input'];
+}>;
+
+export type MenusQuery = {
+  main?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Menu, 'id'> & {
+      items: Array<
+        Pick<StorefrontAPI.MenuItem, 'id' | 'title' | 'type' | 'url'> & {
+          items: Array<
+            Pick<StorefrontAPI.MenuItem, 'id' | 'title' | 'type' | 'url'>
+          >;
+        }
+      >;
+    }
+  >;
+  footer?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Menu, 'id'> & {
+      items: Array<
+        Pick<StorefrontAPI.MenuItem, 'id' | 'title' | 'type' | 'url'> & {
+          items: Array<
+            Pick<StorefrontAPI.MenuItem, 'id' | 'title' | 'type' | 'url'>
+          >;
+        }
       >;
     }
   >;
@@ -480,9 +506,9 @@ interface GeneratedQueryTypes {
     return: NavCollectionsQuery;
     variables: NavCollectionsQueryVariables;
   };
-  '#graphql\n  query Menu($handle: String!) {\n    menu(handle: $handle) {\n      id\n      items {\n        id\n        title\n        type\n        url\n      }\n    }\n    shop {\n      primaryDomain {\n        url\n      }\n    }\n  }\n': {
-    return: MenuQuery;
-    variables: MenuQueryVariables;
+  '#graphql\n  query Menus($mainHandle: String!, $footerHandle: String!) {\n    main: menu(handle: $mainHandle) {\n      ...NavMenu\n    }\n    footer: menu(handle: $footerHandle) {\n      ...NavMenu\n    }\n    shop {\n      primaryDomain {\n        url\n      }\n    }\n  }\n  #graphql\n  fragment NavMenu on Menu {\n    id\n    items {\n      id\n      title\n      type\n      url\n      items {\n        id\n        title\n        type\n        url\n      }\n    }\n  }\n\n': {
+    return: MenusQuery;
+    variables: MenusQueryVariables;
   };
   '#graphql\n  query ProductByHandle($handle: String!) {\n    product(handle: $handle) {\n      ...Product\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    handle\n    title\n    description\n    descriptionHtml\n    vendor\n    productType\n    tags\n    metafields(\n      identifiers: [\n        {namespace: "custom", key: "front_fabric"}\n        {namespace: "custom", key: "back_fabric"}\n        {namespace: "custom", key: "trim"}\n        {namespace: "custom", key: "insert"}\n        {namespace: "custom", key: "care"}\n        {namespace: "custom", key: "in_situ_images"}\n      ]\n    ) {\n      key\n      value\n      # Only custom.in_situ_images (list.file_reference) resolves references;\n      # the text metafields above return null here. See app/lib/product-media.ts.\n      references(first: 10) {\n        nodes {\n          ... on MediaImage {\n            image {\n              ...Image\n            }\n          }\n        }\n      }\n    }\n    featuredImage {\n      ...Image\n    }\n    images(first: 20) {\n      nodes {\n        ...Image\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n      }\n    }\n    variants(first: 50) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          ...Money\n        }\n        compareAtPrice {\n          ...Money\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          ...Image\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n  #graphql\n  fragment Money on MoneyV2 {\n    amount\n    currencyCode\n  }\n\n\n': {
     return: ProductByHandleQuery;

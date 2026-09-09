@@ -17,11 +17,11 @@ import {PageLayout} from './components/PageLayout';
 import {NotFound} from './components/NotFound';
 import {PostHogAnalytics} from './components/PostHogAnalytics';
 import {
-  MENU_QUERY,
+  MENUS_QUERY,
   NAV_COLLECTIONS_QUERY,
   SITE_CONTENT_QUERY,
 } from '~/lib/queries';
-import {toNavLinks} from '~/lib/nav';
+import {toNavColumns, toNavLinks} from '~/lib/nav';
 import {usesMockData} from '~/lib/storefront';
 import {collections} from '~/lib/mock-data';
 import {rootSeo} from '~/lib/seo';
@@ -90,8 +90,10 @@ export async function loader({context, request}: Route.LoaderArgs) {
         handle: c.handle,
         title: c.title,
       })),
-      // No Shopify menu without a real store; the header uses its fallback.
+      // No Shopify menus without a real store; header and footer use their
+      // fallbacks.
       menu: [],
+      footerMenu: [],
     };
   }
 
@@ -101,12 +103,13 @@ export async function loader({context, request}: Route.LoaderArgs) {
     context.storefront.query(SITE_CONTENT_QUERY, {
       cache: context.storefront.CacheShort(),
     }),
-    // The header nav is merchant-editable, so it must not be able to take the
-    // page down: on any failure the header falls back to its hardcoded links.
+    // Header and footer nav are both merchant-editable, so neither must be able
+    // to take the page down: on any failure each falls back to its hardcoded
+    // links. One aliased query for both menus, so the nav costs one round trip.
     // Short cache, so a navigation edit shows up within ~seconds like content.
     context.storefront
-      .query(MENU_QUERY, {
-        variables: {handle: 'main-menu'},
+      .query(MENUS_QUERY, {
+        variables: {mainHandle: 'main-menu', footerHandle: 'footer'},
         cache: context.storefront.CacheShort(),
       })
       .catch(() => null),
@@ -121,7 +124,14 @@ export async function loader({context, request}: Route.LoaderArgs) {
     content,
     collections: navResult.collections.nodes.filter(isVisibleCollection),
     menu: toNavLinks(
-      menuResult?.menu,
+      menuResult?.main,
+      menuResult?.shop.primaryDomain.url,
+      context.env,
+    ),
+    // Nested only: a top-level item with no children isn't a footer column, so
+    // a flat `footer` menu yields none and the Footer uses its own columns.
+    footerMenu: toNavColumns(
+      menuResult?.footer,
       menuResult?.shop.primaryDomain.url,
       context.env,
     ),

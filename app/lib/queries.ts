@@ -226,19 +226,21 @@ export const NAV_COLLECTIONS_QUERY = `#graphql
 ` as const;
 
 /**
- * The merchant-editable header nav (Online Store → Navigation → Main menu).
+ * A merchant-editable menu, two levels deep (Online Store → Navigation).
  *
- * `items.url` is absolute on whichever domain the shop is published under, so
- * `shop.primaryDomain` is fetched alongside it — `~/lib/nav` needs the set of
- * hosts that count as "this site" to re-base each item onto an app path.
- *
- * Second-level items are deliberately not requested: neither nav surface has a
- * dropdown. See `toNavLinks`.
+ * Shopify menus nest three levels; only two are requested because that is all
+ * either nav surface can render — the header uses the top row and ignores
+ * children, the footer uses top-level items as column headings and their
+ * children as the column's links. See `~/lib/nav`.
  */
-export const MENU_QUERY = `#graphql
-  query Menu($handle: String!) {
-    menu(handle: $handle) {
+const NAV_MENU_FRAGMENT = `#graphql
+  fragment NavMenu on Menu {
+    id
+    items {
       id
+      title
+      type
+      url
       items {
         id
         title
@@ -246,12 +248,33 @@ export const MENU_QUERY = `#graphql
         url
       }
     }
+  }
+` as const;
+
+/**
+ * Both merchant-editable menus in a single round trip — the header's
+ * `main-menu` and the footer's `footer` — aliased rather than queried
+ * separately so one nav read costs one request.
+ *
+ * `items.url` is absolute on whichever domain the shop is published under, so
+ * `shop.primaryDomain` is fetched alongside them — `~/lib/nav` needs the set of
+ * hosts that count as "this site" to re-base each item onto an app path.
+ */
+export const MENUS_QUERY = `#graphql
+  query Menus($mainHandle: String!, $footerHandle: String!) {
+    main: menu(handle: $mainHandle) {
+      ...NavMenu
+    }
+    footer: menu(handle: $footerHandle) {
+      ...NavMenu
+    }
     shop {
       primaryDomain {
         url
       }
     }
   }
+  ${NAV_MENU_FRAGMENT}
 ` as const;
 
 /** Product detail page. */

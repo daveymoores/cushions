@@ -6,7 +6,7 @@
  * domain the shop is published under, so every item has to be re-based onto
  * this app before it can be handed to React Router.
  */
-import type {MenuQuery} from 'storefrontapi.generated';
+import type {NavMenuFragment} from 'storefrontapi.generated';
 
 /**
  * Page handles that have a hand-built route of their own. `/pages/<handle>`
@@ -15,6 +15,7 @@ import type {MenuQuery} from 'storefrontapi.generated';
  */
 export const RESERVED_HANDLES: Record<string, string> = {
   atelier: '/atelier',
+  fabrics: '/materials',
 };
 
 /** A single primary-nav entry, already resolved to something renderable. */
@@ -27,8 +28,23 @@ export type NavLink = {
   external: boolean;
 };
 
-type ApiMenu = MenuQuery['menu'];
-type ApiMenuItem = NonNullable<ApiMenu>['items'][number];
+/**
+ * A footer column: one top-level menu item's title, with its children as links.
+ * The heading itself is never a link — Shopify makes a URL mandatory on every
+ * menu item, so a parent's own URL is a formality here and is ignored.
+ */
+export type NavColumn = {
+  id: string;
+  title: string;
+  links: NavLink[];
+};
+
+type ApiMenu = NavMenuFragment | null | undefined;
+/**
+ * Structural, so the same mapper serves both levels: codegen gives the two
+ * nesting levels distinct (but identically shaped) types.
+ */
+type ApiMenuItem = {id: string; title: string; url?: string | null};
 
 /**
  * Reserved TLD, so a relative `url` can be parsed with the same code path as an
@@ -54,7 +70,27 @@ function hostnameOf(value: string | null | undefined): string | null {
 }
 
 /** `/pages/atelier` → `/atelier`. Any other path is returned unchanged. */
+/** The Shopify blog whose articles this site renders at `/journal`. */
+const JOURNAL_BLOG_HANDLE = 'journal';
+
+/**
+ * Rewrite the paths Shopify's own link pickers emit onto the routes this site
+ * actually has. Two cases, both of which a merchant hits by choosing the
+ * obvious option in Navigation:
+ *
+ * - `/pages/<handle>` for pages we render at a bespoke path (see
+ *   `RESERVED_HANDLES`).
+ * - `/blogs/journal` and `/blogs/journal/<article>`, which the Blog and Blog
+ *   post pickers produce. There is no `blogs.*` route — those live at
+ *   `/journal` — so without this the link 404s and the merchant has no way to
+ *   know why.
+ */
 function applyReservedHandles(pathname: string): string {
+  const blog = /^\/blogs\/([^/]+)(?:\/([^/]+))?\/?$/.exec(pathname);
+  if (blog && blog[1] === JOURNAL_BLOG_HANDLE) {
+    return blog[2] ? `/journal/${blog[2]}` : '/journal';
+  }
+
   const handle = /^\/pages\/([^/]+)\/?$/.exec(pathname)?.[1];
   if (!handle) return pathname;
   return RESERVED_HANDLES[handle] ?? pathname;
@@ -99,27 +135,64 @@ function toNavLink(
 }
 
 /**
- * Map a Shopify menu onto app links. Items without a usable URL are dropped, so
- * an empty result means "nothing renderable" and the caller should fall back.
+ * Every host that means "this shop". Derived, never hardcoded: the myshopify
+ * domain stops being the public one at go-live.
+ */
+function internalHostsOf(
+  primaryDomainUrl: string | null | undefined,
+  env: Env,
+): Set<string> {
+  return new Set(
+    [env.PUBLIC_STORE_DOMAIN, primaryDomainUrl, env.PUBLIC_SITE_URL]
+      .map(hostnameOf)
+      .filter((host): host is string => host !== null),
+  );
+}
+
+/**
+ * Map a Shopify menu's top row onto app links, for the header. Items without a
+ * usable URL are dropped, so an empty result means "nothing renderable" and the
+ * caller should fall back.
  *
- * Second-level items (`items.items`) are deliberately not requested or
- * rendered: neither surface has a dropdown, and a parent item always carries a
- * URL of its own, so a menu with children still renders its top row.
+ * Children are ignored here: the header has no dropdown, and a parent item
+ * always carries a URL of its own, so a nested menu still renders its top row.
  */
 export function toNavLinks(
   menu: ApiMenu,
   primaryDomainUrl: string | null | undefined,
   env: Env,
 ): NavLink[] {
-  // Every host that means "this shop". Derived, never hardcoded: the myshopify
-  // domain stops being the public one at go-live.
-  const internalHosts = new Set(
-    [env.PUBLIC_STORE_DOMAIN, primaryDomainUrl, env.PUBLIC_SITE_URL]
-      .map(hostnameOf)
-      .filter((host): host is string => host !== null),
-  );
+  const internalHosts = internalHostsOf(primaryDomainUrl, env);
 
   return (menu?.items ?? [])
     .map((item) => toNavLink(item, internalHosts))
     .filter((link): link is NavLink => link !== null);
+}
+
+/**
+ * Map a Shopify menu onto footer columns: each top-level item becomes a column
+ * heading and its children become that column's links, sharing every URL rule
+ * with `toNavLinks`.
+ *
+ * A top-level item with no usable children is dropped rather than rendered as a
+ * bare heading, so a *flat* menu — every item a link, none nested — maps to
+ * zero columns and the caller falls back to its hardcoded columns. A third
+ * level of nesting is not requested and is therefore ignored.
+ */
+export function toNavColumns(
+  menu: ApiMenu,
+  primaryDomainUrl: string | null | undefined,
+  env: Env,
+): NavColumn[] {
+  const internalHosts = internalHostsOf(primaryDomainUrl, env);
+
+  return (menu?.items ?? [])
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      links: (item.items ?? [])
+        .map((child) => toNavLink(child, internalHosts))
+        .filter((link): link is NavLink => link !== null),
+    }))
+    .filter((column) => column.links.length > 0);
 }
