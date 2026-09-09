@@ -41,7 +41,8 @@ Update Linear in the same piece of work if you change any of:
 - **A `custom.*` product metafield** — the five spec fields and their fallbacks. Note two of
   them (`insert`, `care`) assert facts, which is called out as a hazard.
 - **A hardcoded handle** — blog `journal`, collection `cushions`, pages `atelier` /
-  `shipping` / `returns` / `contact`, article `how-a-sisu-cushion-is-made`. Both docs have a
+  `shipping` / `returns` / `contact` / `faq` / `fabrics`, menus `main-menu` / `footer`,
+  article `how-a-sisu-cushion-is-made`. Both docs have a
   do-not-rename table built on these.
 - **Header nav labels, footer links, homepage section order, the values strip, section
   eyebrows or button labels** — the "ask David" / "escalate" tables enumerate these.
