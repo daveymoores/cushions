@@ -225,6 +225,35 @@ export const NAV_COLLECTIONS_QUERY = `#graphql
   }
 ` as const;
 
+/**
+ * The merchant-editable header nav (Online Store → Navigation → Main menu).
+ *
+ * `items.url` is absolute on whichever domain the shop is published under, so
+ * `shop.primaryDomain` is fetched alongside it — `~/lib/nav` needs the set of
+ * hosts that count as "this site" to re-base each item onto an app path.
+ *
+ * Second-level items are deliberately not requested: neither nav surface has a
+ * dropdown. See `toNavLinks`.
+ */
+export const MENU_QUERY = `#graphql
+  query Menu($handle: String!) {
+    menu(handle: $handle) {
+      id
+      items {
+        id
+        title
+        type
+        url
+      }
+    }
+    shop {
+      primaryDomain {
+        url
+      }
+    }
+  }
+` as const;
+
 /** Product detail page. */
 export const PRODUCT_QUERY = `#graphql
   query ProductByHandle($handle: String!) {

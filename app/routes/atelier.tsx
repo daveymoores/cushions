@@ -19,7 +19,7 @@ export const meta: Route.MetaFunction = ({data, matches}) =>
  */
 export async function loader({context, request}: Route.LoaderArgs) {
   const fallbackSeo = basicSeo({
-    title: 'The Atelier',
+    title: 'About Us',
     description:
       'A small homeware studio in Amsterdam, making cushions from deadstock fabric — cut, sewn and finished by hand in small batches.',
     request,
@@ -41,10 +41,10 @@ export default function Atelier() {
     // Fallback copy until an `atelier` Page is created in Shopify admin.
     return (
       <StubPage
-        eyebrow="By Appointment"
+        eyebrow="Sisu"
         title={
           <>
-            The <span className="italic-stone">atelier</span>
+            About <span className="italic-stone">us</span>
           </>
         }
         body="A small homeware studio in Amsterdam, making cushions from deadstock fabric — surplus rolls from the interiors industry, cut and sewn in small batches and finished by hand."
@@ -57,7 +57,7 @@ export default function Atelier() {
       <Container>
         <div className="max-w-2xl">
           <SealMark size={14} className="text-ink/70 mb-6" />
-          <Eyebrow className="block mb-5">By Appointment</Eyebrow>
+          <Eyebrow className="block mb-5">Sisu</Eyebrow>
           <h1 className="display-h1 text-ink">{page.title}</h1>
           <div
             className="prose-editorial mt-8 text-ash text-[14px] leading-[1.7] font-light"

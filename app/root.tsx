@@ -14,8 +14,14 @@ import favicon from '~/assets/favicon.svg';
 import sophilliaFont from '~/assets/fonts/sophillia-regular.woff2';
 import appStyles from '~/styles/app.css?url';
 import {PageLayout} from './components/PageLayout';
+import {NotFound} from './components/NotFound';
 import {PostHogAnalytics} from './components/PostHogAnalytics';
-import {NAV_COLLECTIONS_QUERY, SITE_CONTENT_QUERY} from '~/lib/queries';
+import {
+  MENU_QUERY,
+  NAV_COLLECTIONS_QUERY,
+  SITE_CONTENT_QUERY,
+} from '~/lib/queries';
+import {toNavLinks} from '~/lib/nav';
 import {usesMockData} from '~/lib/storefront';
 import {collections} from '~/lib/mock-data';
 import {rootSeo} from '~/lib/seo';
@@ -84,15 +90,26 @@ export async function loader({context, request}: Route.LoaderArgs) {
         handle: c.handle,
         title: c.title,
       })),
+      // No Shopify menu without a real store; the header uses its fallback.
+      menu: [],
     };
   }
 
-  const [navResult, contentResult] = await Promise.all([
+  const [navResult, contentResult, menuResult] = await Promise.all([
     context.storefront.query(NAV_COLLECTIONS_QUERY, {variables: {first: 8}}),
     // Short cache so edits to the homepage metaobject appear within ~seconds.
     context.storefront.query(SITE_CONTENT_QUERY, {
       cache: context.storefront.CacheShort(),
     }),
+    // The header nav is merchant-editable, so it must not be able to take the
+    // page down: on any failure the header falls back to its hardcoded links.
+    // Short cache, so a navigation edit shows up within ~seconds like content.
+    context.storefront
+      .query(MENU_QUERY, {
+        variables: {handle: 'main-menu'},
+        cache: context.storefront.CacheShort(),
+      })
+      .catch(() => null),
   ]);
   const content = toSiteContent(contentResult);
   return {
@@ -103,6 +120,11 @@ export async function loader({context, request}: Route.LoaderArgs) {
     posthog,
     content,
     collections: navResult.collections.nodes.filter(isVisibleCollection),
+    menu: toNavLinks(
+      menuResult?.menu,
+      menuResult?.shop.primaryDomain.url,
+      context.env,
+    ),
   };
 }
 
@@ -152,12 +174,39 @@ export function ErrorBoundary() {
     console.error(error);
   }
 
+  // A 404 thrown by a loader (`/pages/<unknown>`, a collection that isn't
+  // published) is a wrong turn, not a failure, so it gets the full site chrome
+  // and the same page the catch-all route renders.
+  //
+  // Only 404s. An unexpected error might *be* the layout failing — a Header
+  // render bug, or a root loader that never returned — and re-rendering
+  // `PageLayout` here would throw a second time inside the boundary, leaving
+  // React Router's unstyled default. Everything else keeps the bare fallback
+  // below, which depends on nothing but the stylesheet.
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return (
+      <PageLayout>
+        <NotFound />
+      </PageLayout>
+    );
+  }
+
   return (
     <div className="container-page section-y">
       <p className="eyebrow">Error {errorStatus}</p>
       <h1 className="font-display italic text-[28px] mt-8 leading-[1.1] text-ink">
-        Something has come undone.
+        Something went wrong at our end.
       </h1>
+      <p className="mt-7 text-ash text-[14px] leading-[1.7] font-light max-w-md">
+        A fault on our side, not a page that’s missing. Trying again often
+        settles it.
+      </p>
+      <a
+        href="/"
+        className="underline-link is-static eyebrow text-ink/85 mt-8 inline-block"
+      >
+        Back to the homepage
+      </a>
       {isDev && errorMessage ? (
         <pre className="mt-8 text-ash text-[12px] whitespace-pre-wrap font-body">
           {errorMessage}

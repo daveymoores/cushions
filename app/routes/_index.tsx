@@ -4,32 +4,23 @@ import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
 import {UnderlineLink} from '~/components/UnderlineLink';
 import {ProductCard} from '~/components/ProductCard';
-import {CollectionCard} from '~/components/CollectionCard';
 import {EditorialSplit} from '~/components/EditorialSplit';
 import {BleedSection} from '~/components/BleedSection';
 import {ValuesStrip} from '~/components/ValuesStrip';
-import {Newsletter} from '~/components/Newsletter';
 import {Hero} from '~/components/Hero';
 import {SealMark} from '~/components/SealMark';
-import {
-  collections,
-  featuredCollection,
-  placeholderImages,
-} from '~/lib/mock-data';
+import {featuredCollection, placeholderImages} from '~/lib/mock-data';
 import {COLLECTION_QUERY, COLLECTIONS_QUERY} from '~/lib/queries';
-import {
-  isVisibleCollection,
-  toCollection,
-  toCollectionCard,
-} from '~/lib/adapters';
+import {isVisibleCollection, toCollection} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
 import {routeMeta, canonical} from '~/lib/seo';
 import {useSiteContent} from '~/lib/content';
 
 /**
- * Handle of the collection featured on the homepage hero strip — the launch
- * collection in admin. If it doesn't exist yet, the loader falls back to the
- * first available collection so the strip is never empty.
+ * Handle of the launch collection in admin. It backs the featured strip and
+ * every "shop" link on this page (hero CTA, "Browse all pieces"), so renaming
+ * or unpublishing it in admin breaks those links. If the collection is missing
+ * the loader falls back to the first available one so the strip is never empty.
  */
 const FEATURED_HANDLE = 'cushions';
 
@@ -44,33 +35,30 @@ export async function loader({context, request}: Route.LoaderArgs) {
   };
 
   if (usesMockData(context.env)) {
-    return {
-      seo,
-      featuredCollection,
-      browseCollections: collections,
-    };
+    return {seo, featuredCollection};
   }
 
   const {storefront} = context;
-  const [featuredResult, browseResult] = await Promise.all([
-    storefront.query(COLLECTION_QUERY, {
-      variables: {handle: FEATURED_HANDLE, first: 6},
-    }),
-    storefront.query(COLLECTIONS_QUERY, {variables: {first: 8}}),
-  ]);
-
-  const browseNodes =
-    browseResult.collections.nodes.filter(isVisibleCollection);
+  let {collection: featured} = await storefront.query(COLLECTION_QUERY, {
+    variables: {handle: FEATURED_HANDLE, first: 6},
+  });
 
   // If the configured featured collection doesn't exist in the store, fall back
   // to the first available collection so the homepage strip is never empty.
-  let featured = featuredResult.collection;
-  const firstBrowse = browseNodes[0];
-  if (!featured && firstBrowse) {
-    const fallback = await storefront.query(COLLECTION_QUERY, {
-      variables: {handle: firstBrowse.handle, first: 6},
+  // Only then is the collection list worth fetching.
+  if (!featured) {
+    const browseResult = await storefront.query(COLLECTIONS_QUERY, {
+      variables: {first: 8},
     });
-    featured = fallback.collection;
+    const firstBrowse = browseResult.collections.nodes.filter(
+      isVisibleCollection,
+    )[0];
+    if (firstBrowse) {
+      const fallback = await storefront.query(COLLECTION_QUERY, {
+        variables: {handle: firstBrowse.handle, first: 6},
+      });
+      featured = fallback.collection;
+    }
   }
 
   return {
@@ -78,7 +66,6 @@ export async function loader({context, request}: Route.LoaderArgs) {
     featuredCollection: featured
       ? toCollection(featured)
       : {...featuredCollection, products: {nodes: []}},
-    browseCollections: browseNodes.map(toCollectionCard),
   };
 }
 
@@ -88,8 +75,7 @@ function heading(text: string | undefined, fallback: React.ReactNode) {
 }
 
 export default function Homepage() {
-  const {featuredCollection: featured, browseCollections} =
-    useLoaderData<typeof loader>();
+  const {featuredCollection: featured} = useLoaderData<typeof loader>();
   const content = useSiteContent();
 
   return (
@@ -110,7 +96,7 @@ export default function Homepage() {
           </>,
         )}
         ctaLabel={content.heroCtaLabel ?? 'Shop cushions'}
-        ctaTo="/collections"
+        ctaTo={`/collections/${FEATURED_HANDLE}`}
       />
 
       <IntroStrip />
@@ -181,9 +167,7 @@ export default function Homepage() {
         }
       />
 
-      <BrowseByCollection collections={browseCollections} />
       <ValuesStrip />
-      <Newsletter />
     </>
   );
 }
@@ -231,7 +215,7 @@ function FeaturedCollection({
             </h2>
           </div>
           <UnderlineLink
-            to="/collections"
+            to={`/collections/${FEATURED_HANDLE}`}
             className="eyebrow text-ink self-start md:self-end"
             staticUnderline
           >
@@ -241,30 +225,6 @@ function FeaturedCollection({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-y-14 gap-x-10">
           {products.map((p) => (
             <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      </Container>
-    </section>
-  );
-}
-
-function BrowseByCollection({
-  collections: cols,
-}: {
-  collections: import('~/lib/mock-data').Collection[];
-}) {
-  return (
-    <section className="section-y bg-paper">
-      <Container>
-        <div className="max-w-xl mb-14">
-          <Eyebrow className="block mb-4">By Material</Eyebrow>
-          <h2 className="display-h2 text-ink">
-            Browse by <span className="italic-stone">collection</span>
-          </h2>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-6">
-          {cols.map((c) => (
-            <CollectionCard key={c.id} collection={c} />
           ))}
         </div>
       </Container>

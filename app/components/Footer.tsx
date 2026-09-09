@@ -9,7 +9,7 @@ const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
   {
     title: 'House',
     links: [
-      {to: '/atelier', label: 'The Atelier'},
+      {to: '/atelier', label: 'About Us'},
       {to: '/journal', label: 'Journal'},
       {to: '/journal/how-a-sisu-cushion-is-made', label: 'How we make'},
     ],
@@ -25,8 +25,6 @@ const COLUMNS: {title: string; links: {to: string; label: string}[]}[] = [
   {
     title: 'Letters',
     links: [
-      {to: '/account', label: 'Account'},
-      {to: '/#newsletter', label: 'Newsletter'},
       {to: '/pages/contact', label: 'Contact'},
       {to: '/pages/contact', label: 'Press'},
     ],

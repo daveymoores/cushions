@@ -4,6 +4,13 @@ import {Eyebrow} from './Eyebrow';
 import {SealMark} from './SealMark';
 import {useSiteContent} from '~/lib/content';
 
+/**
+ * Unmounted since 2026-09-09 (FAR-95): the form only ever set local state and
+ * said "thank you" — the address went nowhere. Kept intact so it can be
+ * remounted once the destination is chosen (Linear FAR-109: Shopify customers
+ * vs Klaviyo vs Mailchimp). Until then nothing renders it, and the homepage
+ * metaobject's `newsletter_heading` / `newsletter_body` fields are dormant.
+ */
 export function Newsletter() {
   const [submitted, setSubmitted] = useState(false);
   const content = useSiteContent();

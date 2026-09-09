@@ -41,7 +41,7 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 
 ## Google Search Console
 
-- [ ] Add domain property for `sisuhomeware.com`, verify via DNS TXT record in Cloudflare
+- [x] Add domain property for `sisuhomeware.com`, verify via DNS TXT record in Cloudflare (confirmed in GSC 2026-09-09)
 - [ ] Submit `https://sisuhomeware.com/sitemap.xml`
 
 ## Deferred (after launch)
@@ -56,6 +56,15 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 ## Access control / go-live switch
 
 - [i] Site is currently PRIVATE by design: sisuhomeware.com targets the password-protected Online Store; the real Hydrogen site is only on the staff-gated o2.myshopify.dev URL.
+### Pre-flip verification (do these BEFORE the go-live switch)
+
+- [ ] **Test-mode checkout.** Settings → Payments → Manage → enable test mode, then place an order on the `o2.myshopify.dev` URL with `4242 4242 4242 4242`. This is the only way to prove, rather than assume: `SISU15` actually applies (Shopify labels the discount "For Online Store" — worth disproving), inventory decrements once tracking is on, tax and shipping rates are right, and the order confirmation goes to **Jessie's** inbox, not David's.
+- [ ] **Turn test mode OFF again.** Leaving it on means every real order is silently fake. Classic launch failure.
+- [ ] **Cancel and archive the test orders** so Jessie's first week of analytics isn't polluted.
+- [ ] Test mode requires Shopify Payments to be activated — so this happens **after** the Payments handover, not before.
+- [ ] Repoint the Shopify **main menu** "Shop" item at the Cushions collection. It currently points at `/collections/all`, which does not exist on a Hydrogen storefront (`collection(handle:"all")` returns null).
+- [ ] Rename the Shopify page `atelier` to **About Us** — the nav label is now merchant-controlled, but the page `<h1>` still reads "About SISU".
+
 - [ ] **GO-LIVE SWITCH:** Shopify admin → Settings → Domains → sisuhomeware.com → Target → change "Online Store" to "Sisu (Production)". One dropdown — but do it **after** the ownership transfer below, not before.
 - [ ] Accounts plan: transfer store ownership to Jessie (jessiebrewin.nl@gmail.com) — she is the merchant/content editor; David re-joins via collaborator access from the Far Harbour Partner org (free, does not count toward the staff limit). Basic allows **0** staff accounts beyond the owner (verified against Shopify's plan user-limits page 2026-08-27), so do NOT try to add her as staff. Ordering matters: any real order taken before the transfer pays out to David's bank account and books the tax in his name.
 
@@ -88,7 +97,7 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [x] David can run `npx shopify hydrogen env pull` post-transfer — verified 2026-08-27 ("No changes to your .env file"), so Hydrogen channel + Oxygen env access survived the ownership transfer.
 - [ ] Push one trivial commit to `main` — CI deploy should still pass (`OXYGEN_DEPLOYMENT_TOKEN_1000171225` is storefront-scoped, not user-scoped, but confirm rather than assume).
 - [ ] Domain still shows Connected under Settings → Domains.
-- [ ] Transfer complete. Note this is a **gate before** go-live, not the last one — the punch list above (real prices, inventory tracking, Delivery/Returns/Contact facts, `journal` blog handle) still stands between here and flipping the GO-LIVE SWITCH.
+- [ ] Transfer complete. Note this is a **gate before** go-live, not the last one — the punch list above (real prices, inventory tracking, Delivery/Returns/Contact facts, `journal` blog handle) still stands between here and flipping the GO-LIVE SWITCH. **Re-verified 2026-09-09: all 9 variants return `quantityAvailable: null` / `availableForSale: true` — nothing can ever sell out.**
 
 ## SEO / AI discoverability (from docs/SEO-AI-AUDIT.md, 2026-08-19)
 
@@ -96,7 +105,7 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [ ] Authoring `hero_image` on the homepage metaobject gives every page a social share image (no code needed)
 - [ ] Create the blog with handle `journal` in admin (sitemap + journal routes expect it)
 - [ ] Post-cutover: `curl -X POST` both `/api/mcp` and `/api/ucp/mcp` on the live domain; correct agents.md to whichever answers (Hydrogen ≤2026.4.5 proxies only `/api/mcp`; upgrading requires a React Router 7.16 bump — separate task)
-- [ ] Set `PUBLIC_SITE_URL=https://sisuhomeware.com` in Oxygen production env (env push after code lands)
+- [x] Set `PUBLIC_SITE_URL=https://sisuhomeware.com` in Oxygen production env — verified present 2026-09-09 by pulling the production env. **Do not use `hydrogen env push`**: it pushes the entire local `.env` and would overwrite production's `SESSION_SECRET` / `PRIVATE_STOREFRONT_API_TOKEN`. Set single vars in admin → Hydrogen → Environments.
 - [ ] Enable **"Agentic storefronts"** toggle in Shopify admin (serves /.well-known/ucp — cannot be self-hosted on headless)
 - [ ] Add the **ChatGPT sales channel** in Shopify admin (no code) — product visibility in ChatGPT shopping answers
 - [ ] After go-live: verify site in **Bing Webmaster Tools** + enable IndexNow (Bing feeds ChatGPT search); watch GSC's "Generative AI performance" report (UK rollout)
@@ -123,18 +132,36 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
   - Follow-up, not done: product images are ~1.5MB PNGs only ~896px wide, so on high-DPR phones the browser picks a candidate at/above the source width and gets the original back. The remaining lever is format conversion (`&format=jpg`/webp), untouched.
 - [x] **`npm run lint` was failing repo-wide** — eslint walked `.claude/worktrees/`, whose files are in no tsconfig project, producing 55 parser errors that masked all real output. Added `**/.claude/` to the ignores in `eslint.config.js`. Now 0 errors, 1 pre-existing warning (`MarqueeText.tsx` array-index key).
 - [~] **`FALLBACK_IMAGE` 404s — decision made 2026-08-27: render no image at all**, an empty block at each slot's aspect ratio (matching the existing `materials.tsx` `bg-bone` pattern), rather than substituting a placeholder. Implementation in progress. (`app/lib/adapters.ts:22` → `cdn.shopify.com/static/images/examples/img-placeholder-1024x1024.png`, confirmed 404 on 2026-08-27). It is what renders for any product or collection with no image set, so those currently show alt text on a broken image. Pre-existing, launch-visible. Needs a decision: a local asset in `app/assets/`, an inline SVG/data-URI, or render nothing at all.
-- [ ] **Blank metafields assert false facts, not placeholders.** An empty `custom.insert` renders "Duck feather, included" and an empty `custom.care` renders "Spot clean recommended" on the live product page. That is wrong information, not a cosmetic fallback — audit before launch, or change the fallbacks to `—`.
+- [x] **Blank metafields assert false facts, not placeholders.** Fixed 2026-09-09 (FAR-94): every `custom.*` row now omits itself when blank or whitespace-only, and the whole "Object record" section disappears when all five are empty. `front_fabric` also had an unflagged "Deadstock fabric" fallback — also removed. Note for the merchant: `Trim: —` used to imply "no trim"; it now says nothing, so state "None" explicitly if that is the fact.
 - [ ] **New products need two easily-missed steps**: tick the Hydrogen sales channel (untick = the product silently does not exist on the site) and add it to the **Cushions** collection (the homepage strip and `/collections/cushions` both read that specific collection). Documented in Jessie's guide.
 - [i] Homepage render order is Hero → Intro → House Notes → cushion strip → In the studio → On Material → browse → values → newsletter. (`IntroStrip` is *defined* far below where it is *called* — a trap when reading `_index.tsx` top to bottom.)
 - [i] Hydrogen's default sub-request cache is `max-age=1, stale-while-revalidate=86399`; only `app/root.tsx` sets `CacheShort`. Practical rule: an admin edit lands on the **second** page load. Nothing takes a day, and hard-refresh/cache-clearing does nothing (it is server-side).
 - [i] Do-not-rename handles, hardcoded in the site: blog `journal`, collection `cushions`, pages `atelier`/`shipping`/`returns`/`contact`, article `how-a-sisu-cushion-is-made`.
 
+## Storefront changes, 2026-09-09 (pending/just deployed)
+
+- [x] **Header nav now renders from the Shopify `main-menu`** (FAR-112). It was hardcoded in `Header.tsx`, so the merchant's Navigation edits did nothing — the root cause of a confusing round trip. New `app/lib/nav.ts` normalises absolute menu URLs to app-relative paths using `PUBLIC_STORE_DOMAIN` / primary domain / `PUBLIC_SITE_URL` (nothing hardcoded), maps `/pages/<handle>` through `RESERVED_HANDLES`, and keeps genuinely external links absolute. Falls back to hardcoded Shop / About Us if the menu query fails or returns nothing, so a bad admin edit cannot leave the site with no nav. **Do not rename or delete "Main menu"** — looked up by handle `main-menu`. Label changes are live without a deploy but need a full page reload.
+- [x] **Branded 404 inside the layout** (FAR-115). There was no catch-all route, so any unmatched path rendered a bare error page with no header, footer or nav. Now `app/routes/$.tsx` + `app/components/NotFound.tsx`, real 404 status, `noindex`, and the root `ErrorBoundary` renders the same page for *thrown* 404s. 500 deliberately stays bare — if the layout is what failed, re-rendering it would throw again. This mattered more once the nav became merchant-controlled: Shopify's menu editor offers five destinations this site does not have (`/collections/all`, `/search`, `/policies/:handle`, `/account/login`, `/account/orders/:id`). Note `storefrontRedirect` runs *before* the 404, so admin URL redirects still rescue dead links with no code change.
+- [x] Nav cut to **Shop / About Us**; Atelier code-side title and SEO title → "About Us"; "By Appointment" strings removed; `/atelier` URL unchanged (FAR-112).
+- [x] Homepage "By Material / Browse by collection" section removed, and `COLLECTIONS_QUERY` moved into the fallback branch so it is no longer fetched on the happy path (FAR-113).
+- [x] Hero type enlarged via **hero-scoped** classes — `.display-h1` / `.eyebrow` are shared, so they were not bumped globally (FAR-114).
+- [x] Marquee slowed 45s → 90s (FAR-111).
+- [x] Newsletter form **removed** pending a real destination (FAR-95). It showed "Thank you" and discarded every address. Component kept, unmounted, with a comment pointing at FAR-109. **The `newsletter_heading` / `newsletter_body` metaobject fields are now dormant** — editing them changes nothing until the form returns.
+
+### Newsletter decision (FAR-109, decided 2026-09-09)
+
+**Shopify Email**, not Klaviyo/Mailchimp — already in the admin Jessie uses, free to 10k sends/month, templates read Settings → Brand, subscribers land in the same customer list as orders. Migratable later; the addresses are just customer records.
+
+Offer is **15% off**, framed as new fabric drops + subscriber offers (specific is both better-converting and what GDPR consent requires). Discount code **`SISU15`** created and Active: 15% off the Cushions collection, one use per customer, no minimum, no end date. One shared code — Shopify Email cannot do unique-per-subscriber without a paid app, so accept that it will eventually leak to voucher sites.
+
+Still to build: Jessie creates a custom app with `write_customers` and pastes the Admin API token straight into the Oxygen production env (David should never handle it); David then remounts the form and wires `customerCreate` with marketing consent, plus a honeypot and rate limit since it is a public endpoint. Verify end to end that a signup fires the welcome automation and the code works at checkout.
+
 ## Site-wiring audit — 2026-08-19 (open decisions)
 
 - [~] **Newsletter backend — assigned to Jessie as [FAR-109](https://linear.app/far-harbour/issue/FAR-109/decide-where-newsletter-sign-ups-should-go)** (destination is her call: Shopify customers w/ marketing consent, Klaviyo, or Mailchimp; David wires it once she picks). Form shows "Thank you" but sends the email nowhere (Newsletter.tsx preventDefault + local state only). Needs a real destination — options: server action + Admin API customerCreate w/ marketing consent (needs a runtime Admin token in Oxygen env), or Klaviyo/Mailchimp. Until wired, subscribers are silently lost.
-- [ ] **Account link**: header + footer link to an admitted placeholder page ("wired up in a follow-up step"). Decide: hide the links until Customer Accounts is built, or build it. Checkout itself is unaffected (Shopify-hosted).
+- [x] **Account link**: hidden 2026-09-09 (FAR-96) from header, mobile drawer and footer. Route file kept; Customer Accounts not built. Checkout unaffected (Shopify-hosted).
 - [ ] **Press footer link** duplicates Contact (/pages/contact); no press page exists. Remove or create page.
-- [ ] Consider deep-linking hero "Shop cushions" / "Browse all pieces" straight to /collections/cushions (collections index has only one collection).
+- [x] Hero "Shop cushions", "Browse all pieces", the cart CTA and the Shop nav link all point at `/collections/cushions` (2026-09-09). `/collections` now **302s** there rather than being deleted, so shared links survive; removed from the sitemap's `STATIC_PATHS` so the redirect is not advertised. 302 not 301 deliberately — the index should return if the store carries more than one collection, and browsers cache permanent redirects indefinitely.
 - [ ] Optional upgrade: cart drawer/aside on add-to-cart (currently inline confirmation added 2026-08-19).
 
 ## Content first pass — DONE 2026-08-19 (dummy pass for Jessie's review)
@@ -145,9 +172,9 @@ Keep statuses current: `[ ]` todo · `[~]` in progress · `[x]` done · `[>]` de
 - [x] Admin API app `sisu-content-loader` created for bulk loads — **revoke or keep**: Dev Dashboard → sisu-content-loader; token in gitignored `.sisu-loader-token` (expires ~24h)
 
 ### Review punch list (for the make-it-legit pass — see docs/COPY-DRAFTS.md markers)
-- [ ] Real prices per design/size (all €150 placeholder)
-- [ ] Delivery/Returns/Contact page facts (marked DUMMY in page HTML comments)
-- [ ] Product sizes not shown for Renee/Parker/Ada (spec metafields have no size field — decide: add size metafield or put in descriptions)
+- [ ] Real prices — **7 of 9 variants still €150**. Verified against the live Storefront API 2026-09-09: Leonie (Teal/Navy/Orange), Parker, Ada, Ember, Zia all €150; **Renee (Cream/Camel) already €120**. **Ember and Zia are new** and have been through neither pricing nor copy review.
+- [ ] Delivery/Returns/Contact facts. Re-checked 2026-09-09: **`/pages/shipping` does not exist at all** — the footer "Delivery" link 404s, which is worse than placeholder text and is EU consumer-rights content. `returns` is already rewritten (30-day policy) but cites `hello@sisu-cushions.nl`, **not the launch domain** — verify that mailbox exists. `contact` still carries its DUMMY marker.
+- [ ] Product sizes not shown (spec metafields have no size field — decide: add a size metafield or put sizes in descriptions). Now spans six products, not three. If price varies by size, sizes must become real variants rather than prose.
 - [ ] Renee Camel: corrected copy exists in COPY-DRAFTS but product shows Cream copy; back-fabric composition ⚠️
 - [ ] Parker/Ada back fabric says "Cotton-blend" (placeholder), sizes assumed 50×50
 - [ ] Inventory tracking OFF on all variants (always purchasable) — enable + set stock before real launch

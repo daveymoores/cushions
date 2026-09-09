@@ -78,16 +78,22 @@ export default function ProductPage() {
     if (idx >= 0) setActiveImage(idx);
   }, [variantImageId, carouselImages]);
 
-  // The spec comes from `custom.*` product metafields, with sensible fallbacks
-  // so the record is never empty.
+  // The spec comes from `custom.*` product metafields. A blank or whitespace-only
+  // metafield drops its row rather than falling back to a default: a stated
+  // "Duck feather, included" on a product with a synthetic insert is a false
+  // claim, not a sensible placeholder. If every field is blank the section below
+  // renders nothing at all.
   const d = product.details;
-  const objectRecord: {label: string; value: string}[] = [
-    {label: 'Front fabric', value: d?.frontFabric ?? 'Deadstock fabric'},
-    {label: 'Back fabric', value: d?.backFabric ?? '—'},
-    {label: 'Trim', value: d?.trim ?? '—'},
-    {label: 'Insert', value: d?.insert ?? 'Duck feather, included'},
-    {label: 'Care', value: d?.care ?? 'Spot clean recommended'},
-  ];
+  const objectRecord = [
+    {label: 'Front fabric', value: d?.frontFabric},
+    {label: 'Back fabric', value: d?.backFabric},
+    {label: 'Trim', value: d?.trim},
+    {label: 'Insert', value: d?.insert},
+    {label: 'Care', value: d?.care},
+  ].flatMap(({label, value}) => {
+    const trimmed = value?.trim();
+    return trimmed ? [{label, value: trimmed}] : [];
+  });
 
   return (
     <>
@@ -273,25 +279,29 @@ export default function ProductPage() {
           </div>
         </div>
 
-        <section className="mt-20 lg:mt-32">
-          <div className="flex items-center gap-4 mb-10">
-            <SealMark size={14} className="text-ink/70" />
-            <Eyebrow>Object record</Eyebrow>
-          </div>
-          <dl className="border-t border-hairline">
-            {objectRecord.map((row) => (
-              <div
-                key={row.label}
-                className="grid grid-cols-12 gap-6 py-5 border-b border-hairline"
-              >
-                <dt className="col-span-4 md:col-span-3 eyebrow">{row.label}</dt>
-                <dd className="col-span-8 md:col-span-9 text-[14px] font-light text-ink">
-                  {row.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+        {objectRecord.length > 0 ? (
+          <section className="mt-20 lg:mt-32">
+            <div className="flex items-center gap-4 mb-10">
+              <SealMark size={14} className="text-ink/70" />
+              <Eyebrow>Object record</Eyebrow>
+            </div>
+            <dl className="border-t border-hairline">
+              {objectRecord.map((row) => (
+                <div
+                  key={row.label}
+                  className="grid grid-cols-12 gap-6 py-5 border-b border-hairline"
+                >
+                  <dt className="col-span-4 md:col-span-3 eyebrow">
+                    {row.label}
+                  </dt>
+                  <dd className="col-span-8 md:col-span-9 text-[14px] font-light text-ink">
+                    {row.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ) : null}
       </Container>
 
       {/* Lifestyle photography, split out of the carousel by

@@ -52,14 +52,14 @@ export function Hero({imageSrc, imageAlt, eyebrow, heading, ctaLabel, ctaTo}: Pr
         <div className="container-page w-full pb-12 lg:pb-24">
           <div className="max-w-xl text-paper">
             <span
-              className="eyebrow stagger-rise block text-paper/80"
+              className="eyebrow hero-eyebrow stagger-rise block text-paper/80"
               data-no-animate={skipAnim || undefined}
               style={{animationDelay: '60ms'}}
             >
               {eyebrow}
             </span>
             <h1
-              className="display-h1 mt-5 stagger-rise"
+              className="display-h1 hero-display mt-5 stagger-rise"
               data-no-animate={skipAnim || undefined}
               style={{animationDelay: '160ms'}}
             >
@@ -72,7 +72,7 @@ export function Hero({imageSrc, imageAlt, eyebrow, heading, ctaLabel, ctaTo}: Pr
             >
               <Link
                 to={ctaTo}
-                className="arrow-link text-paper"
+                className="arrow-link hero-cta text-paper"
                 aria-label={ctaLabel}
               >
                 <span>{ctaLabel}</span>

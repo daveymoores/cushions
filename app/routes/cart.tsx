@@ -67,7 +67,7 @@ export default function Cart() {
         </p>
         <div className="mt-10">
           <UnderlineLink
-            to="/collections"
+            to="/collections/cushions"
             staticUnderline
             className="eyebrow text-ink"
           >

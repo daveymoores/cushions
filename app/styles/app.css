@@ -233,6 +233,27 @@
     cursor: not-allowed;
   }
 
+  /* Homepage hero only. The shared display scale is tuned for body-copy
+     headings; the hero is the first thing anyone sees and reads small at it.
+     Fluid so the longest managed strings still wrap rather than overflow at
+     320px, and `opsz` tracks the rendered size so Fraunces doesn't go heavy. */
+  .hero-eyebrow {
+    font-size: clamp(11px, 1.4vw, 13px);
+    line-height: 1.5;
+  }
+  .hero-display {
+    font-size: clamp(34px, 7.2vw, 64px);
+    font-variation-settings: 'opsz' 40;
+  }
+  @media (min-width: 768px) {
+    .hero-display {
+      font-variation-settings: 'opsz' 64;
+    }
+  }
+  .hero-cta {
+    font-size: clamp(12px, 1.1vw, 14px);
+  }
+
   .product-card-image {
     overflow: hidden;
     background-color: var(--color-bone);
@@ -275,7 +296,7 @@
     flex-shrink: 0;
     gap: 56px;
     padding-inline: 28px;
-    animation: marquee 45s linear infinite;
+    animation: marquee 90s linear infinite;
   }
   @keyframes marquee {
     from {

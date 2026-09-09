@@ -6,17 +6,10 @@ import {SealMark} from '~/components/SealMark';
 import {PAGE_QUERY} from '~/lib/queries';
 import {usesMockData} from '~/lib/storefront';
 import {routeMeta, pageSeo} from '~/lib/seo';
+import {RESERVED_HANDLES} from '~/lib/nav';
 
 export const meta: Route.MetaFunction = ({data, matches}) =>
   routeMeta(matches, data?.seo);
-
-/**
- * Page handles that have a hand-built route of their own. `/pages/<handle>`
- * 301s to it so the same content never lives at two indexable URLs.
- */
-const RESERVED_HANDLES: Record<string, string> = {
-  atelier: '/atelier',
-};
 
 /**
  * Generic Shopify Page renderer. Any Page created in admin (Online Store →

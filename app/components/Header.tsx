@@ -1,21 +1,29 @@
 import {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useRouteLoaderData} from 'react-router';
 import type {RootLoader} from '~/root';
+import type {NavLink} from '~/lib/nav';
 import {Container} from './Container';
 import {UnderlineLink} from './UnderlineLink';
 import {SealMark} from './SealMark';
 
-const PRIMARY_LINKS = [
-  {to: '/collections', label: 'Shop'},
-  {to: '/materials', label: 'Fabrics'},
-  {to: '/journal', label: 'Journal'},
-  {to: '/atelier', label: 'Atelier'},
+/**
+ * The primary nav renders the merchant's Shopify `main-menu`. These are the
+ * links used when that menu can't be read — query failure, a deleted or
+ * renamed menu, or every item unusable — because a bad admin edit or an API
+ * blip must never leave the site with no navigation at all.
+ */
+const FALLBACK_PRIMARY_LINKS: NavLink[] = [
+  {
+    id: 'fallback-shop',
+    to: '/collections/cushions',
+    label: 'Shop',
+    external: false,
+  },
+  {id: 'fallback-about', to: '/atelier', label: 'About Us', external: false},
 ];
 
-const SECONDARY_LINKS = [
-  {to: '/account', label: 'Account'},
-  {to: '/cart', label: 'Cart', cartDot: true},
-];
+// Customer Accounts isn't built, so the cart is the only "yours" link.
+const CART_LINK = {to: '/cart', label: 'Cart', cartDot: true};
 
 type NavCollection = {id: string; handle: string; title: string};
 
@@ -25,6 +33,9 @@ export function Header() {
   const location = useLocation();
   const rootData = useRouteLoaderData<RootLoader>('root');
   const navCollections: NavCollection[] = rootData?.collections ?? [];
+  const menuLinks = rootData?.menu ?? [];
+  const primaryLinks =
+    menuLinks.length > 0 ? menuLinks : FALLBACK_PRIMARY_LINKS;
 
   useEffect(() => {
     let frame = 0;
@@ -80,10 +91,13 @@ export function Header() {
         >
           {/* Left: desktop nav, mobile hamburger */}
           <nav className="hidden md:flex items-center gap-7 eyebrow text-ink/85">
-            {PRIMARY_LINKS.map((l) => (
-              <UnderlineLink key={l.to} to={l.to} className="text-ink/85">
-                {l.label}
-              </UnderlineLink>
+            {primaryLinks.map((l) => (
+              <NavLinkItem
+                key={l.id}
+                link={l}
+                underline
+                className="text-ink/85"
+              />
             ))}
           </nav>
           <div className="md:hidden">
@@ -108,16 +122,9 @@ export function Header() {
             Sisu
           </Link>
 
-          {/* Right: account/cart on desktop, cart-only on mobile */}
+          {/* Right: cart */}
           <nav className="flex items-center justify-end gap-5 sm:gap-7 eyebrow text-ink/85">
-            <div className="hidden md:flex items-center gap-7">
-              {SECONDARY_LINKS.map((l) => (
-                <CartLink key={l.to} link={l} />
-              ))}
-            </div>
-            <div className="md:hidden">
-              <CartLink link={SECONDARY_LINKS[1]} />
-            </div>
+            <CartLink link={CART_LINK} />
           </nav>
         </div>
       </Container>
@@ -135,13 +142,56 @@ export function Header() {
       <MobileNavDrawer
         open={open}
         onClose={() => setOpen(false)}
+        links={primaryLinks}
         collections={navCollections}
       />
     </header>
   );
 }
 
-function CartLink({link}: {link: (typeof SECONDARY_LINKS)[number]}) {
+/**
+ * A menu item can point off-site, and React Router's `<Link>` is for in-app
+ * routes only — an external item renders as a plain anchor instead, with
+ * `rel="noreferrer"` so this site isn't named in the outbound referrer.
+ */
+function NavLinkItem({
+  link,
+  className = '',
+  onClick,
+  underline = false,
+}: {
+  link: NavLink;
+  className?: string;
+  onClick?: () => void;
+  underline?: boolean;
+}) {
+  if (link.external) {
+    return (
+      <a
+        href={link.to}
+        rel="noreferrer"
+        onClick={onClick}
+        className={underline ? `underline-link ${className}` : className}
+      >
+        {link.label}
+      </a>
+    );
+  }
+  if (underline) {
+    return (
+      <UnderlineLink to={link.to} onClick={onClick} className={className}>
+        {link.label}
+      </UnderlineLink>
+    );
+  }
+  return (
+    <Link to={link.to} onClick={onClick} className={className}>
+      {link.label}
+    </Link>
+  );
+}
+
+function CartLink({link}: {link: typeof CART_LINK}) {
   const rootData = useRouteLoaderData<RootLoader>('root');
   const count = rootData?.cart?.totalQuantity ?? 0;
   return (
@@ -198,10 +248,12 @@ function CloseIcon() {
 function MobileNavDrawer({
   open,
   onClose,
+  links,
   collections,
 }: {
   open: boolean;
   onClose: () => void;
+  links: NavLink[];
   collections: NavCollection[];
 }) {
   return (
@@ -234,15 +286,13 @@ function MobileNavDrawer({
           <div className="mb-10">
             <span className="eyebrow block mb-5">Browse</span>
             <ul className="space-y-5">
-              {PRIMARY_LINKS.map((l) => (
-                <li key={l.to}>
-                  <Link
-                    to={l.to}
+              {links.map((l) => (
+                <li key={l.id}>
+                  <NavLinkItem
+                    link={l}
                     onClick={onClose}
                     className="display-h2 text-ink block"
-                  >
-                    {l.label}
-                  </Link>
+                  />
                 </li>
               ))}
             </ul>
@@ -269,19 +319,13 @@ function MobileNavDrawer({
 
           <div>
             <span className="eyebrow block mb-5">Yours</span>
-            <ul className="space-y-3">
-              {SECONDARY_LINKS.map((l) => (
-                <li key={l.to}>
-                  <Link
-                    to={l.to}
-                    onClick={onClose}
-                    className="text-[15px] font-light text-ink"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <Link
+              to={CART_LINK.to}
+              onClick={onClose}
+              className="text-[15px] font-light text-ink"
+            >
+              {CART_LINK.label}
+            </Link>
           </div>
         </div>
 
