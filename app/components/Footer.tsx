@@ -75,6 +75,24 @@ const FALLBACK_COLUMNS: NavColumn[] = [
       {id: 'fallback-faq', to: '/pages/faq', label: 'FAQ', external: false},
     ],
   },
+  {
+    id: 'fallback-legal',
+    title: 'Legal',
+    links: [
+      {
+        id: 'fallback-privacy',
+        to: '/policies/privacy-policy',
+        label: 'Privacy Policy',
+        external: false,
+      },
+      {
+        id: 'fallback-contact-info',
+        to: '/policies/contact',
+        label: 'Contact Information',
+        external: false,
+      },
+    ],
+  },
 ];
 
 export function Footer() {
