@@ -3,22 +3,17 @@ import {SITEMAP_QUERY} from '~/lib/queries';
 import {isVisibleCollection} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
 import {siteOrigin} from '~/lib/seo';
+import {RESERVED_HANDLES} from '~/lib/nav';
 
 /**
- * `/collections` 301s to the cushions collection (see `collections._index.tsx`)
- * and the collection itself is emitted from the query below, so it isn't listed
- * here — that would put a redirect in the sitemap.
+ * `/collections` redirects (a deliberate 302 — see `collections._index.tsx`) to
+ * the cushions collection, and the collection itself is emitted from the query
+ * below, so it isn't listed here — that would put a redirect in the sitemap.
  */
 const STATIC_PATHS = ['/', '/journal', '/materials', '/atelier'];
 
 /** Handle of the Shopify blog rendered at /journal. */
 const BLOG_HANDLE = 'journal';
-
-/**
- * Page handles that 301 elsewhere (see `pages.$handle.tsx`) — listing them
- * would put a redirect in the sitemap.
- */
-const REDIRECTED_PAGE_HANDLES = new Set(['atelier']);
 
 type Entry = {loc: string; lastmod?: string | null};
 
@@ -46,8 +41,11 @@ export async function loader({context, request}: Route.LoaderArgs) {
         loc: `${origin}/collections/${c.handle}`,
         lastmod: c.updatedAt,
       })),
+      // Pages with a bespoke route 301 to it (see `pages.$handle.tsx`), so
+      // listing them would put a redirect in the sitemap. Same map and same
+      // test as the redirect, so the two can't drift apart.
       ...pages.nodes
-        .filter((p) => !REDIRECTED_PAGE_HANDLES.has(p.handle))
+        .filter((p) => !RESERVED_HANDLES[p.handle])
         .map((p) => ({
           loc: `${origin}/pages/${p.handle}`,
           lastmod: p.updatedAt,

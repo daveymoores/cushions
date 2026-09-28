@@ -88,6 +88,13 @@ All content lives in Shopify admin and is read **live from the Storefront API**
 at request time. **Content edits never need a deploy.** There is no build step,
 no sync job, and no "publish the site" button.
 
+⚠️ **One exception: shipping rates and the returns policy.** Google's structured
+data needs them in machine-readable form, so `app/lib/policies.ts` mirrors
+Settings → Shipping and delivery and the `returns` page by hand. If Jessie
+changes either, update that file and deploy, or Google keeps showing the old
+policy. Its header comment has the Storefront API recipe for re-checking the
+real checkout rates.
+
 ### Caching — the real numbers
 
 Two strategies are in play, and both land in the same place practically:
@@ -118,7 +125,7 @@ anywhere:
 | Handle | Kind | Where it's hardcoded | Failure mode |
 |---|---|---|---|
 | `journal` | Blog | `journal._index.tsx`, `journal.$handle.tsx`, `[sitemap.xml].tsx` | Whole journal 404s, no fallback |
-| `cushions` | Collection | `FEATURED_HANDLE` in `app/routes/_index.tsx:34` | Homepage silently features some other collection |
+| `cushions` | Collection | `FEATURED_HANDLE` in `app/routes/_index.tsx`; `SHOP_COLLECTION_HANDLE` in `app/lib/nav.ts` (the `/collections` redirect, product breadcrumbs); literal in `components/Header.tsx` (fallback nav) and `components/NotFound.tsx` | Homepage silently features some other collection; `/collections`, the "Shop" breadcrumb and those links lead to a 404 |
 | `atelier` | Page | `atelier.tsx`; `/pages/atelier` 301s to `/atelier` | Atelier route falls back to a stub |
 | `shipping`, `returns`, `contact` | Pages | `components/Footer.tsx` | Footer links 404 |
 | `how-a-sisu-cushion-is-made` | Article | `components/Footer.tsx` | Footer link 404s |

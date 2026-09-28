@@ -1,4 +1,5 @@
 import {redirect} from 'react-router';
+import {SHOP_COLLECTION_HANDLE} from '~/lib/nav';
 
 /**
  * The store carries a single collection, so an index of collections reads as a
@@ -10,5 +11,5 @@ import {redirect} from 'react-router';
  * is no SEO equity to consolidate here — the URL has never been public.
  */
 export async function loader() {
-  throw redirect('/collections/cushions', 302);
+  throw redirect(`/collections/${SHOP_COLLECTION_HANDLE}`, 302);
 }

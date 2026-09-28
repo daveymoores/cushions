@@ -7,6 +7,13 @@
 import {getSeoMeta, type SeoConfig} from '@shopify/hydrogen';
 import type {Product, Collection} from '~/lib/mock-data';
 import {usesMockData} from '~/lib/storefront';
+import {SHOP_COLLECTION_HANDLE} from '~/lib/nav';
+import {
+  offerReturnPolicy,
+  offerShippingDetails,
+  organizationReturnPolicy,
+  organizationShippingService,
+} from '~/lib/policies';
 
 export const SITE_NAME = 'Sisu';
 
@@ -142,6 +149,10 @@ export function rootSeo(
         name: SITE_NAME,
         url: site,
         description: SITE_DESCRIPTION,
+        // Google's recommended home for a site-wide policy. Offers repeat the
+        // subset they support — see `productSeo`.
+        hasMerchantReturnPolicy: organizationReturnPolicy(site),
+        hasShippingService: organizationShippingService(),
       },
       {
         '@context': 'https://schema.org',
@@ -188,6 +199,7 @@ export function productSeo(
   // is a malformed Product for Google's rich results, and there is no stand-in
   // URL to emit in its place.
   const images = product.images.map((i) => i.url);
+  const {amount, currencyCode} = product.priceRange.minVariantPrice;
   return {
     title: product.title,
     description:
@@ -204,17 +216,23 @@ export function productSeo(
         brand: {'@type': 'Brand', name: product.vendor || SITE_NAME},
         offers: {
           '@type': 'Offer',
-          price: product.priceRange.minVariantPrice.amount,
-          priceCurrency: product.priceRange.minVariantPrice.currencyCode,
+          price: amount,
+          priceCurrency: currencyCode,
           availability: inStock
             ? 'https://schema.org/InStock'
             : 'https://schema.org/OutOfStock',
           url,
+          // The Organization already carries both policies. Google doesn't
+          // say whether that alone satisfies its offer-level checks, so the
+          // offer states them too, from the same constants.
+          hasMerchantReturnPolicy: offerReturnPolicy(),
+          shippingDetails: offerShippingDetails(Number(amount), currencyCode),
         },
       },
+      // `/collections` is a redirect; point "Shop" at where it lands.
       breadcrumb(site, [
         {name: 'Home', path: '/'},
-        {name: 'Shop', path: '/collections'},
+        {name: 'Shop', path: `/collections/${SHOP_COLLECTION_HANDLE}`},
         {name: product.title, path: `/products/${product.handle}`},
       ]),
     ] as JsonLd,
@@ -243,9 +261,9 @@ export function collectionSeo(
         description: collection.description,
         url,
       },
+      // No "Collections" crumb: `/collections` only redirects back here.
       breadcrumb(site, [
         {name: 'Home', path: '/'},
-        {name: 'Collections', path: '/collections'},
         {name: collection.title, path: `/collections/${collection.handle}`},
       ]),
     ] as JsonLd,

@@ -18,6 +18,13 @@ export const RESERVED_HANDLES: Record<string, string> = {
   fabrics: '/materials',
 };
 
+/**
+ * Handle of the store's one collection. `/collections` redirects to it, and
+ * the "Shop" breadcrumb in product structured data points at it directly so
+ * Google isn't handed the redirect.
+ */
+export const SHOP_COLLECTION_HANDLE = 'cushions';
+
 /** A single primary-nav entry, already resolved to something renderable. */
 export type NavLink = {
   id: string;
