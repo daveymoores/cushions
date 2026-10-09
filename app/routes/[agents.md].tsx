@@ -1,5 +1,6 @@
 import type {Route} from './+types/[agents.md]';
 import {siteOrigin} from '~/lib/seo';
+import {SHOP_COLLECTION_HANDLE} from '~/lib/nav';
 
 /**
  * `/agents.md` — Shopify's canonical agent-discovery file, and the one piece of
@@ -7,16 +8,35 @@ import {siteOrigin} from '~/lib/seo';
  *
  * On an Online Store this is generated from the `agents-md.liquid` theme
  * template and linked from Shopify's own robots.txt. Oxygen inherits none of
- * it, so without this route the brand domain loses agent discovery the day the
- * domain is cut over. (`/.well-known/ucp` is the opposite case: Shopify serves
- * it and it cannot be self-hosted — enable "Agentic storefronts" in admin.)
+ * it, so without this route the brand domain has no agent guide.
  *
- * The MCP path below is the one Hydrogen's own request handler proxies:
- * `createRequestHandler` matches `/^\/api\/mcp$/` and forwards to
- * `<shop>.myshopify.com/api/mcp`. Shopify's Online Store robots.txt advertises
- * `/api/ucp/mcp`; that path is NOT proxied by the installed Hydrogen
- * (2026.4.2, and unchanged in 2026.4.5), so advertising it here would 404.
- * Re-check after any Hydrogen upgrade.
+ * The commerce endpoints listed below are not served by this app. On the
+ * brand domain Shopify's edge answers all three before a request reaches
+ * Oxygen — their responses carry `powered-by: Shopify`, where anything this
+ * app renders says `Shopify, Oxygen, Hydrogen` (checked 2026-10-09):
+ *
+ * - `/.well-known/ucp` — the Universal Commerce Protocol manifest. Every page
+ *   also gets `link: </.well-known/ucp>; rel="ucp"` from the edge. Its
+ *   `endpoint` names the myshopify host; agents treat the manifest as
+ *   canonical.
+ * - `/api/ucp/mcp` — UCP over MCP: catalogue search, product lookup, cart,
+ *   checkout and order tools.
+ * - `/api/mcp` — Shopify's storefront MCP. On this store its `tools/list`
+ *   returns only `search_shop_policies_and_faqs`, so it is listed for
+ *   policies, not for the catalogue.
+ *
+ * Hydrogen's `createRequestHandler` also proxies `/^\/api\/mcp$/` to the
+ * myshopify domain, but only requests that reach Oxygen use it — a preview
+ * deployment or local dev. It does not proxy `/api/ucp/mcp`, so on those
+ * hosts that path 404s. The links below are built from `siteOrigin`, i.e.
+ * `PUBLIC_SITE_URL`, so they name the brand domain even when this file is
+ * served from a preview. To re-check, POST
+ * `{"jsonrpc":"2.0","id":1,"method":"tools/list"}` to each MCP path on the
+ * brand domain and look at the tool names and the `powered-by` header.
+ *
+ * Key pages mirror the live `main-menu` (Shop, About) plus the footer's
+ * Journal and Fabrics, each at the URL it resolves to — never one that
+ * redirects (`/collections` 302s, `/pages/atelier` 301s).
  */
 export async function loader({context, request}: Route.LoaderArgs) {
   const site = siteOrigin(request, context.env);
@@ -35,14 +55,19 @@ Content on this site is written by the maker.
 
 ## Key pages
 
-- [Collections](${site}/collections): all cushion collections
+- [Shop](${site}/collections/${SHOP_COLLECTION_HANDLE}): every cushion currently for sale
+- [About](${site}/atelier): who makes the cushions, and how
 - [Fabrics](${site}/materials): the deadstock fabrics behind each cushion
-- [The Atelier](${site}/atelier): who makes the cushions, and how
 - [Journal](${site}/journal): notes on deadstock fabric and making
+- [Shipping](${site}/pages/shipping), [Returns](${site}/pages/returns),
+  [FAQ](${site}/pages/faq), [Contact](${site}/pages/contact)
 
 ## Commerce
 
-- Product catalogue and cart: MCP endpoint at ${site}/api/mcp
+- Universal Commerce Protocol manifest: ${site}/.well-known/ucp
+  (also advertised on every page as \`Link: </.well-known/ucp>; rel="ucp"\`)
+- Catalogue, cart and checkout: UCP MCP endpoint at ${site}/api/ucp/mcp
+- Store policies and FAQs: MCP endpoint at ${site}/api/mcp
 - Cart: ${site}/cart
 - Checkout requires explicit human approval. Do not complete payment
   automatically on a person's behalf.
