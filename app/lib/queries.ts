@@ -252,20 +252,28 @@ const NAV_MENU_FRAGMENT = `#graphql
 ` as const;
 
 /**
- * Both merchant-editable menus in a single round trip — the header's
- * `main-menu` and the footer's `footer` — aliased rather than queried
- * separately so one nav read costs one request.
+ * Every merchant-editable menu in a single round trip — the header's
+ * `main-menu`, the footer's `footer` and the footer's social icons, `social`
+ * (see `~/lib/social`) — aliased rather than queried separately so one nav read
+ * costs one request.
  *
  * `items.url` is absolute on whichever domain the shop is published under, so
  * `shop.primaryDomain` is fetched alongside them — `~/lib/nav` needs the set of
  * hosts that count as "this site" to re-base each item onto an app path.
  */
 export const MENUS_QUERY = `#graphql
-  query Menus($mainHandle: String!, $footerHandle: String!) {
+  query Menus(
+    $mainHandle: String!
+    $footerHandle: String!
+    $socialHandle: String!
+  ) {
     main: menu(handle: $mainHandle) {
       ...NavMenu
     }
     footer: menu(handle: $footerHandle) {
+      ...NavMenu
+    }
+    social: menu(handle: $socialHandle) {
       ...NavMenu
     }
     shop {

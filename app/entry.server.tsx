@@ -36,6 +36,13 @@ export default async function handleRequest(
       'https://cdn.shopify.com',
       'https://shopify.com',
       'https://images.unsplash.com',
+      // Behold's CDN, for the homepage Instagram strip (app/lib/instagram.ts).
+      // The feed is fetched server-side, so only the images need allowing. The
+      // live feed serves from the bare domain and Behold's docs also show
+      // `cdn.` / `cdn2.`; a `*.` wildcard never matches the bare domain, hence
+      // both entries.
+      'https://behold.pictures',
+      'https://*.behold.pictures',
     ],
     // eu-assets.i.posthog.com serves posthog-js's lazily loaded extension
     // bundles (session recorder, surveys, toolbar) — they're <script> loads,

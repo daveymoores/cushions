@@ -23,5 +23,11 @@ declare global {
      * site. Falls back to the request origin when unset — see `siteOrigin()`.
      */
     PUBLIC_SITE_URL?: string;
+    /**
+     * Behold JSON feed for the homepage Instagram strip: the ID at the end of
+     * `https://feeds.behold.so/<id>` (the whole URL is accepted too). Server
+     * only — never sent to the browser. Unset = no Instagram section.
+     */
+    BEHOLD_FEED_ID?: string;
   }
 }

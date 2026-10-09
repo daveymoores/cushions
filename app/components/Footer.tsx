@@ -1,10 +1,16 @@
 import {useRouteLoaderData} from 'react-router';
 import type {RootLoader} from '~/root';
 import type {NavColumn, NavLink} from '~/lib/nav';
+import {
+  FALLBACK_SOCIAL_LINKS,
+  SOCIAL_PLATFORM_NAMES,
+  socialPlatformOf,
+} from '~/lib/social';
 import {Container} from './Container';
 import {UnderlineLink} from './UnderlineLink';
 import {Eyebrow} from './Eyebrow';
 import {SealMark} from './SealMark';
+import {SocialIcon} from './SocialIcon';
 
 /**
  * The footer's link columns render the merchant's Shopify `footer` menu, one
@@ -99,6 +105,9 @@ export function Footer() {
   const rootData = useRouteLoaderData<RootLoader>('root');
   const collections = rootData?.collections ?? [];
   const menuColumns = rootData?.footerMenu ?? [];
+  // Already resolved to the `social` menu or its fallback by the root loader;
+  // the fallback here only covers a render with no root data at all.
+  const socialLinks = rootData?.socialLinks ?? FALLBACK_SOCIAL_LINKS;
 
   // Shop column is driven by live Shopify collections, not by the menu: with a
   // single collection a merchant-authored Shop column would add nothing, and a
@@ -152,12 +161,53 @@ export function Footer() {
           <p className="eyebrow text-ash max-w-[420px]">
             Cushions made from deadstock fabric · sewn in Amsterdam
           </p>
+          {socialLinks.length > 0 ? <SocialLinks links={socialLinks} /> : null}
           <p className="caption mt-2 text-stone">
             © {new Date().getFullYear()} Sisu. All rights reserved.
           </p>
         </div>
       </Container>
     </footer>
+  );
+}
+
+/**
+ * The brand's social profiles as a quiet row of marks under the tagline — its
+ * own slot rather than a footer column, so it never competes with (or is
+ * replaced alongside) the merchant's `footer` menu. A site we have no mark for
+ * shows its menu title instead. 40px hit areas around 16px marks.
+ */
+function SocialLinks({links}: {links: NavLink[]}) {
+  return (
+    <ul
+      aria-label="Sisu on social media"
+      className="flex flex-wrap items-center justify-center gap-x-1"
+    >
+      {links.map((link) => {
+        const platform = socialPlatformOf(link.to);
+        return (
+          <li key={link.id}>
+            <a
+              href={link.to}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={
+                platform
+                  ? `Sisu on ${SOCIAL_PLATFORM_NAMES[platform]}`
+                  : undefined
+              }
+              className="inline-flex h-10 min-w-10 items-center justify-center px-1 text-ash transition-colors duration-500 ease-quiet hover:text-ink focus-visible:text-ink"
+            >
+              {platform ? (
+                <SocialIcon platform={platform} className="h-4 w-4" />
+              ) : (
+                <span className="eyebrow text-inherit">{link.label}</span>
+              )}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 

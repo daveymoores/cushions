@@ -1,4 +1,5 @@
-import {useLoaderData} from 'react-router';
+import {Suspense} from 'react';
+import {Await, useLoaderData} from 'react-router';
 import type {Route} from './+types/_index';
 import {Container} from '~/components/Container';
 import {Eyebrow} from '~/components/Eyebrow';
@@ -9,7 +10,9 @@ import {BleedSection} from '~/components/BleedSection';
 import {ValuesStrip} from '~/components/ValuesStrip';
 import {Hero} from '~/components/Hero';
 import {SealMark} from '~/components/SealMark';
+import {InstagramFeed} from '~/components/InstagramFeed';
 import {featuredCollection, placeholderImages} from '~/lib/mock-data';
+import {loadInstagramFeed} from '~/lib/instagram';
 import {COLLECTION_QUERY, COLLECTIONS_QUERY} from '~/lib/queries';
 import {isVisibleCollection, toCollection} from '~/lib/adapters';
 import {usesMockData} from '~/lib/storefront';
@@ -34,8 +37,13 @@ export async function loader({context, request}: Route.LoaderArgs) {
     url: canonical(request, context.env),
   };
 
+  // Deliberately not awaited: the Instagram strip streams in after the rest of
+  // the page, so Behold can never hold it up. Resolves to `null` — never
+  // rejects — when there's nothing to show.
+  const instagram = loadInstagramFeed(context);
+
   if (usesMockData(context.env)) {
-    return {seo, featuredCollection};
+    return {seo, featuredCollection, instagram};
   }
 
   const {storefront} = context;
@@ -66,6 +74,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
     featuredCollection: featured
       ? toCollection(featured)
       : {...featuredCollection, products: {nodes: []}},
+    instagram,
   };
 }
 
@@ -75,7 +84,8 @@ function heading(text: string | undefined, fallback: React.ReactNode) {
 }
 
 export default function Homepage() {
-  const {featuredCollection: featured} = useLoaderData<typeof loader>();
+  const {featuredCollection: featured, instagram} =
+    useLoaderData<typeof loader>();
   const content = useSiteContent();
 
   return (
@@ -168,6 +178,15 @@ export default function Homepage() {
       />
 
       <ValuesStrip />
+
+      {/* No fallback: until (and unless) the feed arrives there is no section,
+          not an empty one. `errorElement` is belt and braces — the promise
+          never rejects, but without one a rejection would take the page. */}
+      <Suspense fallback={null}>
+        <Await resolve={instagram} errorElement={<></>}>
+          {(feed) => (feed ? <InstagramFeed feed={feed} /> : null)}
+        </Await>
+      </Suspense>
     </>
   );
 }

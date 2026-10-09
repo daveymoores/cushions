@@ -281,6 +281,7 @@ export type NavMenuFragment = Pick<StorefrontAPI.Menu, 'id'> & {
 export type MenusQueryVariables = StorefrontAPI.Exact<{
   mainHandle: StorefrontAPI.Scalars['String']['input'];
   footerHandle: StorefrontAPI.Scalars['String']['input'];
+  socialHandle: StorefrontAPI.Scalars['String']['input'];
 }>;
 
 export type MenusQuery = {
@@ -296,6 +297,17 @@ export type MenusQuery = {
     }
   >;
   footer?: StorefrontAPI.Maybe<
+    Pick<StorefrontAPI.Menu, 'id'> & {
+      items: Array<
+        Pick<StorefrontAPI.MenuItem, 'id' | 'title' | 'type' | 'url'> & {
+          items: Array<
+            Pick<StorefrontAPI.MenuItem, 'id' | 'title' | 'type' | 'url'>
+          >;
+        }
+      >;
+    }
+  >;
+  social?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Menu, 'id'> & {
       items: Array<
         Pick<StorefrontAPI.MenuItem, 'id' | 'title' | 'type' | 'url'> & {
@@ -550,7 +562,7 @@ interface GeneratedQueryTypes {
     return: NavCollectionsQuery;
     variables: NavCollectionsQueryVariables;
   };
-  '#graphql\n  query Menus($mainHandle: String!, $footerHandle: String!) {\n    main: menu(handle: $mainHandle) {\n      ...NavMenu\n    }\n    footer: menu(handle: $footerHandle) {\n      ...NavMenu\n    }\n    shop {\n      primaryDomain {\n        url\n      }\n    }\n  }\n  #graphql\n  fragment NavMenu on Menu {\n    id\n    items {\n      id\n      title\n      type\n      url\n      items {\n        id\n        title\n        type\n        url\n      }\n    }\n  }\n\n': {
+  '#graphql\n  query Menus(\n    $mainHandle: String!\n    $footerHandle: String!\n    $socialHandle: String!\n  ) {\n    main: menu(handle: $mainHandle) {\n      ...NavMenu\n    }\n    footer: menu(handle: $footerHandle) {\n      ...NavMenu\n    }\n    social: menu(handle: $socialHandle) {\n      ...NavMenu\n    }\n    shop {\n      primaryDomain {\n        url\n      }\n    }\n  }\n  #graphql\n  fragment NavMenu on Menu {\n    id\n    items {\n      id\n      title\n      type\n      url\n      items {\n        id\n        title\n        type\n        url\n      }\n    }\n  }\n\n': {
     return: MenusQuery;
     variables: MenusQueryVariables;
   };

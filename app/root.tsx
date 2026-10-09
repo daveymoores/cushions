@@ -22,6 +22,7 @@ import {
   SITE_CONTENT_QUERY,
 } from '~/lib/queries';
 import {toNavColumns, toNavLinks} from '~/lib/nav';
+import {FALLBACK_SOCIAL_LINKS, toSocialLinks} from '~/lib/social';
 import {usesMockData} from '~/lib/storefront';
 import {collections} from '~/lib/mock-data';
 import {NOT_FOUND_TITLE, rootSeo, routeMeta} from '~/lib/seo';
@@ -108,7 +109,12 @@ export async function loader({context, request}: Route.LoaderArgs) {
   if (usesMockData(context.env)) {
     return {
       cart,
-      seo: rootSeo(request, context.env),
+      seo: rootSeo(
+        request,
+        context.env,
+        undefined,
+        FALLBACK_SOCIAL_LINKS.map((link) => link.to),
+      ),
       posthog,
       content: emptyContent,
       collections: collections.map((c) => ({
@@ -120,6 +126,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
       // fallbacks.
       menu: [],
       footerMenu: [],
+      socialLinks: FALLBACK_SOCIAL_LINKS,
     };
   }
 
@@ -135,17 +142,35 @@ export async function loader({context, request}: Route.LoaderArgs) {
     // Short cache, so a navigation edit shows up within ~seconds like content.
     context.storefront
       .query(MENUS_QUERY, {
-        variables: {mainHandle: 'main-menu', footerHandle: 'footer'},
+        variables: {
+          mainHandle: 'main-menu',
+          footerHandle: 'footer',
+          socialHandle: 'social',
+        },
         cache: context.storefront.CacheShort(),
       })
       .catch(() => null),
   ]);
   const content = toSiteContent(contentResult);
+  // Resolved once here because two consumers must agree on it: the footer's
+  // icon row and the Organization's `sameAs`.
+  const menuSocialLinks = toSocialLinks(
+    menuResult?.social,
+    menuResult?.shop.primaryDomain.url,
+    context.env,
+  );
+  const socialLinks =
+    menuSocialLinks.length > 0 ? menuSocialLinks : FALLBACK_SOCIAL_LINKS;
   return {
     cart,
     // The homepage hero doubles as the site-wide Open Graph image: routes that
     // set their own `media` (products, collections, articles) override it.
-    seo: rootSeo(request, context.env, content.heroImage),
+    seo: rootSeo(
+      request,
+      context.env,
+      content.heroImage,
+      socialLinks.map((link) => link.to),
+    ),
     posthog,
     content,
     collections: navResult.collections.nodes.filter(isVisibleCollection),
@@ -161,6 +186,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
       menuResult?.shop.primaryDomain.url,
       context.env,
     ),
+    socialLinks,
   };
 }
 

@@ -128,11 +128,16 @@ export function canonical(request: Request, env: Env): string {
   return siteOrigin(request, env) + new URL(request.url).pathname;
 }
 
-/** Site-wide defaults + Organization/WebSite structured data. */
+/**
+ * Site-wide defaults + Organization/WebSite structured data. `sameAs` is the
+ * brand's social profiles — the same list the footer's icons render (see
+ * `~/lib/social`).
+ */
 export function rootSeo(
   request: Request,
   env: Env,
   media?: SeoImageInput,
+  sameAs: string[] = [],
 ): SeoConfig {
   const site = siteOrigin(request, env);
   return {
@@ -155,6 +160,7 @@ export function rootSeo(
         name: SITE_NAME,
         url: site,
         description: SITE_DESCRIPTION,
+        sameAs: sameAs.length > 0 ? sameAs : undefined,
         // Google's recommended home for a site-wide policy. Offers repeat the
         // subset they support — see `productSeo`.
         hasMerchantReturnPolicy: organizationReturnPolicy(site),

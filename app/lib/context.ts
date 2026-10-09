@@ -1,8 +1,19 @@
-import {createHydrogenContext, InMemoryCache} from '@shopify/hydrogen';
+import {
+  createHydrogenContext,
+  createWithCache,
+  InMemoryCache,
+  type WithCache,
+} from '@shopify/hydrogen';
 import {AppSession} from '~/lib/session';
 
-const additionalContext = {} as const;
-type AdditionalContextType = typeof additionalContext;
+type AdditionalContextType = {
+  /**
+   * Cached fetches to third parties (the Behold Instagram feed), on the same
+   * cache and `waitUntil` as the Storefront client — so stale-while-revalidate
+   * refreshes in the background instead of holding up the response.
+   */
+  withCache: WithCache;
+};
 
 declare global {
   interface HydrogenAdditionalContext extends AdditionalContextType {}
@@ -35,6 +46,10 @@ export async function createHydrogenRouterContext(
     openCache(),
     AppSession.init(request, [env.SESSION_SECRET]),
   ]);
+
+  const additionalContext: AdditionalContextType = {
+    withCache: createWithCache({cache, waitUntil, request}),
+  };
 
   const hydrogenContext = createHydrogenContext(
     {

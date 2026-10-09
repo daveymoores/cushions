@@ -136,6 +136,7 @@ anywhere:
 | `atelier` | Page | `atelier.tsx`; `/pages/atelier` 301s to `/atelier` | Atelier route falls back to a stub |
 | `shipping`, `returns`, `contact` | Pages | `components/Footer.tsx` | Footer links 404 |
 | `how-a-sisu-cushion-is-made` | Article | `components/Footer.tsx` | Footer link 404s |
+| `social` | Menu | `root.tsx` (`MENUS_QUERY` variables); see `app/lib/social.ts` | Footer icons and the Organization `sameAs` silently revert to the hardcoded `FALLBACK_SOCIAL_LINKS` |
 
 Also: Shopify's auto-created `frontpage` collection is hidden by code
 (`isVisibleCollection()` in `app/lib/adapters.ts`). Renaming it makes it appear
@@ -162,6 +163,29 @@ in the nav and browse grid.
 - Mock data is automatic, not a flag: `app/lib/storefront.ts → usesMockData()`
   serves design fixtures only when `PUBLIC_STORE_DOMAIN` is unset or
   `mock.shop`. Production has the real domain injected by Oxygen.
+
+### Social links and the Instagram strip (FAR-118)
+
+- **Footer icons + `sameAs`** come from one list (`app/lib/social.ts`): the
+  Shopify menu with handle `social` (one top-level item per profile), or
+  `FALLBACK_SOCIAL_LINKS` when that menu is missing or empty. Icons are chosen
+  by host (Instagram, Pinterest incl. `pin.it`, Facebook / `fb.com`, Etsy);
+  any other host shows the item's title as text.
+- **Homepage Instagram strip** is fed by Behold (`app/lib/instagram.ts`),
+  configured by `BEHOLD_FEED_ID` — the ID at the end of
+  `https://feeds.behold.so/<id>` (the whole URL is accepted too). Unset, or
+  Behold failing / taking over 2.5s, means **no section at all**, not an error;
+  a failure logs one `[instagram] Behold feed unavailable` warning per request.
+- Fetched server-side with `CacheLong()` (1h fresh + 23h stale-while-revalidate),
+  and streamed after the rest of the page, so Behold never delays it. A new
+  Instagram post shows up within about an hour.
+- Needs three or more usable posts; shows six when there are six, else three.
+- ⚠️ **Leave Behold's "Domain whitelist" empty.** The request comes from
+  Oxygen's servers, not a browser on sisuhomeware.com, so a whitelist would
+  block it and the strip would silently vanish.
+- CSP: images load from `https://behold.pictures` and
+  `https://*.behold.pictures` (`imgSrc` in `app/entry.server.tsx`). The feed
+  itself is never fetched by the browser, so `connectSrc` is unchanged.
 
 ---
 

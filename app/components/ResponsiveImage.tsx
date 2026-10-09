@@ -43,7 +43,8 @@ export type ResponsiveImageProps = Omit<
 };
 
 /**
- * The image hosts allowed by `imgSrc` in app/entry.server.tsx, minus Unsplash.
+ * The image hosts allowed by `imgSrc` in app/entry.server.tsx, minus Unsplash
+ * and Behold (whose Instagram images `InstagramFeed` renders itself).
  * Only these accept Shopify's `?width=&height=&crop=` transform params.
  */
 function isShopifyImage(src: string): boolean {
