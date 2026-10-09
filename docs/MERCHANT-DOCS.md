@@ -38,21 +38,33 @@ Update Linear in the same piece of work if you change any of:
   The operating manual lists all 16 `homepage` keys with the exact fallback string for each.
 - **A fallback string.** Both docs quote fallbacks verbatim so Jessie can recognise "my edit
   reverted" as a blanked field. A changed fallback makes that diagnosis wrong.
-- **A `custom.*` product metafield** — the five spec fields and their fallbacks. Note two of
-  them (`insert`, `care`) assert facts, which is called out as a hazard.
+- **A `custom.*` product metafield** — the five spec fields. Since FAR-94 (2026-09-09) a
+  blank field drops its row rather than showing a fallback; both docs say so.
+- **A Settings → Policies handle or the Shopify policies route** — `/policies/<handle>`
+  renders `privacy-policy`, `refund-policy`, `shipping-policy`, `terms-of-service`,
+  `terms-of-sale`, `subscription-policy`, `contact-information` from admin; a blank policy
+  404s. Both docs list which are live.
 - **A hardcoded handle** — blog `journal`, collection `cushions`, pages `atelier` /
-  `shipping` / `returns` / `contact` / `faq` / `fabrics`, menus `main-menu` / `footer`,
-  article `how-a-sisu-cushion-is-made`. Both docs have a
-  do-not-rename table built on these.
+  `shipping` / `returns` / `contact` / `faq` / `fabrics`, menus `main-menu` / `footer` /
+  `social`, the seven policy handles above, article `how-a-sisu-cushion-is-made`, and the
+  Online Store theme snippet `headless-redirect` (the checkout-host redirect). Both docs have
+  a do-not-rename table built on these.
 - **Header nav labels, footer links, homepage section order, the values strip, section
   eyebrows or button labels** — the "ask David" / "escalate" tables enumerate these.
-- **Cache strategy** (`app/root.tsx`, or adding a `cache` option to any loader). Both docs
-  tell Jessie "reload twice" and explicitly forbid saying "it takes a day".
+- **Cache strategy** (`app/root.tsx`, or adding a `cache` option to any loader, including the
+  Behold Instagram fetch in `app/lib/instagram.ts`). Both docs tell Jessie "reload twice" and
+  explicitly forbid saying "it takes a day".
+- **Shipping or returns markup** (`app/lib/policies.ts`) — the docs tell Jessie to tell David
+  the same day she changes a rate, a shipping discount (e.g. the NL promotion ending
+  2026-12-31) or the returns terms.
+- **The Online Store theme** — the redirect snippet, or which theme is published. Both docs
+  warn that publishing any other theme drops the checkout-host redirect.
 - **Any image slot's aspect ratio or container size** — both docs carry a shapes table.
 - **What a missing image looks like.** Products and collections without a photograph render
   an empty block at the slot's ratio (as of 2026-08-27; previously a dead placeholder URL).
-- **Fixing something listed as broken** — the newsletter form discarding submissions, the
-  `/account` stub, `No. 0X`, missing sale strike-through. When one is fixed, remove it from
+- **Fixing something listed as broken** — newsletter sign-up (the form was removed in
+  `4299474`; wiring tracked in FAR-109), the `/account` stub, `No. 0X`, missing sale
+  strike-through, the Instagram section waiting on `BEHOLD_FEED_ID`. When one is fixed, remove it from
   the "not finished yet" / "known-broken" sections. Leaving a fixed item listed is as bad as
   omitting a broken one.
 
