@@ -23,7 +23,10 @@ export async function loader({params, context, request}: Route.LoaderArgs) {
   // Handles that also have a bespoke route would otherwise serve the same
   // content at two self-canonicalising URLs. Send the generic one to the
   // bespoke one permanently. Must run before the mock-data 404 below.
-  const reserved = RESERVED_HANDLES[handle];
+  // Own keys only: `/pages/constructor` must not find `Object`.
+  const reserved = Object.hasOwn(RESERVED_HANDLES, handle)
+    ? RESERVED_HANDLES[handle]
+    : undefined;
   if (reserved) throw redirect(reserved, 301);
 
   if (usesMockData(context.env)) throw new Response('Not found', {status: 404});

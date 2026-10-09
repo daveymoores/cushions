@@ -104,7 +104,9 @@ export function applyReservedHandles(pathname: string): string {
 
   const handle = /^\/pages\/([^/]+)\/?$/.exec(pathname)?.[1];
   if (!handle) return pathname;
-  return RESERVED_HANDLES[handle] ?? pathname;
+  return Object.hasOwn(RESERVED_HANDLES, handle)
+    ? RESERVED_HANDLES[handle]
+    : pathname;
 }
 
 function toNavLink(
