@@ -402,6 +402,50 @@ export type PageQuery = {
   >;
 };
 
+export type PolicyFragment = Pick<
+  StorefrontAPI.ShopPolicy,
+  'id' | 'handle' | 'title' | 'body'
+>;
+
+export type PolicyQueryVariables = StorefrontAPI.Exact<{
+  privacyPolicy: StorefrontAPI.Scalars['Boolean']['input'];
+  refundPolicy: StorefrontAPI.Scalars['Boolean']['input'];
+  shippingPolicy: StorefrontAPI.Scalars['Boolean']['input'];
+  termsOfService: StorefrontAPI.Scalars['Boolean']['input'];
+  termsOfSale: StorefrontAPI.Scalars['Boolean']['input'];
+  subscriptionPolicy: StorefrontAPI.Scalars['Boolean']['input'];
+  contactInformation: StorefrontAPI.Scalars['Boolean']['input'];
+}>;
+
+export type PolicyQuery = {
+  shop: {
+    privacyPolicy?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ShopPolicy, 'id' | 'handle' | 'title' | 'body'>
+    >;
+    refundPolicy?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ShopPolicy, 'id' | 'handle' | 'title' | 'body'>
+    >;
+    shippingPolicy?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ShopPolicy, 'id' | 'handle' | 'title' | 'body'>
+    >;
+    termsOfService?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ShopPolicy, 'id' | 'handle' | 'title' | 'body'>
+    >;
+    termsOfSale?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ShopPolicy, 'id' | 'handle' | 'title' | 'body'>
+    >;
+    subscriptionPolicy?: StorefrontAPI.Maybe<
+      Pick<
+        StorefrontAPI.ShopPolicyWithDefault,
+        'id' | 'handle' | 'title' | 'body'
+      >
+    >;
+    contactInformation?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ShopPolicy, 'id' | 'handle' | 'title' | 'body'>
+    >;
+  };
+};
+
 export type BlogQueryVariables = StorefrontAPI.Exact<{
   handle: StorefrontAPI.Scalars['String']['input'];
   first: StorefrontAPI.Scalars['Int']['input'];
@@ -517,6 +561,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query Page($handle: String!) {\n    page(handle: $handle) {\n      id\n      title\n      body\n      seo {\n        title\n        description\n      }\n    }\n  }\n': {
     return: PageQuery;
     variables: PageQueryVariables;
+  };
+  "#graphql\n  query Policy(\n    $privacyPolicy: Boolean!\n    $refundPolicy: Boolean!\n    $shippingPolicy: Boolean!\n    $termsOfService: Boolean!\n    $termsOfSale: Boolean!\n    $subscriptionPolicy: Boolean!\n    $contactInformation: Boolean!\n  ) {\n    shop {\n      privacyPolicy @include(if: $privacyPolicy) {\n        ...Policy\n      }\n      refundPolicy @include(if: $refundPolicy) {\n        ...Policy\n      }\n      shippingPolicy @include(if: $shippingPolicy) {\n        ...Policy\n      }\n      termsOfService @include(if: $termsOfService) {\n        ...Policy\n      }\n      termsOfSale @include(if: $termsOfSale) {\n        ...Policy\n      }\n      # A different type (ShopPolicyWithDefault) with the same fields, so the\n      # ShopPolicy fragment can't be spread here.\n      subscriptionPolicy @include(if: $subscriptionPolicy) {\n        id\n        handle\n        title\n        body\n      }\n      contactInformation @include(if: $contactInformation) {\n        ...Policy\n      }\n    }\n  }\n  #graphql\n  fragment Policy on ShopPolicy {\n    id\n    handle\n    title\n    body\n  }\n\n": {
+    return: PolicyQuery;
+    variables: PolicyQueryVariables;
   };
   '#graphql\n  query Blog($handle: String!, $first: Int!) {\n    blog(handle: $handle) {\n      title\n      articles(first: $first, sortKey: PUBLISHED_AT, reverse: true) {\n        nodes {\n          id\n          handle\n          title\n          excerpt\n          publishedAt\n          author: authorV2 {\n            name\n          }\n          image {\n            ...Image\n          }\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n': {
     return: BlogQuery;

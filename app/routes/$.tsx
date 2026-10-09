@@ -1,7 +1,8 @@
-import {data} from 'react-router';
+import {data, redirect} from 'react-router';
 import type {Route} from './+types/$';
 import {NotFound} from '~/components/NotFound';
 import {routeMeta, basicSeo} from '~/lib/seo';
+import {applyReservedHandles} from '~/lib/nav';
 
 export const meta: Route.MetaFunction = ({data, matches}) =>
   routeMeta(matches, data?.seo);
@@ -17,8 +18,17 @@ export const meta: Route.MetaFunction = ({data, matches}) =>
  *
  * A 404 leaving the app is also what makes Shopify's own URL redirects work:
  * `storefrontRedirect` in `server.ts` only consults them on a 404.
+ *
+ * Before that, Shopify-shaped paths this app serves elsewhere — `/blogs/journal`
+ * and its articles — 301 to where they live, by the same rule the nav uses to
+ * rewrite menu links (`applyReservedHandles`). Those are the paths the Online
+ * Store theme links to, so a visitor sent over from it lands on the real page.
  */
 export async function loader({context, request}: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const target = applyReservedHandles(url.pathname);
+  if (target !== url.pathname) throw redirect(`${target}${url.search}`, 301);
+
   return data(
     {
       seo: basicSeo({

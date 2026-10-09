@@ -87,7 +87,7 @@ const FALLBACK_COLUMNS: NavColumn[] = [
       },
       {
         id: 'fallback-contact-info',
-        to: '/policies/contact',
+        to: '/policies/contact-information',
         label: 'Contact Information',
         external: false,
       },

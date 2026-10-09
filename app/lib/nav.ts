@@ -76,7 +76,6 @@ function hostnameOf(value: string | null | undefined): string | null {
   }
 }
 
-/** `/pages/atelier` → `/atelier`. Any other path is returned unchanged. */
 /** The Shopify blog whose articles this site renders at `/journal`. */
 const JOURNAL_BLOG_HANDLE = 'journal';
 
@@ -91,8 +90,13 @@ const JOURNAL_BLOG_HANDLE = 'journal';
  *   post pickers produce. There is no `blogs.*` route — those live at
  *   `/journal` — so without this the link 404s and the merchant has no way to
  *   know why.
+ *
+ * Any other path is returned unchanged. The catch-all route (`routes/$.tsx`)
+ * runs request paths through this too, so the same URLs arriving from outside
+ * the nav — the Online Store theme, old links, search results — 301 instead of
+ * 404ing.
  */
-function applyReservedHandles(pathname: string): string {
+export function applyReservedHandles(pathname: string): string {
   const blog = /^\/blogs\/([^/]+)(?:\/([^/]+))?\/?$/.exec(pathname);
   if (blog && blog[1] === JOURNAL_BLOG_HANDLE) {
     return blog[2] ? `/journal/${blog[2]}` : '/journal';

@@ -305,6 +305,64 @@ export const PAGE_QUERY = `#graphql
   }
 ` as const;
 
+const POLICY_FRAGMENT = `#graphql
+  fragment Policy on ShopPolicy {
+    id
+    handle
+    title
+    body
+  }
+` as const;
+
+/**
+ * One store policy (Settings → Policies). The Storefront API exposes each
+ * policy as its own `shop` field, and a field name can't be a variable, so
+ * every field is listed and the caller switches on exactly one with its
+ * boolean — the others are skipped rather than fetched and discarded. `body`
+ * is rich-text HTML authored in admin. See `routes/policies.$handle.tsx`.
+ */
+export const POLICY_QUERY = `#graphql
+  query Policy(
+    $privacyPolicy: Boolean!
+    $refundPolicy: Boolean!
+    $shippingPolicy: Boolean!
+    $termsOfService: Boolean!
+    $termsOfSale: Boolean!
+    $subscriptionPolicy: Boolean!
+    $contactInformation: Boolean!
+  ) {
+    shop {
+      privacyPolicy @include(if: $privacyPolicy) {
+        ...Policy
+      }
+      refundPolicy @include(if: $refundPolicy) {
+        ...Policy
+      }
+      shippingPolicy @include(if: $shippingPolicy) {
+        ...Policy
+      }
+      termsOfService @include(if: $termsOfService) {
+        ...Policy
+      }
+      termsOfSale @include(if: $termsOfSale) {
+        ...Policy
+      }
+      # A different type (ShopPolicyWithDefault) with the same fields, so the
+      # ShopPolicy fragment can't be spread here.
+      subscriptionPolicy @include(if: $subscriptionPolicy) {
+        id
+        handle
+        title
+        body
+      }
+      contactInformation @include(if: $contactInformation) {
+        ...Policy
+      }
+    }
+  }
+  ${POLICY_FRAGMENT}
+` as const;
+
 /** Blog index — the list of articles in a Shopify blog (e.g. handle "journal"). */
 export const BLOG_QUERY = `#graphql
   query Blog($handle: String!, $first: Int!) {
