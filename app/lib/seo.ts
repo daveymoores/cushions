@@ -97,6 +97,12 @@ const TITLE_SUFFIX = ` · ${SITE_NAME}`;
 /** What the title template makes of the default title — see `routeMeta`. */
 const TEMPLATED_SITE_TITLE = SITE_TITLE + TITLE_SUFFIX;
 
+/**
+ * Title of the not-found page, wherever it renders: the catch-all route
+ * (`$.tsx`) and a 404 thrown by a loader (the root `meta`).
+ */
+export const NOT_FOUND_TITLE = 'Page not found';
+
 const SITE_DESCRIPTION =
   'Cushions cut and sewn in small batches in Amsterdam from deadstock fabric — surplus rolls given a second life. Feather-filled, finished by hand, naturally limited.';
 

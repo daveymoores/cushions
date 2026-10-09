@@ -24,7 +24,7 @@ import {
 import {toNavColumns, toNavLinks} from '~/lib/nav';
 import {usesMockData} from '~/lib/storefront';
 import {collections} from '~/lib/mock-data';
-import {rootSeo} from '~/lib/seo';
+import {NOT_FOUND_TITLE, rootSeo, routeMeta} from '~/lib/seo';
 import {toSiteContent, type SiteContent} from '~/lib/content';
 import {isVisibleCollection} from '~/lib/adapters';
 
@@ -38,6 +38,32 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
   if (formMethod && formMethod !== 'GET') return true;
   if (currentUrl.toString() === nextUrl.toString()) return true;
   return false;
+};
+
+/**
+ * Earns its keep only when the root `ErrorBoundary` renders. React Router runs
+ * `meta` for the routes down to the one whose boundary caught the error and no
+ * further, so a 404 thrown by a child loader (`/products/<unknown>`,
+ * `/collections/all`, an unknown `/pages/x`) never reaches the child's own
+ * `meta` — this is the only place that page's tags can come from. It gets what
+ * the catch-all route (`$.tsx`) gets: the same title, a canonical to the
+ * requested path, and `noindex,follow`.
+ *
+ * Runs in the browser too, so no `env`: the canonical is built from the site
+ * origin the root loader already baked into `seo.url`.
+ *
+ * Anything else returns nothing, as before this existed: every page route's
+ * `meta` replaces its parent's and merges the root config itself, so building
+ * the site defaults here would be thrown away on every normal render.
+ */
+export const meta: Route.MetaFunction = ({data, error, location, matches}) => {
+  if (!isRouteErrorResponse(error) || error.status !== 404) return [];
+  const site = data?.seo.url;
+  return routeMeta(matches, {
+    title: NOT_FOUND_TITLE,
+    url: site ? site + location.pathname : undefined,
+    robots: {noIndex: true, noFollow: false},
+  });
 };
 
 export function links() {
@@ -186,7 +212,8 @@ export function ErrorBoundary() {
 
   // A 404 thrown by a loader (`/pages/<unknown>`, a collection that isn't
   // published) is a wrong turn, not a failure, so it gets the full site chrome
-  // and the same page the catch-all route renders.
+  // and the same page the catch-all route renders. Its title and noindex come
+  // from the root `meta` above.
   //
   // Only 404s. An unexpected error might *be* the layout failing — a Header
   // render bug, or a root loader that never returned — and re-rendering

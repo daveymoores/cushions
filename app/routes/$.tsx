@@ -1,7 +1,7 @@
 import {data, redirect} from 'react-router';
 import type {Route} from './+types/$';
 import {NotFound} from '~/components/NotFound';
-import {routeMeta, basicSeo} from '~/lib/seo';
+import {routeMeta, basicSeo, NOT_FOUND_TITLE} from '~/lib/seo';
 import {applyReservedHandles} from '~/lib/nav';
 
 export const meta: Route.MetaFunction = ({data, matches}) =>
@@ -32,7 +32,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
   return data(
     {
       seo: basicSeo({
-        title: 'Page not found',
+        title: NOT_FOUND_TITLE,
         request,
         env: context.env,
         noIndex: true,
