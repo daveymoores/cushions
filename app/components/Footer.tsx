@@ -139,7 +139,9 @@ export function Footer() {
   return (
     <footer className="bg-paper text-ink mt-32 border-t border-hairline">
       <Container>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8 pt-20 pb-16">
+        {/* One row from md up, however many columns the menu produces: a fixed
+            md:grid-cols-4 left the fifth (Legal) wrapping onto a row alone. */}
+        <div className="grid grid-cols-2 md:grid-cols-none md:grid-flow-col md:auto-cols-fr gap-y-12 gap-x-8 pt-20 pb-16">
           {[shopColumn, ...columns].map((col) => (
             <div key={col.id}>
               <Eyebrow className="block mb-6">{col.title}</Eyebrow>
