@@ -45,7 +45,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
       // listing them would put a redirect in the sitemap. Same map and same
       // test as the redirect, so the two can't drift apart.
       ...pages.nodes
-        .filter((p) => !RESERVED_HANDLES[p.handle])
+        .filter((p) => !Object.hasOwn(RESERVED_HANDLES, p.handle))
         .map((p) => ({
           loc: `${origin}/pages/${p.handle}`,
           lastmod: p.updatedAt,
