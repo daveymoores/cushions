@@ -360,3 +360,32 @@ current; this section summarises where it stood on 27 Aug 2026.
 8. **`/account` is a stub** that admits in its own copy that accounts are
    "wired up in a follow-up step". Either build it or hide the header/footer
    links before go-live. Checkout is Shopify-hosted and unaffected.
+
+---
+
+## 10. IndexNow — telling Bing and Yandex about new pages
+
+IndexNow lets the site push URLs to Bing, Yandex, Seznam, Naver and the other
+engines sharing `api.indexnow.org`, instead of waiting for them to crawl.
+Google does not take part; it relies on the sitemap and its own crawl.
+
+- **Key file:** `https://sisuhomeware.com/eba79443b09b890dcda1c687ab461b61.txt`,
+  served by `app/routes/[eba79443b09b890dcda1c687ab461b61.txt].tsx` (a route,
+  not `public/`). The file name *is* the key; the script reads it from there.
+  The key is not a secret.
+- **Submit:** `npm run indexnow` reads the live `sitemap.xml` (following any
+  child sitemaps), and POSTs every URL on `sisuhomeware.com` to IndexNow.
+  It prints the response status: `200` submitted, `202` accepted with key
+  validation pending, `403` key not readable, `422` URL/host mismatch, `429`
+  slow down.
+- **Dry run:** `npm run indexnow -- --dry-run` prints the payload and submits
+  nothing.
+- **Production only.** IndexNow fetches the key file from the brand domain, so
+  the key route must be deployed to `main` first. The script checks the live
+  key file and refuses to submit if it is missing.
+- **When:** once after the key route first reaches production, then after a
+  batch of new products, articles or pages. Resubmitting unchanged URLs gains
+  nothing.
+- **Rotating the key:** rename the route file to a new 32-hex-character name
+  (`openssl rand -hex 16`), update `KEY` inside it to match, deploy, then
+  submit.
