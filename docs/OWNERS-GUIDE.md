@@ -90,10 +90,17 @@ no sync job, and no "publish the site" button.
 
 ⚠️ **One exception: shipping rates and the returns policy.** Google's structured
 data needs them in machine-readable form, so `app/lib/policies.ts` mirrors
-Settings → Shipping and delivery and the `returns` page by hand. If Jessie
-changes either, update that file and deploy, or Google keeps showing the old
-policy. Its header comment has the Storefront API recipe for re-checking the
-real checkout rates.
+Settings → Shipping and delivery, any automatic shipping discount, and the
+`returns` page by hand. If Jessie changes any of them — including starting,
+extending or ending a shipping promotion under Discounts — update that file and
+deploy, or Google keeps showing the old policy. Its header comment has the
+Storefront API recipe for re-checking the real checkout rates (read
+`discountAllocations` too: a shipping discount doesn't show in the rate).
+
+The NL promotion "Free shipping Netherlands" (free at any order value) is
+encoded with its end date, 31 Dec 2026 23:59 Amsterdam, and the markup reverts
+to €6.95 / free over €300 on its own at midnight. Ending it early or extending
+it is a code change.
 
 ### Caching — the real numbers
 
