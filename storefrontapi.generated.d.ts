@@ -541,6 +541,19 @@ export type MetaobjectsQuery = {
   };
 };
 
+export type NewsletterCustomerCreateMutationVariables = StorefrontAPI.Exact<{
+  input: StorefrontAPI.CustomerCreateInput;
+}>;
+
+export type NewsletterCustomerCreateMutation = {
+  customerCreate?: StorefrontAPI.Maybe<{
+    customer?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Customer, 'id'>>;
+    customerUserErrors: Array<
+      Pick<StorefrontAPI.CustomerUserError, 'code' | 'field' | 'message'>
+    >;
+  }>;
+};
+
 interface GeneratedQueryTypes {
   '#graphql\n  query Collection($handle: String!, $first: Int!) {\n    collection(handle: $handle) {\n      id\n      handle\n      title\n      description\n      image {\n        ...Image\n      }\n      products(first: $first) {\n        nodes {\n          ...Product\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    handle\n    title\n    description\n    descriptionHtml\n    vendor\n    productType\n    tags\n    metafields(\n      identifiers: [\n        {namespace: "custom", key: "front_fabric"}\n        {namespace: "custom", key: "back_fabric"}\n        {namespace: "custom", key: "trim"}\n        {namespace: "custom", key: "insert"}\n        {namespace: "custom", key: "care"}\n        {namespace: "custom", key: "in_situ_images"}\n      ]\n    ) {\n      key\n      value\n      # Only custom.in_situ_images (list.file_reference) resolves references;\n      # the text metafields above return null here. See app/lib/product-media.ts.\n      references(first: 10) {\n        nodes {\n          ... on MediaImage {\n            image {\n              ...Image\n            }\n          }\n        }\n      }\n    }\n    featuredImage {\n      ...Image\n    }\n    images(first: 20) {\n      nodes {\n        ...Image\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...Money\n      }\n      maxVariantPrice {\n        ...Money\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n      }\n    }\n    variants(first: 50) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          ...Money\n        }\n        compareAtPrice {\n          ...Money\n        }\n        selectedOptions {\n          name\n          value\n        }\n        image {\n          ...Image\n        }\n      }\n    }\n  }\n  #graphql\n  fragment Image on Image {\n    id\n    url\n    altText\n    width\n    height\n  }\n\n  #graphql\n  fragment Money on MoneyV2 {\n    amount\n    currencyCode\n  }\n\n\n': {
     return: CollectionQuery;
@@ -592,7 +605,12 @@ interface GeneratedQueryTypes {
   };
 }
 
-interface GeneratedMutationTypes {}
+interface GeneratedMutationTypes {
+  '#graphql\n  mutation NewsletterCustomerCreate($input: CustomerCreateInput!) {\n    customerCreate(input: $input) {\n      customer {\n        id\n      }\n      customerUserErrors {\n        code\n        field\n        message\n      }\n    }\n  }\n': {
+    return: NewsletterCustomerCreateMutation;
+    variables: NewsletterCustomerCreateMutationVariables;
+  };
+}
 
 declare module '@shopify/hydrogen' {
   interface StorefrontQueries extends GeneratedQueryTypes {}

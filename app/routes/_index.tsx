@@ -11,6 +11,7 @@ import {ValuesStrip} from '~/components/ValuesStrip';
 import {Hero} from '~/components/Hero';
 import {SealMark} from '~/components/SealMark';
 import {InstagramFeed} from '~/components/InstagramFeed';
+import {Newsletter} from '~/components/Newsletter';
 import {featuredCollection, placeholderImages} from '~/lib/mock-data';
 import {loadInstagramFeed} from '~/lib/instagram';
 import {COLLECTION_QUERY, COLLECTIONS_QUERY} from '~/lib/queries';
@@ -187,6 +188,8 @@ export default function Homepage() {
           {(feed) => (feed ? <InstagramFeed feed={feed} /> : null)}
         </Await>
       </Suspense>
+
+      <Newsletter />
     </>
   );
 }
