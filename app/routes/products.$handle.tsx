@@ -310,9 +310,10 @@ export default function ProductPage() {
               </CartForm>
             </div>
 
-            <p className="caption mt-8 text-stone max-w-md">
-              Cut and sewn in small batches in Amsterdam from deadstock fabric —
-              once a fabric is gone, that design won&rsquo;t be made again.
+            <p className="mt-8 text-stone text-[14px] leading-[1.7] font-light max-w-md">
+              Made in small batches in Amsterdam, every cushion is cut and sewn
+              from designer surplus fabric. Once a fabric is gone, it&rsquo;s
+              gone for good, so each design is truly unique.
             </p>
           </div>
         </div>
