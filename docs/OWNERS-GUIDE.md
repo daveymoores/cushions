@@ -377,10 +377,12 @@ current; this section summarises where it stood on 27 Aug 2026.
 6. **A domain freshly imported to Cloudflare keeps its old host's records** —
    after pointing at Shopify, delete leftover wildcard/`A`/`AAAA` records from
    the previous host or the apex resolves to the wrong server.
-7. **The newsletter form discards submissions**
-   (`app/components/Newsletter.tsx`) — it shows a thank-you and sends the email
-   nowhere. Subscribers are silently lost. Wire a real destination before
-   anyone drives traffic at the site.
+7. **The newsletter form posts to `/newsletter`** (`app/routes/newsletter.tsx`,
+   `app/components/Newsletter.tsx`, since 2026-11-05): a Storefront API
+   `customerCreate` with marketing consent, no Admin token. Known gaps: no rate
+   limit yet, and an existing customer who signs up is thanked but not
+   re-consented (that needs the Admin API). Delete the test customers it leaves
+   behind (`newsletter-test+…@sisuhomeware.com`).
 8. **`/account` is a stub** that admits in its own copy that accounts are
    "wired up in a follow-up step". Either build it or hide the header/footer
    links before go-live. Checkout is Shopify-hosted and unaffected.
