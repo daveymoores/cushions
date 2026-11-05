@@ -169,7 +169,7 @@ export function Footer() {
           {/* Two set lines rather than one wrapping sentence, which left
               "Amsterdam" alone on a line. Balanced in case a narrow screen
               still has to break the first. */}
-          <p className="eyebrow text-ash leading-[1.9] text-balance max-w-[420px]">
+          <p className="eyebrow text-ash leading-[1.6] text-balance max-w-[420px]">
             <span className="block">Cushions made from deadstock fabric</span>
             <span className="block">Sewn in Amsterdam</span>
           </p>
