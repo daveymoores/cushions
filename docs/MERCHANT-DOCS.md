@@ -62,18 +62,17 @@ Update Linear in the same piece of work if you change any of:
 - **Any image slot's aspect ratio or container size** — both docs carry a shapes table.
 - **What a missing image looks like.** Products and collections without a photograph render
   an empty block at the slot's ratio (as of 2026-08-27; previously a dead placeholder URL).
-- **Fixing something listed as broken** — newsletter sign-up (the form was removed in
-  `4299474`; wiring tracked in FAR-109), the `/account` stub, `No. 0X`, missing sale
+- **Fixing something listed as broken** — the `/account` stub, `No. 0X`, missing sale
   strike-through, the Instagram section waiting on `BEHOLD_FEED_ID`. When one is fixed, remove it from
   the "not finished yet" / "known-broken" sections. Leaving a fixed item listed is as bad as
   omitting a broken one.
 
 ## How to update
 
-1. **Read the current document** with `mcp__claude_ai_Linear__get_document` (ID above), so
+1. **Read the current document** with `mcp__linear-server__get_document` (ID above), so
    you edit rather than overwrite. Someone may have edited it in Linear directly — that is
    allowed and expected.
-2. **Edit** with `mcp__claude_ai_Linear__save_document`, passing `patch` for a targeted change
+2. **Edit** with `mcp__linear-server__save_document`, passing `patch` for a targeted change
    rather than resending the whole body.
 3. **Read it back** and check the change rendered, particularly any table you touched.
 
@@ -99,7 +98,7 @@ Note her two addresses differ by tool: **Linear is `.uk`**, while **Shopify and 
 
 ## Provenance
 
-Both documents were verified on 2026-08-27 against the live store (via the Storefront API
+Both documents were verified on 2026-08-27, and updated and re-checked on 2026-11-05, against the live store (via the Storefront API
 using `PUBLIC_STOREFRONT_API_TOKEN` from `.env`, API version 2026-04) and against the
 running code. Reads of metaobject field keys and types, metafield values, and handles need
 no Admin token and no MCP — see `docs/OWNERS-GUIDE.md` for the curl recipe.
