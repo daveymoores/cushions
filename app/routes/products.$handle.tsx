@@ -12,6 +12,7 @@ import {UnderlineLink} from '~/components/UnderlineLink';
 import {
   getProductByHandle,
   type ImageT,
+  type Product,
   type ProductVariant,
 } from '~/lib/mock-data';
 import {PRODUCT_QUERY} from '~/lib/queries';
@@ -31,7 +32,11 @@ export async function loader({params, context, request}: Route.LoaderArgs) {
   if (usesMockData(context.env)) {
     const product = getProductByHandle(handle);
     if (!product) throw new Response('Not found', {status: 404});
-    return data({product, seo: productSeo(product, request, context.env)});
+    return data({
+      product,
+      selectedVariantId: variantFromSearch(product, request),
+      seo: productSeo(product, request, context.env),
+    });
   }
 
   const {product} = await context.storefront.query(PRODUCT_QUERY, {
@@ -39,11 +44,37 @@ export async function loader({params, context, request}: Route.LoaderArgs) {
   });
   if (!product) throw new Response('Not found', {status: 404});
   const adapted = toProduct(product);
-  return data({product: adapted, seo: productSeo(adapted, request, context.env)});
+  return data({
+    product: adapted,
+    selectedVariantId: variantFromSearch(adapted, request),
+    seo: productSeo(adapted, request, context.env),
+  });
+}
+
+/**
+ * The variant a `?variant=<numeric id>` link asks for (the product feed links
+ * each colour this way), as its full gid. Read in the loader so the server
+ * render and hydration open on the same variant. The number is compared with
+ * the last segment of each variant gid; anything that isn't a plain number or
+ * matches no variant of this product returns null, and the page opens on the
+ * first variant as before.
+ */
+function variantFromSearch(product: Product, request: Request): string | null {
+  const param = new URL(request.url).searchParams.get('variant');
+  if (!param || !/^\d+$/.test(param)) return null;
+  const match = product.variants.nodes.find(
+    (v) => numericVariantId(v.id) === param,
+  );
+  return match?.id ?? null;
+}
+
+/** The numeric tail of a variant gid, as `?variant=` carries it. */
+function numericVariantId(gid: string): string {
+  return gid.slice(gid.lastIndexOf('/') + 1);
 }
 
 export default function ProductPage() {
-  const {product} = useLoaderData<typeof loader>();
+  const {product, selectedVariantId} = useLoaderData<typeof loader>();
 
   // Lifestyle shots move to their own section; the carousel keeps the studio
   // front/back shots plus the fabric swatches, which are material information a
@@ -51,7 +82,19 @@ export default function ProductPage() {
   const media = useMemo(() => groupProductMedia(product), [product]);
   const carouselImages = media.carousel;
 
-  const [activeImage, setActiveImage] = useState(0);
+  // The variant the page opens on: the one a `?variant=` link named, else the
+  // first. Both the option buttons and the main image start from it, so the
+  // server HTML already shows that colour.
+  const initialVariant =
+    product.variants.nodes.find((v) => v.id === selectedVariantId) ??
+    product.variants.nodes[0];
+
+  const [activeImage, setActiveImage] = useState(() => {
+    const idx = carouselImages.findIndex(
+      (img) => img.id === initialVariant?.image?.id,
+    );
+    return idx >= 0 ? idx : 0;
+  });
   // Undefined when the product has no photographs at all — the frame below
   // renders empty rather than reaching for a stand-in image.
   const image: ImageT | undefined =
@@ -61,7 +104,7 @@ export default function ProductPage() {
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(
     () =>
       Object.fromEntries(
-        (product.variants.nodes[0]?.selectedOptions ?? []).map((o) => [
+        (initialVariant?.selectedOptions ?? []).map((o) => [
           o.name,
           o.value,
         ]),
@@ -83,6 +126,24 @@ export default function ProductPage() {
     if (idx >= 0) setActiveImage(idx);
   }, [variantImageId, carouselImages]);
 
+  // Once the shopper picks a variant, mirror it into `?variant=` so a shared
+  // link keeps the colour. `replaceState` rather than a navigation: no loader
+  // run, no scroll, no history entry. React Router's own history state is
+  // passed through so its back/forward bookkeeping is untouched. Only the
+  // address bar changes; the canonical URL and structured data are built from
+  // the pathname alone. The ref holds the handle the pick was made on, so a
+  // client-side navigation to another product doesn't inherit it.
+  const pickedOn = useRef<string | null>(null);
+  const variantId = variant?.id;
+  useEffect(() => {
+    if (pickedOn.current !== product.handle || !variantId) return;
+    const url = new URL(window.location.href);
+    const numeric = numericVariantId(variantId);
+    if (url.searchParams.get('variant') === numeric) return;
+    url.searchParams.set('variant', numeric);
+    window.history.replaceState(window.history.state, '', url);
+  }, [variantId, product.handle]);
+
   // One `product_viewed` per product page view: keyed on the handle, so a
   // client-side navigation to another product fires again but choosing a
   // variant doesn't. The ref absorbs StrictMode's double effect in dev.
@@ -90,17 +151,16 @@ export default function ProductPage() {
   useEffect(() => {
     if (viewedHandle.current === product.handle) return;
     viewedHandle.current = product.handle;
-    const first = product.variants.nodes[0];
-    const price = first?.price ?? product.priceRange.minVariantPrice;
+    const price = initialVariant?.price ?? product.priceRange.minVariantPrice;
     track('product_viewed', {
       handle: product.handle,
       product_id: product.id,
-      variant_id: first?.id ?? '',
+      variant_id: initialVariant?.id ?? '',
       price: Number(price.amount),
       currency: price.currencyCode,
       title: product.title,
     });
-  }, [product]);
+  }, [product, initialVariant]);
 
   // The spec comes from `custom.*` product metafields. A blank or whitespace-only
   // metafield drops its row rather than falling back to a default: a stated
@@ -211,12 +271,13 @@ export default function ProductPage() {
                         key={value}
                         type="button"
                         aria-pressed={active}
-                        onClick={() =>
+                        onClick={() => {
+                          pickedOn.current = product.handle;
                           setSelectedOptions((prev) => ({
                             ...prev,
                             [option.name]: value,
-                          }))
-                        }
+                          }));
+                        }}
                         className={`hairline px-4 py-2.5 text-[12px] font-light tracking-wide transition-colors cursor-pointer ${
                           active ? 'border-ink text-ink' : 'hover:border-ink'
                         }`}
