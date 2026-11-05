@@ -73,6 +73,19 @@ function numericVariantId(gid: string): string {
   return gid.slice(gid.lastIndexOf('/') + 1);
 }
 
+/**
+ * Shopify gives a product with no real options a placeholder one, "Title"
+ * with the single value "Default Title". It is not a choice, so it gets no
+ * picker (the cart hides the same placeholder on its line items).
+ */
+function isDefaultTitleOption(option: Product['options'][number]): boolean {
+  return (
+    option.name === 'Title' &&
+    option.values.length === 1 &&
+    option.values[0] === 'Default Title'
+  );
+}
+
 export default function ProductPage() {
   const {product, selectedVariantId} = useLoaderData<typeof loader>();
 
@@ -114,6 +127,11 @@ export default function ProductPage() {
     product.variants.nodes.find((v) =>
       v.selectedOptions.every((o) => selectedOptions[o.name] === o.value),
     ) ?? product.variants.nodes[0];
+  // Only real choices get a picker. A hidden placeholder option stays in
+  // `selectedOptions`, so variant resolution above is unchanged.
+  const pickerOptions = product.options.filter(
+    (option) => !isDefaultTitleOption(option),
+  );
 
   // When the chosen variant has its own image, jump the main image to it.
   // `activeImage` indexes `carouselImages`, so the lookup must use that same
@@ -260,7 +278,7 @@ export default function ProductPage() {
               </p>
             )}
 
-            {product.options.map((option) => (
+            {pickerOptions.map((option) => (
               <div key={option.name} className="mt-10">
                 <Eyebrow className="block mb-4">{option.name}</Eyebrow>
                 <div className="flex flex-wrap gap-2">
