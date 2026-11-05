@@ -1,6 +1,11 @@
 import {useEffect} from 'react';
-import {useRouteLoaderData} from 'react-router';
+import {useLocation, useRouteLoaderData} from 'react-router';
 import type {RootLoader} from '~/root';
+import {
+  applyInternalFlag,
+  connectAnalytics,
+  getAnalyticsClient,
+} from '~/lib/analytics';
 
 /**
  * Client-side PostHog bootstrap.
@@ -38,6 +43,12 @@ export function PostHogAnalytics() {
         // navigations are tracked without any manual capture() calls. Passing
         // `true` here would disable the History API listener.
         capture_pageview: 'history_change',
+        // Runs before the initial pageview is captured, so an `?internal=1`
+        // landing is opted out before it records anything.
+        loaded: (instance) => {
+          applyInternalFlag(instance, window.location.search);
+          connectAnalytics(instance);
+        },
       });
     });
 
@@ -45,6 +56,13 @@ export function PostHogAnalytics() {
       cancelled = true;
     };
   }, [key, host]);
+
+  // `?internal=` arriving on a client-side navigation rather than a landing.
+  const {search} = useLocation();
+  useEffect(() => {
+    const posthog = getAnalyticsClient();
+    if (posthog) applyInternalFlag(posthog, search);
+  }, [search]);
 
   return null;
 }
