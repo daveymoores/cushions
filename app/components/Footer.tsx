@@ -92,6 +92,12 @@ const FALLBACK_COLUMNS: NavColumn[] = [
         external: false,
       },
       {
+        id: 'fallback-refund',
+        to: '/policies/refund-policy',
+        label: 'Refund Policy',
+        external: false,
+      },
+      {
         id: 'fallback-contact-info',
         to: '/policies/contact-information',
         label: 'Contact Information',
