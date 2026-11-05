@@ -29,6 +29,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
 ## Optional
 
 - [Sitemap](${site}/sitemap.xml)
+- [Product feed](${site}/feeds/products.xml): every variant, Google Shopping RSS format
 - Commerce: UCP manifest at ${site}/.well-known/ucp; catalogue, cart and
   checkout over MCP at ${site}/api/ucp/mcp; store policies and FAQs over MCP
   at ${site}/api/mcp. Checkout requires explicit human approval.

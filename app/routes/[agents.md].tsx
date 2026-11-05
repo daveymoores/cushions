@@ -75,6 +75,8 @@ Content on this site is written by the maker.
 ## Machine-readable
 
 - Sitemap: ${site}/sitemap.xml
+- Product feed (Google Shopping RSS 2.0, one item per variant):
+  ${site}/feeds/products.xml
 - Robots: ${site}/robots.txt
 - Short form of this file: ${site}/llms.txt
 - Product, collection and article pages carry schema.org JSON-LD in the HTML.

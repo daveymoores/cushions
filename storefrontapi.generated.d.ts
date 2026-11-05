@@ -258,6 +258,40 @@ export type SitemapQuery = {
   }>;
 };
 
+export type ProductFeedQueryVariables = StorefrontAPI.Exact<{
+  first: StorefrontAPI.Scalars['Int']['input'];
+}>;
+
+export type ProductFeedQuery = {
+  products: {
+    nodes: Array<
+      Pick<
+        StorefrontAPI.Product,
+        'id' | 'handle' | 'title' | 'descriptionHtml' | 'productType'
+      > & {
+        collections: {
+          nodes: Array<Pick<StorefrontAPI.Collection, 'handle' | 'title'>>;
+        };
+        images: {nodes: Array<Pick<StorefrontAPI.Image, 'url'>>};
+        variants: {
+          nodes: Array<
+            Pick<
+              StorefrontAPI.ProductVariant,
+              'id' | 'title' | 'availableForSale'
+            > & {
+              price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+              selectedOptions: Array<
+                Pick<StorefrontAPI.SelectedOption, 'name' | 'value'>
+              >;
+              image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, 'url'>>;
+            }
+          >;
+        };
+      }
+    >;
+  };
+};
+
 export type NavCollectionsQueryVariables = StorefrontAPI.Exact<{
   first: StorefrontAPI.Scalars['Int']['input'];
 }>;
@@ -557,6 +591,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query Sitemap($first: Int!, $blog: String!) {\n    products(first: $first) {\n      nodes {\n        handle\n        updatedAt\n      }\n    }\n    collections(first: $first) {\n      nodes {\n        handle\n        updatedAt\n      }\n    }\n    pages(first: $first) {\n      nodes {\n        handle\n        updatedAt\n      }\n    }\n    blog(handle: $blog) {\n      articles(first: $first, sortKey: PUBLISHED_AT, reverse: true) {\n        nodes {\n          handle\n          publishedAt\n        }\n      }\n    }\n  }\n': {
     return: SitemapQuery;
     variables: SitemapQueryVariables;
+  };
+  '#graphql\n  query ProductFeed($first: Int!) {\n    products(first: $first) {\n      nodes {\n        id\n        handle\n        title\n        descriptionHtml\n        productType\n        collections(first: 5) {\n          nodes {\n            handle\n            title\n          }\n        }\n        images(first: 11) {\n          nodes {\n            url\n          }\n        }\n        variants(first: 100) {\n          nodes {\n            id\n            title\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            selectedOptions {\n              name\n              value\n            }\n            image {\n              url\n            }\n          }\n        }\n      }\n    }\n  }\n': {
+    return: ProductFeedQuery;
+    variables: ProductFeedQueryVariables;
   };
   '#graphql\n  query NavCollections($first: Int!) {\n    collections(first: $first) {\n      nodes {\n        id\n        handle\n        title\n      }\n    }\n  }\n': {
     return: NavCollectionsQuery;
