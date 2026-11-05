@@ -455,7 +455,7 @@ Offer is **15% off**, framed as new fabric drops + subscriber offers (specific i
 
 ## Growth work, 2026-11-05 (on Preview, not production — tick each when merged to `main`)
 
-Context: zero orders in eight weeks and roughly sixty real visitors; the bottleneck is distribution, not conversion. Plan and decisions: the "Sisu first sales" artifact (David has the link). All branches below are merged into `preview/tonight` for one Preview deployment; merge each into `main` individually.
+Context: zero orders in eight weeks and roughly sixty real visitors; the bottleneck is distribution, not conversion. Plan and decisions: the "Sisu first sales" artifact (David has the link). The four site branches below (feed, analytics, variant links, newsletter) are merged into `preview/tonight` for one Preview deployment; the pipeline branch and this docs branch are not in it. Merge each into `main` individually: the four site branches, then the pipeline, then this docs branch.
 
 - [ ] **Product feed** — `feat/product-feed` (`6e656b8`). `/feeds/products.xml`, Google Shopping RSS 2.0, one item per variant, links carry `?variant=<id>`, cached one hour. Feeds Pinterest Catalogs, Meta Commerce Manager and Microsoft Merchant Center; Google Merchant Center only once the shipping copy is fixed (see the Shopping-tab item). Listed in `agents.md` and `llms.txt`.
 - [ ] **Funnel analytics** — `feat/funnel-analytics` (`2081cfb`). PostHog events `product_viewed`, `add_to_cart`, `checkout_started` (`app/lib/analytics.ts`). Opt-out for our own visits: open any page once with `?internal=1` per browser; `?internal=0` undoes it. Jessie and David do this on every phone and laptop they browse the shop from.
