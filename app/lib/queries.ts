@@ -212,6 +212,54 @@ export const SITEMAP_QUERY = `#graphql
   }
 ` as const;
 
+/**
+ * Every published product with its variants, for the shopping feed at
+ * `/feeds/products.xml`. Images are capped at 11: one `image_link` plus the
+ * ten `additional_image_link`s the feed format allows.
+ */
+export const PRODUCT_FEED_QUERY = `#graphql
+  query ProductFeed($first: Int!) {
+    products(first: $first) {
+      nodes {
+        id
+        handle
+        title
+        descriptionHtml
+        productType
+        collections(first: 5) {
+          nodes {
+            handle
+            title
+          }
+        }
+        images(first: 11) {
+          nodes {
+            url
+          }
+        }
+        variants(first: 100) {
+          nodes {
+            id
+            title
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+            selectedOptions {
+              name
+              value
+            }
+            image {
+              url
+            }
+          }
+        }
+      }
+    }
+  }
+` as const;
+
 /** Lightweight collection list for site navigation (header + footer). */
 export const NAV_COLLECTIONS_QUERY = `#graphql
   query NavCollections($first: Int!) {

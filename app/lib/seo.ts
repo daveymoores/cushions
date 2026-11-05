@@ -103,7 +103,7 @@ const TEMPLATED_SITE_TITLE = SITE_TITLE + TITLE_SUFFIX;
  */
 export const NOT_FOUND_TITLE = 'Page not found';
 
-const SITE_DESCRIPTION =
+export const SITE_DESCRIPTION =
   'Cushions cut and sewn in small batches in Amsterdam from deadstock fabric — surplus rolls given a second life. Feather-filled, finished by hand, naturally limited.';
 
 type JsonLd = NonNullable<SeoConfig['jsonLd']>;
