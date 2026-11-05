@@ -1,0 +1,47 @@
+{
+  // Sisu journal pipeline. Deployed by David from a laptop (see README.md).
+  // Nothing here is secret: SHOPIFY_ADMIN_TOKEN, RESEND_API_KEY and
+  // PIPELINE_SECRET are set with `wrangler secret put`, never in this file.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sisu-journal-pipeline",
+  "main": "src/index.ts",
+  "account_id": "bc84abad431336eff149920646572ce3",
+  "compatibility_date": "2026-10-15",
+  "workers_dev": true,
+  "observability": {"enabled": true},
+  "triggers": {
+    // Weekly draft, Monday 06:00 UTC (07:00 or 08:00 in Amsterdam).
+    // Daily IndexNow check, 07:00 UTC.
+    "crons": ["0 6 * * 1", "0 7 * * *"]
+  },
+  // Workers AI always runs remotely, also under `wrangler dev`.
+  "ai": {"binding": "AI", "remote": true},
+  "kv_namespaces": [
+    {
+      "binding": "SISU_PIPELINE",
+      // Replace with the id printed by `npx wrangler kv namespace create SISU_PIPELINE`
+      // (README step 3). `wrangler dev` uses a local store and ignores it.
+      "id": "REPLACE_WITH_KV_NAMESPACE_ID"
+    }
+  ],
+  "vars": {
+    "SHOP_DOMAIN": "gqrjsh-ha.myshopify.com",
+    "SHOP_ADMIN_HANDLE": "gqrjsh-ha",
+    "ADMIN_API_VERSION": "2026-10",
+    "STOREFRONT_API_VERSION": "2026-10",
+    // The same public token the storefront ships to every browser.
+    // Set it here before deploying (README step 4), or pass --var locally.
+    "PUBLIC_STOREFRONT_API_TOKEN": "REPLACE_WITH_PUBLIC_STOREFRONT_API_TOKEN",
+    "SITE_URL": "https://sisuhomeware.com",
+    "BLOG_HANDLE": "journal",
+    "AUTHOR_NAME": "Jessie Brewin",
+    "REVIEW_TO": "REPLACE_WITH_JESSIE_EMAIL,REPLACE_WITH_DAVID_EMAIL",
+    "REVIEW_FROM": "Sisu journal <REPLACE_WITH_VERIFIED_SENDER>",
+    "INDEXNOW_KEY": "eba79443b09b890dcda1c687ab461b61",
+    "PRIMARY_MODEL": "@cf/openai/gpt-oss-120b",
+    "FALLBACK_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    // "1" skips every Shopify Admin call and every email; the bundle is
+    // written to KV and the log instead.
+    "DRY_RUN": "0"
+  }
+}
