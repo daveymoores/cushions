@@ -160,8 +160,12 @@ export function Footer() {
           <div className="wordmark text-[28px] text-ink">
             Sisu
           </div>
-          <p className="eyebrow text-ash max-w-[420px]">
-            Cushions made from deadstock fabric · sewn in Amsterdam
+          {/* Two set lines rather than one wrapping sentence, which left
+              "Amsterdam" alone on a line. Balanced in case a narrow screen
+              still has to break the first. */}
+          <p className="eyebrow text-ash leading-[1.9] text-balance max-w-[420px]">
+            <span className="block">Cushions made from deadstock fabric</span>
+            <span className="block">Sewn in Amsterdam</span>
           </p>
           {socialLinks.length > 0 ? <SocialLinks links={socialLinks} /> : null}
           <p className="caption mt-2 text-stone">
