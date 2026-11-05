@@ -1,0 +1,87 @@
+[
+  {
+    "fact": "Every SISU cushion is filled with a duck feather insert, and the insert is included with the cover.",
+    "source": "Product descriptions and the custom.insert metafield on every product (Storefront API, 2026-11-05)",
+    "status": "confirmed"
+  },
+  {
+    "fact": "The duck feather inserts are made in the Netherlands.",
+    "source": "Product descriptions (\"Dutch duck feather insert\", \"made in the Netherlands\")",
+    "status": "confirmed"
+  },
+  {
+    "fact": "The inserts are certified to DOWNPASS, an independent standard for the origin and traceability of down and feather.",
+    "source": "Product descriptions",
+    "status": "confirmed"
+  },
+  {
+    "fact": "The inserts are OEKO-TEX STANDARD 100 certified, which means they have been tested for harmful substances. This is not an allergy test, and SISU does not call its inserts hypoallergenic.",
+    "source": "Product descriptions; docs/journal-drafts/2026-11-05-feather-or-foam-insert.md",
+    "status": "confirmed"
+  },
+  {
+    "fact": "A 50 x 50 cm SISU cover comes with a 55 cm insert. The insert is deliberately larger than the cover so the cushion looks full.",
+    "source": "Product descriptions of the 50 x 50 cm cushions",
+    "status": "confirmed"
+  },
+  {
+    "fact": "The insert size used in the 60 x 40 cm covers.",
+    "source": "Not stated on any product page; awaiting Jessie",
+    "status": "unknown"
+  },
+  {
+    "fact": "Every cover closes with a concealed Opti zip.",
+    "source": "Construction facts supplied by Jessie (pipeline ticket, 2026-11-05)",
+    "status": "confirmed"
+  },
+  {
+    "fact": "Covers are sewn with 1.5 cm seams.",
+    "source": "Construction facts supplied by Jessie (pipeline ticket, 2026-11-05)",
+    "status": "confirmed"
+  },
+  {
+    "fact": "The fringing on SISU cushions is 100% cotton, except Gaia, whose trim details say 100% polyester. Do not make a general claim about fringe material without a confirm marker.",
+    "source": "Construction facts supplied by Jessie; custom.trim metafields. Gaia's trim metafield says 100% Polyester, so check per product.",
+    "status": "confirmed"
+  },
+  {
+    "fact": "SISU recommends spot cleaning the covers.",
+    "source": "custom.care metafield on every product (\"Spot clean recommended\")",
+    "status": "confirmed"
+  },
+  {
+    "fact": "Each cushion is cut and sewn in small batches in Amsterdam.",
+    "source": "Product descriptions (\"cut and sewn in small batches in Amsterdam\")",
+    "status": "confirmed"
+  },
+  {
+    "fact": "The fabrics are deadstock and surplus from leading interior brands, bought from EU suppliers including Wasted Fabrics, EVA re-source and Fabric Sight.",
+    "source": "Construction facts supplied by Jessie (pipeline ticket, 2026-11-05); product descriptions",
+    "status": "confirmed"
+  },
+  {
+    "fact": "Because of the fabric cut, pattern placement varies on each cushion, so no two are exactly alike.",
+    "source": "Product descriptions",
+    "status": "confirmed"
+  },
+  {
+    "fact": "Once a deadstock fabric is used up it is not restocked.",
+    "source": "Ember 60x40 product description",
+    "status": "confirmed"
+  },
+  {
+    "fact": "Delivery is free in the Netherlands.",
+    "source": "Product descriptions (\"Free delivery in the Netherlands\")",
+    "status": "confirmed"
+  },
+  {
+    "fact": "Whether SISU inserts can be washed, and if so how.",
+    "source": "Not stated anywhere; awaiting Jessie",
+    "status": "unknown"
+  },
+  {
+    "fact": "Whether SISU sells covers without an insert.",
+    "source": "Not stated anywhere; awaiting Jessie",
+    "status": "unknown"
+  }
+]

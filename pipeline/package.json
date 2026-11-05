@@ -1,0 +1,23 @@
+{
+  "name": "sisu-journal-pipeline",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Weekly journal drafts for sisuhomeware.com, written by Workers AI and saved unpublished in Shopify for Jessie to review.",
+  "scripts": {
+    "dev": "wrangler dev --test-scheduled",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261019.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.12",
+    "wrangler": "4.151.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261019.1": true
+  }
+}

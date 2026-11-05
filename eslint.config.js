@@ -33,6 +33,8 @@ export default [
       '**/.react-router/',
       '**/.claude/',
       '**/packages/hydrogen/dist/',
+      // The journal pipeline Worker has its own package, tsconfig and tests.
+      'pipeline/',
     ],
   },
   ...fixupConfigRules(
