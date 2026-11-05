@@ -1,5 +1,5 @@
-import {useEffect, useMemo, useState} from 'react';
-import {useLoaderData, data} from 'react-router';
+import {useEffect, useMemo, useRef, useState} from 'react';
+import {useLoaderData, data, type FetcherWithComponents} from 'react-router';
 import {CartForm} from '@shopify/hydrogen';
 import type {Route} from './+types/products.$handle';
 import {Container} from '~/components/Container';
@@ -9,12 +9,17 @@ import {ResponsiveImage} from '~/components/ResponsiveImage';
 import {ProductInSitu} from '~/components/ProductInSitu';
 import {SealMark} from '~/components/SealMark';
 import {UnderlineLink} from '~/components/UnderlineLink';
-import {getProductByHandle, type ImageT} from '~/lib/mock-data';
+import {
+  getProductByHandle,
+  type ImageT,
+  type ProductVariant,
+} from '~/lib/mock-data';
 import {PRODUCT_QUERY} from '~/lib/queries';
 import {toProduct} from '~/lib/adapters';
 import {groupProductMedia} from '~/lib/product-media';
 import {usesMockData} from '~/lib/storefront';
 import {routeMeta, productSeo} from '~/lib/seo';
+import {track, type AnalyticsEvents} from '~/lib/analytics';
 
 export const meta: Route.MetaFunction = ({data, matches}) =>
   routeMeta(matches, data?.seo, 'product');
@@ -77,6 +82,25 @@ export default function ProductPage() {
     const idx = carouselImages.findIndex((img) => img.id === variantImageId);
     if (idx >= 0) setActiveImage(idx);
   }, [variantImageId, carouselImages]);
+
+  // One `product_viewed` per product page view: keyed on the handle, so a
+  // client-side navigation to another product fires again but choosing a
+  // variant doesn't. The ref absorbs StrictMode's double effect in dev.
+  const viewedHandle = useRef<string | null>(null);
+  useEffect(() => {
+    if (viewedHandle.current === product.handle) return;
+    viewedHandle.current = product.handle;
+    const first = product.variants.nodes[0];
+    const price = first?.price ?? product.priceRange.minVariantPrice;
+    track('product_viewed', {
+      handle: product.handle,
+      product_id: product.id,
+      variant_id: first?.id ?? '',
+      price: Number(price.amount),
+      currency: price.currencyCode,
+      title: product.title,
+    });
+  }, [product]);
 
   // The spec comes from `custom.*` product metafields. A blank or whitespace-only
   // metafield drops its row rather than falling back to a default: a stated
@@ -215,60 +239,13 @@ export default function ProductPage() {
                     : [],
                 }}
               >
-                {(fetcher) => {
-                  const adding = fetcher.state !== 'idle';
-                  const errorMessage: string | undefined =
-                    fetcher.data?.errors?.[0]?.message;
-                  const added =
-                    !adding && Boolean(fetcher.data?.cart) && !errorMessage;
-                  return (
-                    <>
-                      <button
-                        type="submit"
-                        disabled={!variant?.availableForSale || adding}
-                        className="arrow-link text-ink disabled:opacity-50"
-                      >
-                        <span>
-                          {adding
-                            ? 'Adding…'
-                            : variant?.availableForSale
-                              ? 'Add to cart'
-                              : 'Sold out'}
-                        </span>
-                        <svg
-                          viewBox="0 0 24 1"
-                          preserveAspectRatio="none"
-                          aria-hidden="true"
-                        >
-                          <line
-                            x1="0"
-                            y1="0.5"
-                            x2="24"
-                            y2="0.5"
-                            stroke="currentColor"
-                            strokeWidth="1"
-                          />
-                        </svg>
-                      </button>
-                      {errorMessage ? (
-                        <p className="caption mt-5 text-stone" role="alert">
-                          {errorMessage}
-                        </p>
-                      ) : added ? (
-                        <p className="caption mt-5 text-ash">
-                          Added —{' '}
-                          <UnderlineLink
-                            to="/cart"
-                            staticUnderline
-                            className="text-ash hover:text-ink"
-                          >
-                            view cart
-                          </UnderlineLink>
-                        </p>
-                      ) : null}
-                    </>
-                  );
-                }}
+                {(fetcher) => (
+                  <AddToCartButton
+                    fetcher={fetcher}
+                    handle={product.handle}
+                    variant={variant}
+                  />
+                )}
               </CartForm>
             </div>
 
@@ -307,6 +284,106 @@ export default function ProductPage() {
       {/* Lifestyle photography, split out of the carousel by
           ~/lib/product-media. Renders nothing when there is none. */}
       <ProductInSitu images={media.inSitu} productTitle={product.title} />
+    </>
+  );
+}
+
+/**
+ * The add-to-cart button and its status line. A component of its own, rather
+ * than inline in the `CartForm` render prop, so it can hold the effect that
+ * records `add_to_cart` once the cart action has succeeded.
+ */
+function AddToCartButton({
+  fetcher,
+  handle,
+  variant,
+}: {
+  fetcher: FetcherWithComponents<any>;
+  handle: string;
+  variant: ProductVariant | undefined;
+}) {
+  // What was submitted, captured when the fetcher first leaves idle: by the
+  // time the action returns, the shopper may already have picked another
+  // variant.
+  const submitted = useRef<AnalyticsEvents['add_to_cart'] | null>(null);
+  const trackedData = useRef<unknown>(null);
+
+  useEffect(() => {
+    if (fetcher.state !== 'idle' && !submitted.current && variant) {
+      submitted.current = {
+        handle,
+        variant_id: variant.id,
+        quantity: 1,
+        price: Number(variant.price.amount),
+        currency: variant.price.currencyCode,
+      };
+    }
+  }, [fetcher.state, handle, variant]);
+
+  useEffect(() => {
+    const result = fetcher.data as
+      | {cart?: unknown; errors?: unknown[]}
+      | undefined;
+    if (fetcher.state !== 'idle' || !result?.cart) return;
+    if (result.errors?.length) return;
+    // A fresh `fetcher.data` object per successful submission; identity
+    // dedupes re-renders and StrictMode's double effect.
+    if (trackedData.current === result || !submitted.current) return;
+    trackedData.current = result;
+    track('add_to_cart', submitted.current);
+    submitted.current = null;
+  }, [fetcher.state, fetcher.data]);
+
+  const adding = fetcher.state !== 'idle';
+  const errorMessage: string | undefined =
+    fetcher.data?.errors?.[0]?.message;
+  const added =
+    !adding && Boolean(fetcher.data?.cart) && !errorMessage;
+  return (
+    <>
+      <button
+        type="submit"
+        disabled={!variant?.availableForSale || adding}
+        className="arrow-link text-ink disabled:opacity-50"
+      >
+        <span>
+          {adding
+            ? 'Adding…'
+            : variant?.availableForSale
+              ? 'Add to cart'
+              : 'Sold out'}
+        </span>
+        <svg
+          viewBox="0 0 24 1"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <line
+            x1="0"
+            y1="0.5"
+            x2="24"
+            y2="0.5"
+            stroke="currentColor"
+            strokeWidth="1"
+          />
+        </svg>
+      </button>
+      {errorMessage ? (
+        <p className="caption mt-5 text-stone" role="alert">
+          {errorMessage}
+        </p>
+      ) : added ? (
+        <p className="caption mt-5 text-ash">
+          Added —{' '}
+          <UnderlineLink
+            to="/cart"
+            staticUnderline
+            className="text-ash hover:text-ink"
+          >
+            view cart
+          </UnderlineLink>
+        </p>
+      ) : null}
     </>
   );
 }
