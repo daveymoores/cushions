@@ -7,6 +7,7 @@ import {Money} from '~/components/Money';
 import {ResponsiveImage} from '~/components/ResponsiveImage';
 import {UnderlineLink} from '~/components/UnderlineLink';
 import {routeMeta, basicSeo} from '~/lib/seo';
+import {track} from '~/lib/analytics';
 
 export const meta: Route.MetaFunction = ({data, matches}) =>
   routeMeta(matches, data?.seo);
@@ -108,6 +109,21 @@ export default function Cart() {
             <a
               href={cart.checkoutUrl}
               className="arrow-link text-ink mt-8 inline-flex"
+              // Recorded on the way out; never prevents or delays the
+              // navigation. sendBeacon, sent at once, survives the page unload.
+              onClick={() => {
+                const total =
+                  cart.cost?.totalAmount ?? cart.cost?.subtotalAmount;
+                track(
+                  'checkout_started',
+                  {
+                    cart_total: Number(total?.amount ?? 0),
+                    currency: total?.currencyCode ?? '',
+                    line_count: lines.length,
+                  },
+                  {send_instantly: true, transport: 'sendBeacon'},
+                );
+              }}
             >
               <span>Continue to checkout</span>
               <svg viewBox="0 0 24 1" preserveAspectRatio="none" aria-hidden="true">
